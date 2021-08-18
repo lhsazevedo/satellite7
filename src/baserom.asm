@@ -2341,7 +2341,7 @@ _LABEL_13B0_:
 _LABEL_13BB_:
 	ld a, (player1XPos)
 	ld h, a
-	ld a, (_RAM_C606_)
+	ld a, (player1YPos)
 	ld l, a
 	ret
 
@@ -3086,7 +3086,7 @@ _LABEL_1A2A_:
 	ld h, a
 	add a, $30
 	ld l, a
-	ld a, (_RAM_C606_)
+	ld a, (player1YPos)
 	ld c, $01
 	cp h
 	jr c, +
@@ -3303,7 +3303,7 @@ _LABEL_1C11_:
 	ld a, (_RAM_C623_)
 	or a
 	jr z, --
-	ld a, (_RAM_C606_)
+	ld a, (player1YPos)
 	ld b, a
 	ld a, (_RAM_C626_)
 	cp b
@@ -3328,7 +3328,7 @@ _LABEL_1C69_:
 	ld (iy+5), a
 	cp $01
 	jr nz, +
-	ld a, (_RAM_C606_)
+	ld a, (player1YPos)
 	add a, $02
 	ld (iy+25), a
 	ld a, (player1XPos)
@@ -4713,7 +4713,7 @@ _LABEL_2760_:
 	add a, $02
 	call _LABEL_282B_
 	jr nc, +
-	ld a, (_RAM_C606_)
+	ld a, (player1YPos)
 	add a, $02
 	call _LABEL_283B_
 	jr nc, +
@@ -4723,7 +4723,7 @@ _LABEL_2760_:
 	add a, $0A
 	call _LABEL_282B_
 	jr nc, +
-	ld a, (_RAM_C606_)
+	ld a, (player1YPos)
 	add a, $02
 	call _LABEL_283B_
 	jr nc, +
@@ -4733,7 +4733,7 @@ _LABEL_2760_:
 	add a, $02
 	call _LABEL_282B_
 	jr nc, +
-	ld a, (_RAM_C606_)
+	ld a, (player1YPos)
 	add a, $0A
 	call _LABEL_283B_
 	jr nc, +
@@ -4743,7 +4743,7 @@ _LABEL_2760_:
 	add a, $0A
 	call _LABEL_282B_
 	jr nc, +
-	ld a, (_RAM_C606_)
+	ld a, (player1YPos)
 	add a, $0A
 	call _LABEL_283B_
 	jr nc, +

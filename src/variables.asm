@@ -156,7 +156,7 @@ _RAM_C602_ db
 _RAM_C603_ db
 _RAM_C604_ db
 _RAM_C605_ db
-_RAM_C606_ db
+player1YPos db
 .ende
 
 .enum $C608 export
