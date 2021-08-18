@@ -174,7 +174,7 @@ _RAM_C606_ db
 .ende
 
 .enum $C608 export
-_RAM_C608_ db
+player1XPos db
 .ende
 
 .enum $C60B export
@@ -1038,8 +1038,10 @@ _LABEL_48D_:
 	ld a, (_RAM_C103_)
 	bit 0, a
 	jr nz, +
+
+	; Respaw position
 	ld a, $58
-	ld (_RAM_C608_), a
+	ld (player1XPos), a
 	ret
 
 +:
@@ -2710,7 +2712,7 @@ _LABEL_13B0_:
 	jp _LABEL_3063_
 
 _LABEL_13BB_:
-	ld a, (_RAM_C608_)
+	ld a, (player1XPos)
 	ld h, a
 	ld a, (_RAM_C606_)
 	ld l, a
@@ -3224,7 +3226,7 @@ _LABEL_1805_:
 	cp $38
 	jr nc, +++
 ++:
-	ld a, (_RAM_C608_)
+	ld a, (player1XPos)
 	call _LABEL_1884_
 	jp c, +
 	ld a, (_RAM_C103_)
@@ -3702,7 +3704,7 @@ _LABEL_1C69_:
 	ld a, (_RAM_C606_)
 	add a, $02
 	ld (iy+25), a
-	ld a, (_RAM_C608_)
+	ld a, (player1XPos)
 	add a, $02
 	ld (iy+26), a
 	jr ++
@@ -5080,7 +5082,7 @@ _LABEL_2760_:
 	or a
 	ret nz
 	ld c, $00
-	ld a, (_RAM_C608_)
+	ld a, (player1XPos)
 	add a, $02
 	call _LABEL_282B_
 	jr nc, +
@@ -5090,7 +5092,7 @@ _LABEL_2760_:
 	jr nc, +
 	set 0, c
 +:
-	ld a, (_RAM_C608_)
+	ld a, (player1XPos)
 	add a, $0A
 	call _LABEL_282B_
 	jr nc, +
@@ -5100,7 +5102,7 @@ _LABEL_2760_:
 	jr nc, +
 	set 1, c
 +:
-	ld a, (_RAM_C608_)
+	ld a, (player1XPos)
 	add a, $02
 	call _LABEL_282B_
 	jr nc, +
@@ -5110,7 +5112,7 @@ _LABEL_2760_:
 	jr nc, +
 	set 2, c
 +:
-	ld a, (_RAM_C608_)
+	ld a, (player1XPos)
 	add a, $0A
 	call _LABEL_282B_
 	jr nc, +
