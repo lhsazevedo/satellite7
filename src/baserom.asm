@@ -2105,11 +2105,11 @@ _LABEL_115F_:
 	ret
 
 _LABEL_1183_:
-	call _LABEL_13BB_
+	call loadPlayer1XYPosToHL
 	ld a, (iy+5)
 	cp $01
 	jr z, +
-	call _LABEL_13C4_
+	call loadPlayer2XYPosToHL_LABEL_13C4_
 +:
 	ld d, l
 	ld e, h
@@ -2301,11 +2301,11 @@ _LABEL_1362_:
 	or a
 	jr nz, ++
 	call _LABEL_FFF_
-	call _LABEL_13BB_
+	call loadPlayer1XYPosToHL
 	ld a, (iy+5)
 	dec a
 	jr z, +
-	call _LABEL_13C4_
+	call loadPlayer2XYPosToHL_LABEL_13C4_
 +:
 	ld a, l
 	sub $30
@@ -2338,14 +2338,14 @@ _LABEL_13B0_:
 	ld (iy+25), $38
 	jp _LABEL_3063_
 
-_LABEL_13BB_:
+loadPlayer1XYPosToHL:
 	ld a, (player1XPos)
 	ld h, a
 	ld a, (player1YPos)
 	ld l, a
 	ret
 
-_LABEL_13C4_:
+loadPlayer2XYPosToHL_LABEL_13C4_:
 	ld a, (_RAM_C628_)
 	ld h, a
 	ld a, (_RAM_C626_)
@@ -2973,11 +2973,11 @@ _LABEL_191F_:
 	ld a, (iy+26)
 	or a
 	jp nz, _LABEL_10D8_
-	call _LABEL_13BB_
+	call loadPlayer1XYPosToHL
 	ld a, (iy+5)
 	cp $01
 	jr z, +
-	call _LABEL_13C4_
+	call loadPlayer2XYPosToHL_LABEL_13C4_
 +:
 	ld (iy+25), l
 	ld a, h
