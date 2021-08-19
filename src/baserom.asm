@@ -12,6 +12,8 @@ BANKSIZE $4000
 BANKS 2
 .ENDRO
 
+.INCLUDE "constants.asm"
+.INCLUDE "structs.asm"
 .INCLUDE "variables.asm"
 
 ; Ports
@@ -387,7 +389,7 @@ _LABEL_283_:
 	bit 3, a
 	call nz, _LABEL_369_
 	call _LABEL_2301_
-	call _LABEL_C3C_
+	call updateEntities
 	ld a, (_RAM_C319_)
 	cpl
 	ld (_RAM_C319_), a
@@ -410,7 +412,7 @@ _LABEL_283_:
 	jp c, _LABEL_10B_
 +:
 	ld iy, _RAM_C600_
-	call _LABEL_1056_
+	call putIYEntityOffscreen
 	jp +++
 
 ++:
@@ -430,9 +432,9 @@ _LABEL_283_:
 	jp c, _LABEL_10B_
 +:
 	ld iy, _RAM_C600_
-	call _LABEL_1056_
+	call putIYEntityOffscreen
 	ld iy, _RAM_C620_
-	call _LABEL_1056_
+	call putIYEntityOffscreen
 	ld a, (_RAM_C133_)
 	and $F9
 	ld (_RAM_C133_), a
@@ -447,7 +449,7 @@ _LABEL_283_:
 	ld hl, _RAM_C133_
 	res 1, (hl)
 	ld iy, _RAM_C600_
-	call _LABEL_1056_
+	call putIYEntityOffscreen
 	jp _LABEL_10B_
 
 _LABEL_324_:
@@ -456,7 +458,7 @@ _LABEL_324_:
 	ld hl, _RAM_C133_
 	res 2, (hl)
 	ld iy, _RAM_C620_
-	call _LABEL_1056_
+	call putIYEntityOffscreen
 	jp _LABEL_10B_
 
 +:
@@ -534,7 +536,7 @@ _LABEL_39E_:
 	ld (_RAM_C104_), a
 	ld hl, _RAM_C133_
 	set 3, (hl)
-	ld a, (_RAM_C105_)
+	ld a, (p1Lives)
 	dec a
 	jp p, +++
 	ld a, (_RAM_C104_)
@@ -557,7 +559,7 @@ _LABEL_39E_:
 ++:
 	xor a
 +++:
-	ld (_RAM_C105_), a
+	ld (p1Lives), a
 	call _LABEL_45C_
 _LABEL_3FF_:
 	ld a, (_RAM_C103_)
@@ -613,11 +615,11 @@ _LABEL_456_:
 _LABEL_45C_:
 	or a
 	push af
-	ld a, (_RAM_C105_)
+	ld a, (p1Lives)
 	cp $0A
 	jr c, +
 	ld a, $09
-	ld (_RAM_C105_), a
+	ld (p1Lives), a
 	jr +
 
 _LABEL_46C_:
@@ -668,7 +670,7 @@ _LABEL_48D_:
 
 	; Respaw position
 	ld a, $58
-	ld (player1XPos), a
+	ld (player1.xPos.low), a
 	ret
 
 +:
@@ -1147,7 +1149,7 @@ _DATA_9B9_:
 _LABEL_9BD_:
 	ld a, $8B
 	ld (_RAM_CD00_), a
-	ld hl, _RAM_C105_
+	ld hl, p1Lives
 	inc (hl)
 	jp _LABEL_45C_
 
@@ -1243,10 +1245,10 @@ _LABEL_A3E_:
 	ld hl, _RAM_C32F_
 	ld a, (hl)
 	cp $05
-	jp c, _LABEL_1056_
+	jp c, putIYEntityOffscreen
 	dec (hl)
 	call _LABEL_2A9A_
-	jp _LABEL_1056_
+	jp putIYEntityOffscreen
 
 _LABEL_A63_:
 	ld iy, _RAM_C6A0_
@@ -1260,7 +1262,7 @@ _LABEL_A63_:
 +:
 	ld a, (_RAM_C943_)
 	or a
-	jp nz, _LABEL_1056_
+	jp nz, putIYEntityOffscreen
 	ld a, (iy+8)
 	sub $04
 	ld (_RAM_C948_), a
@@ -1499,8 +1501,12 @@ _LABEL_BFC_:
 	ld (_RAM_C116_), a
 	ld a, $03
 	ld (_RAM_C151_), a
+
+	; Initial lives
+	; @TODO: Display text still starts with 2
 	ld a, $02
-	ld (_RAM_C105_), a
+	ld (p1Lives), a
+
 	ld (_RAM_C106_), a
 	ld a, $1E
 	ld (_RAM_C32F_), a
@@ -1518,9 +1524,9 @@ _LABEL_BFC_:
 	ld (_RAM_C322_), a
 	ret
 
-_LABEL_C3C_:
-	ld b, $1B
-	ld iy, _RAM_C600_
+updateEntities:
+	ld b, ENTITY_ARRAY_SIZE
+	ld iy, entities
 -:
 	push bc
 	push iy
@@ -1538,7 +1544,7 @@ _LABEL_C3C_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, _DATA_C64_ - 2
+	ld hl, entityUpdatersPointers - 2
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -1547,204 +1553,45 @@ _LABEL_C3C_:
 	jp (hl)
 
 ; Jump Table from C64 to CA7 (34 entries, indexed by _RAM_C602_)
-_DATA_C64_:
-.dw _LABEL_CA8_ _LABEL_CCB_ _LABEL_D8D_ _LABEL_DE8_ _LABEL_E2C_ _LABEL_EBF_ _LABEL_1155_ _LABEL_F63_
-.dw _LABEL_FC0_ _LABEL_11CE_ _LABEL_12BA_ _LABEL_13CD_ _LABEL_149D_ _LABEL_156A_ _LABEL_15C4_ _LABEL_1770_
-.dw _LABEL_1EE9_ _LABEL_189A_ _LABEL_198A_ _LABEL_2011_ _LABEL_199B_ _LABEL_1A6B_ _LABEL_1AEE_ _LABEL_20AA_
-.dw _LABEL_2114_ _LABEL_1BA5_ _LABEL_1C11_ _LABEL_1D72_ _LABEL_1DBE_ _LABEL_213F_ _LABEL_21AE_ _LABEL_11A8_
-.dw _LABEL_1E99_ _LABEL_1E86_
+entityUpdatersPointers:
+.dw updatePlayer1
+.dw updatePlayer2
+.dw updateBullet
+.dw updateBomb
+.dw _LABEL_E2C_
+.dw _LABEL_EBF_
+.dw _LABEL_1155_
+.dw updateExplosion
+.dw _LABEL_FC0_
+.dw updateEnemy1
+.dw _LABEL_12BA_
+.dw _LABEL_13CD_
+.dw _LABEL_149D_
+.dw _LABEL_156A_
+.dw _LABEL_15C4_
+.dw _LABEL_1770_
+.dw _LABEL_1EE9_
+.dw _LABEL_189A_
+.dw _LABEL_198A_
+.dw _LABEL_2011_
+.dw _LABEL_199B_
+.dw _LABEL_1A6B_
+.dw updateEnemy2
+.dw _LABEL_20AA_
+.dw _LABEL_2114_
+.dw _LABEL_1BA5_
+.dw _LABEL_1C11_
+.dw _LABEL_1D72_
+.dw _LABEL_1DBE_
+.dw _LABEL_213F_
+.dw _LABEL_21AE_
+.dw _LABEL_11A8_
+.dw _LABEL_1E99_
+.dw _LABEL_1E86_
 
-; 1st entry of Jump Table from C64 (indexed by _RAM_C602_)
-_LABEL_CA8_:
-	ld a, (iy+27)
-	cp $01
-	jr nz, +
-	ld de, $FF00
-	ld a, (iy+6)
-	cp $80
-	jp nc, _LABEL_1005_
-	ld (iy+27), $02
-	ld hl, _RAM_C104_
-	res 0, (hl)
-	set 1, (hl)
-	ret
-
-+:
-	ld a, (_RAM_C12F_)
-	jr ++
-
-; 2nd entry of Jump Table from C64 (indexed by _RAM_C602_)
-_LABEL_CCB_:
-	ld a, (iy+27)
-	cp $01
-	jr nz, +
-	ld de, $FF00
-	ld a, (iy+6)
-	cp $80
-	jp nc, _LABEL_1005_
-	ld (iy+27), $02
-	ld hl, _RAM_C104_
-	res 4, (hl)
-	set 5, (hl)
-	ret
-
-+:
-	ld a, (_RAM_C131_)
-++:
-	ld (_RAM_C12E_), a
-	ld a, (iy+24)
-	ld c, a
-	or a
-	jr nz, +
-	ld a, (_RAM_C12E_)
-	and $0F
-	or a
-	jr z, ++
-	ld c, a
-+:
-	bit 0, c
-	call nz, +++
-	bit 1, c
-	call nz, _LABEL_D4B_
-	bit 2, c
-	call nz, _LABEL_D61_
-	bit 3, c
-	call nz, _LABEL_D77_
-++:
-	ld a, (iy+25)
-	or a
-	ret z
-	ld a, (iy+24)
-	call _LABEL_1027_
-	inc (iy+25)
-	ld a, (iy+25)
-	cp $20
-	ret c
-	xor a
-	ld (iy+24), a
-	ld (iy+25), a
-	ld (iy+17), a
-	ld (iy+19), a
-	ret
-
-+++:
-	ld a, (iy+6)
-	cp $40
-	ret c
-	ld de, $FF00
-	ld a, (iy+4)
-	or a
-	jp z, _LABEL_1005_
-	ld de, $FE40
-	jp _LABEL_1005_
-
-_LABEL_D4B_:
-	ld a, (iy+6)
-	cp $B0
-	ret nc
-	ld de, $0100
-	ld a, (iy+4)
-	or a
-	jp z, _LABEL_1005_
-	ld de, $01A0
-	jp _LABEL_1005_
-
-_LABEL_D61_:
-	ld a, (iy+8)
-	cp $08
-	ret c
-	ld de, $FF00
-	ld a, (iy+4)
-	or a
-	jp z, _LABEL_1019_
-	ld de, $FE40
-	jp _LABEL_1019_
-
-_LABEL_D77_:
-	ld a, (iy+8)
-	cp $A8
-	ret nc
-	ld de, $0100
-	ld a, (iy+4)
-	or a
-	jp z, _LABEL_1019_
-	ld de, $01A0
-	jp _LABEL_1019_
-
-; 3rd entry of Jump Table from C64 (indexed by _RAM_C602_)
-_LABEL_D8D_:
-	inc (iy+31)
-	ld a, (iy+6)
-	cp $C0
-	jp nc, _LABEL_1056_
-	ld a, (iy+8)
-	cp $B8
-	jp nc, _LABEL_1056_
-	ld a, (_RAM_C31F_)
-	or a
-	call nz, +
-	call _LABEL_10D8_
-	ld a, (iy+24)
-	or a
-	ret z
-	cp $02
-	jp nc, _LABEL_1056_
-	inc (iy+25)
-	ld a, (iy+25)
-	cp $06
-	ret c
-	jp _LABEL_1056_
-
-+:
-	ld a, (_RAM_C320_)
-	ld d, a
-	ld a, (_RAM_C321_)
-	ld e, a
-	call _LABEL_30BC_
-	push hl
-	ld h, (iy+13)
-	ld l, (iy+14)
-	add hl, de
-	ld (iy+13), h
-	ld (iy+14), l
-	pop hl
-	ld d, (iy+15)
-	ld e, (iy+16)
-	add hl, de
-	ld (iy+15), h
-	ld (iy+16), l
-	ret
-
-; 4th entry of Jump Table from C64 (indexed by _RAM_C602_)
-_LABEL_DE8_:
-	ld d, $00
-	ld e, (iy+24)
-	ld h, (iy+13)
-	ld l, (iy+14)
-	add hl, de
-	ld (iy+13), h
-	ld (iy+14), l
-	ex de, hl
-	ld e, $00
-	call _LABEL_1005_
-	inc (iy+19)
-	ld a, (iy+19)
-	cp $08
-	ret c
-	ld (iy+17), $01
-	cp $16
-	ret c
-	ld (iy+17), $02
-	cp $23
-	ret c
-	ld (iy+17), $03
-	cp $2A
-	jp nc, _LABEL_1056_
-	ld a, (_RAM_C133_)
-	and $20
-	ret nz
-	ld de, $0055
-	jp _LABEL_1005_
+.INCLUDE "entities/updatePlayers.asm"
+.INCLUDE "entities/updateBullet.asm"
+.INCLUDE "entities/updateBomb.asm"
 
 ; 5th entry of Jump Table from C64 (indexed by _RAM_C602_)
 _LABEL_E2C_:
@@ -1794,7 +1641,7 @@ _LABEL_E9B_:
 	ld hl, _RAM_C104_
 	ld a, (iy+5)
 	push af
-	call _LABEL_1056_
+	call putIYEntityOffscreen
 	pop af
 	dec a
 	jr nz, +
@@ -1841,7 +1688,7 @@ _DATA_EEC_:
 _LABEL_F48_:
 	ld a, (iy+6)
 	cp $80
-	jp nc, _LABEL_FFF_
+	jp nc, updateEntityY
 	ld hl, _RAM_C133_
 	ld a, (iy+5)
 	dec a
@@ -1855,36 +1702,7 @@ _LABEL_F48_:
 	set 7, (hl)
 	ret
 
-; 8th entry of Jump Table from C64 (indexed by _RAM_C602_)
-_LABEL_F63_:
-	ld a, (iy+22)
-	or a
-	jr nz, _LABEL_FB0_
-	ld (iy+22), $01
-	ld hl, _DATA_F8C_
-	ld (iy+0), l
-	ld (iy+1), h
-	ld (iy+17), $00
-	ld (iy+18), $04
-	ld (iy+19), $00
-	ld (iy+20), $08
-	ld a, $87
-	ld (_RAM_CD00_), a
-	ret
-
-; Data from F8C to FAF (36 bytes)
-_DATA_F8C_:
-.db $92 $0F $9F $0F $A3 $0F $04 $00 $00 $23 $00 $08 $24 $08 $00 $25
-.db $08 $08 $26 $01 $04 $04 $22 $04 $00 $00 $23 $00 $08 $24 $08 $00
-.db $25 $08 $08 $26
-
-_LABEL_FB0_:
-	call _LABEL_1027_
-	ld a, (iy+17)
-	cp $03
-	ret c
-	ld (iy+17), $00
-	jp _LABEL_1056_
+.INCLUDE "entities/updateExplosion.asm"
 
 ; 9th entry of Jump Table from C64 (indexed by _RAM_C602_)
 _LABEL_FC0_:
@@ -1909,29 +1727,29 @@ _DATA_FE5_:
 +:
 	ld a, (iy+6)
 	cp $C0
-	jp nc, _LABEL_1056_
-	jp _LABEL_FFF_
+	jp nc, putIYEntityOffscreen
+	jp updateEntityY
 
-_LABEL_FFF_:
-	ld d, (iy+13)
-	ld e, (iy+14)
-_LABEL_1005_:
-	ld h, (iy+6)
-	ld l, (iy+7)
+updateEntityY:
+	ld d, (iy + Entity.yVel.low)
+	ld e, (iy + Entity.yVel.high)
+updateEntityYWith:
+	ld h, (iy + Entity.yPos.low)
+	ld l, (iy + Entity.yPos.high)
 	add hl, de
-	ld (iy+6), h
-	ld (iy+7), l
+	ld (iy + Entity.yPos.low), h
+	ld (iy + Entity.yPos.high), l
 	ret
 
-_LABEL_1013_:
-	ld d, (iy+15)
-	ld e, (iy+16)
-_LABEL_1019_:
-	ld h, (iy+8)
-	ld l, (iy+9)
+updateEntityX:
+	ld d, (iy + Entity.xVel.low)
+	ld e, (iy + Entity.xVel.high)
+updateEntityXWith:
+	ld h, (iy + Entity.xPos.low)
+	ld l, (iy + Entity.xPos.high)
 	add hl, de
-	ld (iy+8), h
-	ld (iy+9), l
+	ld (iy + Entity.xPos.low), h
+	ld (iy + Entity.xPos.high), l
 	ret
 
 _LABEL_1027_:
@@ -1964,16 +1782,16 @@ _LABEL_1050_:
 	ldir
 	ret
 
-_LABEL_1056_:
-	ld (iy+6), $D8
-	ld (iy+8), $00
-	ld (iy+21), $01
+putIYEntityOffscreen:
+	ld (iy + Entity.yPos.low), $D8
+	ld (iy + Entity.xPos.low), $00
+	ld (iy + Entity.data15), $01
 	ret
 
 _LABEL_1063_:
-	ld (ix+6), $D8
-	ld (ix+8), $00
-	ld (ix+21), $01
+	ld (ix + Entity.yPos.low), $D8
+	ld (ix + Entity.xPos.low), $00
+	ld (ix + Entity.data15), $01
 	ret
 
 _LABEL_1070_:
@@ -2010,7 +1828,7 @@ _LABEL_1091_:
 	cp $19
 	jr z, +
 -:
-	call _LABEL_1056_
+	call putIYEntityOffscreen
 	jr _LABEL_1091_
 
 +:
@@ -2036,9 +1854,9 @@ destroyEntities:
 	ldir
 	ret
 
-_LABEL_10D8_:
-	call _LABEL_1013_
-	jp _LABEL_FFF_
+updateEntityXY:
+	call updateEntityX
+	jp updateEntityY
 
 ; Data from 10DE to 110B (46 bytes)
 .db $CD $2A $2D $E6 $0F $FE $05 $D8 $FD $36 $08 $30 $FE $0A $D8 $FD
@@ -2085,7 +1903,7 @@ _LABEL_1149_:
 _LABEL_1155_:
 	ld a, (iy+3)
 	or a
-	jp nz, _LABEL_10D8_
+	jp nz, updateEntityXY
 	ld hl, _DATA_11A2_
 _LABEL_115F_:
 	push hl
@@ -2109,7 +1927,7 @@ _LABEL_1183_:
 	ld a, (iy+5)
 	cp $01
 	jr z, +
-	call loadPlayer2XYPosToHL_LABEL_13C4_
+	call loadPlayer2XYPosToHL
 +:
 	ld d, l
 	ld e, h
@@ -2138,15 +1956,15 @@ _LABEL_11A8_:
 	cp $40
 	call c, _LABEL_1183_
 	ld de, $0100
-	call _LABEL_1005_
-	jp _LABEL_1013_
+	call updateEntityYWith
+	jp updateEntityX
 
 ; Data from 11C8 to 11CD (6 bytes)
 _DATA_11C8_:
 .db $CA $11 $01 $00 $00 $40
 
 ; 10th entry of Jump Table from C64 (indexed by _RAM_C602_)
-_LABEL_11CE_:
+updateEnemy1:
 	ld a, (iy+3)
 	or a
 	jp nz, _LABEL_1265_
@@ -2218,16 +2036,16 @@ _LABEL_1265_:
 
 +:
 	call _LABEL_1A2A_
-	jp _LABEL_1013_
+	jp updateEntityX
 
 ++:
 	ld (iy+17), $02
 	ld a, (iy+19)
 	or a
-	jp z, _LABEL_10D8_
+	jp z, updateEntityXY
 	ld (iy+17), $01
 	dec (iy+19)
-	jp _LABEL_10D8_
+	jp updateEntityXY
 
 ; 11th entry of Jump Table from C64 (indexed by _RAM_C602_)
 _LABEL_12BA_:
@@ -2300,12 +2118,12 @@ _LABEL_1362_:
 	ld a, (iy+24)
 	or a
 	jr nz, ++
-	call _LABEL_FFF_
+	call updateEntityY
 	call loadPlayer1XYPosToHL
 	ld a, (iy+5)
 	dec a
 	jr z, +
-	call loadPlayer2XYPosToHL_LABEL_13C4_
+	call loadPlayer2XYPosToHL
 +:
 	ld a, l
 	sub $30
@@ -2323,7 +2141,7 @@ _LABEL_1362_:
 
 ++:
 	call _LABEL_1027_
-	jp _LABEL_1013_
+	jp updateEntityX
 
 +++:
 	ld a, (iy+5)
@@ -2339,16 +2157,16 @@ _LABEL_13B0_:
 	jp _LABEL_3063_
 
 loadPlayer1XYPosToHL:
-	ld a, (player1XPos)
+	ld a, (player1.xPos.low)
 	ld h, a
-	ld a, (player1YPos)
+	ld a, (player1.yPos.low)
 	ld l, a
 	ret
 
-loadPlayer2XYPosToHL_LABEL_13C4_:
-	ld a, (_RAM_C628_)
+loadPlayer2XYPosToHL:
+	ld a, (player2.xPos.low)
 	ld h, a
-	ld a, (_RAM_C626_)
+	ld a, (player2.yPos.low)
 	ld l, a
 	ret
 
@@ -2415,7 +2233,7 @@ _LABEL_144B_:
 	ld de, $0400
 	ld a, (iy+6)
 	cp $40
-	jp c, _LABEL_1005_
+	jp c, updateEntityYWith
 	ld (iy+24), $30
 	ld (iy+25), $01
 	ld (iy+26), $01
@@ -2431,11 +2249,11 @@ _LABEL_144B_:
 	or a
 	jr z, +
 	dec (iy+24)
-	jp _LABEL_10D8_
+	jp updateEntityXY
 
 +:
 	ld de, $0100
-	call _LABEL_1005_
+	call updateEntityYWith
 	dec (iy+26)
 	ret nz
 	ld (iy+26), $20
@@ -2474,7 +2292,7 @@ _LABEL_1511_:
 	dec (iy+28)
 	call z, +++
 	call ++++
-	call _LABEL_FFF_
+	call updateEntityY
 	ld h, (iy+15)
 	ld l, (iy+16)
 	ld e, (iy+24)
@@ -2493,7 +2311,7 @@ _LABEL_1511_:
 	ld (iy+16), l
 	ex de, hl
 	ld e, $00
-	jp _LABEL_1019_
+	jp updateEntityXWith
 
 +++:
 	ld (iy+28), $38
@@ -2541,7 +2359,7 @@ _DATA_158E_:
 
 _LABEL_15B5_:
 	ld de, $0040
-	call _LABEL_1005_
+	call updateEntityYWith
 	ld a, (iy+6)
 	ld (_RAM_C320_), a
 	jp _LABEL_1027_
@@ -2584,8 +2402,8 @@ _LABEL_15FE_:
 	ld (iy+14), l
 +:
 	ex de, hl
-	call _LABEL_1005_
-	jp _LABEL_1013_
+	call updateEntityYWith
+	jp updateEntityX
 
 _LABEL_161A_:
 	ld de, $0280
@@ -2654,7 +2472,7 @@ _LABEL_169A_:
 
 _LABEL_16A9_:
 	ld iy, _RAM_C600_
-	ld a, (_RAM_C124_)
+	ld a, (p1ScoreByte1)
 	ld c, a
 	ld a, (_RAM_C146_)
 	dec a
@@ -2853,15 +2671,15 @@ _LABEL_1805_:
 	cp $38
 	jr nc, +++
 ++:
-	ld a, (player1XPos)
+	ld a, (player1.xPos.low)
 	call _LABEL_1884_
 	jp c, +
 	ld a, (_RAM_C103_)
 	bit 0, a
-	jp z, _LABEL_10D8_
-	ld a, (_RAM_C628_)
+	jp z, updateEntityXY
+	ld a, (player2.xPos.low)
 	call _LABEL_1884_
-	jp nc, _LABEL_10D8_
+	jp nc, updateEntityXY
 	ld a, $02
 	jp ++++
 
@@ -2885,7 +2703,7 @@ _LABEL_185F_:
 	add hl, de
 	ld (iy+15), h
 	ld (iy+16), l
-	jp _LABEL_10D8_
+	jp updateEntityXY
 
 ++++:
 	ld c, a
@@ -2972,20 +2790,20 @@ _LABEL_191F_:
 +:
 	ld a, (iy+26)
 	or a
-	jp nz, _LABEL_10D8_
+	jp nz, updateEntityXY
 	call loadPlayer1XYPosToHL
 	ld a, (iy+5)
 	cp $01
 	jr z, +
-	call loadPlayer2XYPosToHL_LABEL_13C4_
+	call loadPlayer2XYPosToHL
 +:
 	ld (iy+25), l
 	ld a, h
 	call _LABEL_1884_
-	jp nc, _LABEL_10D8_
+	jp nc, updateEntityXY
 	ld a, (iy+25)
 	call _LABEL_1889_
-	jp nc, _LABEL_10D8_
+	jp nc, updateEntityXY
 	ld (iy+26), $01
 	ld c, (iy+5)
 	call _LABEL_2F92_
@@ -3064,9 +2882,9 @@ _LABEL_1A0B_:
 	ret z
 	ld de, $FFC0
 	dec a
-	jp z, _LABEL_1019_
+	jp z, updateEntityXWith
 	ld de, $0040
-	jp _LABEL_1019_
+	jp updateEntityXWith
 
 _LABEL_1A2A_:
 	ld e, (iy+24)
@@ -3078,7 +2896,7 @@ _LABEL_1A2A_:
 	ld (iy+13), h
 	ld (iy+14), l
 	ex de, hl
-	jp _LABEL_1005_
+	jp updateEntityYWith
 
 +:
 	ld a, (iy+6)
@@ -3086,14 +2904,14 @@ _LABEL_1A2A_:
 	ld h, a
 	add a, $30
 	ld l, a
-	ld a, (player1YPos)
+	ld a, (player1.yPos.low)
 	ld c, $01
 	cp h
 	jr c, +
 	cp l
 	call c, ++
 +:
-	ld a, (_RAM_C626_)
+	ld a, (player2.yPos.low)
 	ld c, $02
 	cp h
 	ret c
@@ -3148,7 +2966,7 @@ _DATA_1AAE_:
 .db $00 $3B $01 $00 $00 $3C $01 $00 $00 $3D $01 $00 $00 $3E
 
 _LABEL_1ACC_:
-	call _LABEL_FFF_
+	call updateEntityY
 	ld a, (iy+24)
 	or a
 	ret z
@@ -3161,10 +2979,10 @@ _LABEL_1AD4_:
 	ld (_RAM_C114_), a
 	ld a, (iy+5)
 	ld (_RAM_C146_), a
-	jp _LABEL_1056_
+	jp putIYEntityOffscreen
 
 ; 23rd entry of Jump Table from C64 (indexed by _RAM_C602_)
-_LABEL_1AEE_:
+updateEnemy2:
 	ld a, (iy+3)
 	or a
 	jr nz, _LABEL_1B5A_
@@ -3264,7 +3082,7 @@ _DATA_1BDB_:
 .db $00 $A2 $08 $08 $A3
 
 _LABEL_1C00_:
-	call _LABEL_FFF_
+	call updateEntityY
 	call _LABEL_1027_
 	dec (iy+26)
 	ret nz
@@ -3303,9 +3121,9 @@ _LABEL_1C11_:
 	ld a, (_RAM_C623_)
 	or a
 	jr z, --
-	ld a, (player1YPos)
+	ld a, (player1.yPos.low)
 	ld b, a
-	ld a, (_RAM_C626_)
+	ld a, (player2.yPos.low)
 	cp b
 	jr z, +
 	jr nc, --
@@ -3328,19 +3146,19 @@ _LABEL_1C69_:
 	ld (iy+5), a
 	cp $01
 	jr nz, +
-	ld a, (player1YPos)
+	ld a, (player1.yPos.low)
 	add a, $02
 	ld (iy+25), a
-	ld a, (player1XPos)
+	ld a, (player1.xPos.low)
 	add a, $02
 	ld (iy+26), a
 	jr ++
 
 +:
-	ld a, (_RAM_C626_)
+	ld a, (player2.yPos.low)
 	add a, $02
 	ld (iy+25), a
-	ld a, (_RAM_C628_)
+	ld a, (player2.xPos.low)
 	add a, $02
 	ld (iy+26), a
 ++:
@@ -3462,8 +3280,8 @@ _DATA_1D4E_:
 _LABEL_1D56_:
 	ld (iy+13), $FD
 	ld (iy+15), $FE
-	call _LABEL_FFF_
-	jp _LABEL_1013_
+	call updateEntityY
+	jp updateEntityX
 
 ; Data from 1D64 to 1D71 (14 bytes)
 _DATA_1D64_:
@@ -3498,7 +3316,7 @@ _DATA_1DA4_:
 
 ++:
 	call _LABEL_1027_
-	call _LABEL_10D8_
+	call updateEntityXY
 	dec (iy+24)
 	ret nz
 	ld (iy+24), $40
@@ -3554,9 +3372,9 @@ _LABEL_1E38_:
 	ld de, $0080
 	ret nz
 +:
-	call _LABEL_1019_
+	call updateEntityXWith
 ++:
-	call _LABEL_FFF_
+	call updateEntityY
 	dec (iy+26)
 	jr nz, +
 	ld (iy+26), $48
@@ -3670,17 +3488,17 @@ _LABEL_1F85_:
 
 +:
 	ld de, $0080
-	jp _LABEL_1005_
+	jp updateEntityYWith
 
 _LABEL_1FA9_:
 	ld a, (_RAM_C743_)
 	or a
 	ret nz
 	ld de, $FF00
-	jp _LABEL_1005_
+	jp updateEntityYWith
 
 ++:
-	call _LABEL_1013_
+	call updateEntityX
 	ld d, (iy+30)
 	ld e, (iy+31)
 	ld h, (iy+13)
@@ -3688,7 +3506,7 @@ _LABEL_1FA9_:
 	add hl, de
 	ld (iy+13), h
 	ld (iy+14), l
-	call _LABEL_FFF_
+	call updateEntityY
 	inc (iy+26)
 	ld a, (iy+26)
 	cp $3F
@@ -3737,7 +3555,7 @@ _LABEL_2039_:
 	or a
 	jr nz, +
 	ld de, $0080
-	jp _LABEL_1005_
+	jp updateEntityYWith
 
 +:
 	ld a, (_RAM_C766_)
@@ -3954,7 +3772,7 @@ _LABEL_2217_:
 	or a
 	ret nz
 	ld de, $0200
-	jp _LABEL_1005_
+	jp updateEntityYWith
 
 _LABEL_2222_:
 	ld a, (_RAM_C103_)
@@ -4143,7 +3961,7 @@ _LABEL_2371_:
 	dec (hl)
 	ret nz
 +:
-	ld a, (ix+28)
+	ld a, (ix + Entity.data1c)
 	ld (hl), a
 	call _LABEL_246F_
 	ret nc
@@ -4152,15 +3970,20 @@ _LABEL_2371_:
 	ld hl, _DATA_23D6_
 	ld bc, $0005
 	ldir
-	ld a, (ix+5)
-	ld (iy+5), a
-	ld a, (ix+6)
-	ld (iy+6), a
-	ld a, (ix+8)
+
+	ld a, (ix + Entity.data05)
+	ld (iy + Entity.data05), a
+
+	ld a, (ix + Entity.yPos.low)
+	ld (iy + Entity.yPos.low), a
+
+	ld a, (ix + Entity.xPos.low)
 	add a, $04
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
+
 	call _LABEL_2456_
-	ld a, (ix+17)
+
+	ld a, (ix + Entity.data11)
 	add a, a
 	add a, a
 	ld e, a
@@ -4168,34 +3991,46 @@ _LABEL_2371_:
 	ld hl, _DATA_23E1_
 	add hl, de
 	ld a, (hl)
-	ld (iy+13), a
+	ld (iy + Entity.yVel.low), a
 	inc hl
 	ld a, (hl)
-	ld (iy+14), a
+	ld (iy + Entity.yVel.high), a
+
 	inc hl
 	ld a, (hl)
-	ld (iy+15), a
+	ld (iy + Entity.xVel.low), a
 	inc hl
 	ld a, (hl)
-	ld (iy+16), a
+	ld (iy + Entity.xVel.high), a
+
 	ld c, $85
-	ld a, (ix+5)
+	ld a, (ix + Entity.data05)
 	dec a
 	jr z, +
 	ld c, $8E
 +:
 	ld a, c
 	ld (_RAM_CD00_), a
+
 	ret
 
 ; Data from 23D6 to 23E0 (11 bytes)
 _DATA_23D6_:
-.db $DB $23 $03 $01 $01 $DD $23 $01 $00 $00 $04
+.db $DB $23 $03 $01 $01
+.db $DD $23 $01 $00 $00
+.db $04
 
 ; Data from 23E1 to 2400 (32 bytes)
 _DATA_23E1_:
-.db $FB $00 $00 $00 $FD $00 $FE $00 $FC $00 $FC $00 $FD $00 $FE $00
-.db $FB $00 $00 $00 $FC $00 $02 $00 $FD $00 $03 $00 $FC $00 $02 $00
+; yVel.low / yVel.high / xVel.low / xVel.high
+.db $FB $00 $00 $00
+.db $FD $00 $FE $00
+.db $FC $00 $FC $00
+.db $FD $00 $FE $00
+.db $FB $00 $00 $00
+.db $FC $00 $02 $00
+.db $FD $00 $03 $00
+.db $FC $00 $02 $00
 
 _LABEL_2401_:
 	bit 4, a
@@ -4473,7 +4308,7 @@ _LABEL_25F1_:
 	ld (de), a
 	inc de
 	call ++
-	ld hl, _RAM_C126_
+	ld hl, p1ScoreByte3
 	ld de, $3970
 	ld b, $06
 	call +++
@@ -4509,7 +4344,7 @@ _LABEL_25F1_:
 	ld bc, $0003
 	ldir
 _LABEL_2638_:
-	ld hl, _RAM_C121_
+	ld hl, highScoreByte3
 	ld de, $38B0
 	ld b, $06
 +++:
@@ -4709,41 +4544,41 @@ _LABEL_2760_:
 	or a
 	ret nz
 	ld c, $00
-	ld a, (player1XPos)
+	ld a, (player1.xPos.low)
 	add a, $02
 	call _LABEL_282B_
 	jr nc, +
-	ld a, (player1YPos)
+	ld a, (player1.yPos.low)
 	add a, $02
 	call _LABEL_283B_
 	jr nc, +
 	set 0, c
 +:
-	ld a, (player1XPos)
+	ld a, (player1.xPos.low)
 	add a, $0A
 	call _LABEL_282B_
 	jr nc, +
-	ld a, (player1YPos)
+	ld a, (player1.yPos.low)
 	add a, $02
 	call _LABEL_283B_
 	jr nc, +
 	set 1, c
 +:
-	ld a, (player1XPos)
+	ld a, (player1.xPos.low)
 	add a, $02
 	call _LABEL_282B_
 	jr nc, +
-	ld a, (player1YPos)
+	ld a, (player1.yPos.low)
 	add a, $0A
 	call _LABEL_283B_
 	jr nc, +
 	set 2, c
 +:
-	ld a, (player1XPos)
+	ld a, (player1.xPos.low)
 	add a, $0A
 	call _LABEL_282B_
 	jr nc, +
-	ld a, (player1YPos)
+	ld a, (player1.yPos.low)
 	add a, $0A
 	call _LABEL_283B_
 	jr nc, +
@@ -4791,7 +4626,7 @@ _LABEL_282B_:
 	ld h, a
 	add a, $03
 	ld l, a
-	ld a, (_RAM_C628_)
+	ld a, (player2.xPos.low)
 	add a, $02
 	ld d, a
 	add a, $0B
@@ -4802,7 +4637,7 @@ _LABEL_283B_:
 	ld h, a
 	add a, $03
 	ld l, a
-	ld a, (_RAM_C626_)
+	ld a, (player2.yPos.low)
 	add a, $02
 	ld d, a
 	add a, $0B
@@ -5821,15 +5656,19 @@ _LABEL_30BC_:
 	ld a, $04
 	add a, d
 	ld d, a
+
 	ld a, $04
 	add a, e
 	ld e, a
+
 	ld a, $04
-	add a, (iy+6)
+	add a, (iy + Entity.yPos.low)
 	ld l, a
+
 	ld a, $04
-	add a, (iy+8)
+	add a, (iy + Entity.xPos.low)
 	ld h, a
+
 	ld c, $00
 	ld a, d
 	sub l

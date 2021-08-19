@@ -5,7 +5,7 @@ _RAM_C101_ db
 _RAM_C102_ db
 _RAM_C103_ db
 _RAM_C104_ db
-_RAM_C105_ db
+p1Lives db
 _RAM_C106_ db
 _RAM_C107_ db
 _RAM_C108_ db
@@ -36,14 +36,17 @@ _RAM_C11B_ db
 
 .enum $C11E export
 _RAM_C11E_ db
-_RAM_C11F_ dw
-_RAM_C121_ db
+_RAM_C11F_ .dw
+highScoreByte1 db
+highScoreByte2 db
+highScoreByte3 db
 .ende
 
 .enum $C123 export
 _RAM_C123_ db
-_RAM_C124_ dw
-_RAM_C126_ db
+p1ScoreByte1 db
+p1ScoreByte2 db
+p1ScoreByte3 db
 _RAM_C127_ db
 _RAM_C128_ dw
 _RAM_C12A_ db
@@ -150,17 +153,21 @@ _RAM_C540_ db
 .ende
 
 .enum $C600 export
+    player1 INSTANCEOF Entity
+    player2 INSTANCEOF Entity
+.ende
+
+.enum $C600 export
+    entities INSTANCEOF Entity ENTITY_ARRAY_SIZE
+.ende
+
+.enum $C600 export
 _RAM_C600_ db
 _RAM_C601_ db
 _RAM_C602_ db
 _RAM_C603_ db
 _RAM_C604_ db
 _RAM_C605_ db
-player1YPos db
-.ende
-
-.enum $C608 export
-player1XPos db
 .ende
 
 .enum $C60B export
@@ -190,11 +197,6 @@ _RAM_C622_ db
 _RAM_C623_ db
 _RAM_C624_ db
 _RAM_C625_ db
-_RAM_C626_ db
-.ende
-
-.enum $C628 export
-_RAM_C628_ db
 .ende
 
 .enum $C62B export
