@@ -2028,7 +2028,7 @@ _LABEL_1091_:
 	ld (_RAM_C321_), a
 	ret
 
-_LABEL_10CA_:
+destroyEntities:
 	ld hl, _RAM_C640_
 	ld de, _RAM_C640_ + 1
 	ld bc, $0320
@@ -5219,7 +5219,9 @@ _LABEL_2B98_:
 	ld (hl), $00
 	ld bc, $0007
 	ldir
-	call _LABEL_10CA_
+
+	call destroyEntities
+
 	ld hl, $0000
 	ld (_RAM_C134_), hl
 	xor a
