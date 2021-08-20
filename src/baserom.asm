@@ -38,7 +38,7 @@ _LABEL_0_:
 	jr _LABEL_69_
 
 _LABEL_8_:
-	call _LABEL_BDD_
+	call writeVDPCommandWord
 	in a, (Port_VDPData)
 	ld b, a
 	push af
@@ -52,13 +52,13 @@ _LABEL_8_:
 
 _LABEL_18_:
 	push af
-	call _LABEL_BD4_
+	call setVDPWriteAddress
 	pop af
 	out (Port_VDPData), a
 	ret
 
 _LABEL_20_:
-	call _LABEL_BD4_
+	call setVDPWriteAddress
 	ld a, c
 	or a
 	jr z, +
@@ -129,15 +129,17 @@ _LABEL_69_:
 	call _LABEL_16C_
 	call _LABEL_36A1_
 	call _LABEL_31B2_
+
 	ld hl, palette
 	ld de, $C000
 	ld bc, $0020
 	rst $20	; _LABEL_20_
+
 	call _LABEL_BEE_
 	ld de, $81E0
 	ld a, e
 	ld (_RAM_C101_), a
-	call _LABEL_BDD_
+	call writeVDPCommandWord
 	ld a, $01
 	ld (_RAM_C102_), a
 _LABEL_EB_:
@@ -153,7 +155,7 @@ _LABEL_EB_:
 	ld hl, _RAM_C103_
 	res 7, (hl)
 	ld de, $8900
-	call _LABEL_BDD_
+	call writeVDPCommandWord
 _LABEL_10B_:
 	ei
 	ld a, (_RAM_C107_)
@@ -1190,7 +1192,7 @@ _LABEL_9D5_:
 	ld a, (_RAM_C145_)
 	rst $18	; _LABEL_18_
 	ld a, $08
-	call _LABEL_BE4_
+	call writeVDPData
 	pop hl
 	ld a, (hl)
 	cp $05
@@ -1358,7 +1360,7 @@ _LABEL_B2C_:
 	ret
 
 _LABEL_B2D_:
-	call _LABEL_BD4_
+	call setVDPWriteAddress
 	ld c, Port_VDPData
 -:
 	outi
@@ -1375,7 +1377,7 @@ _LABEL_B42_:
 	ld de, $3800
 	ld bc, $0380
 _LABEL_B48_:
-	call _LABEL_BD4_
+	call setVDPWriteAddress
 	ld a, c
 	or a
 	jr z, _LABEL_B50_
@@ -1394,7 +1396,7 @@ _LABEL_B50_:
 
 _LABEL_B5E_:
 	push bc
-	call _LABEL_BD4_
+	call setVDPWriteAddress
 	ld b, c
 	ld c, Port_VDPData
 -:
@@ -1414,7 +1416,7 @@ _LABEL_B5E_:
 
 _LABEL_B7B_:
 	push bc
-	call _LABEL_BD4_
+	call setVDPWriteAddress
 	ld b, c
 	ld c, Port_VDPData
 -:
@@ -1455,7 +1457,7 @@ _DATA_BBE_:
 .db $A6 $80 $80 $81 $FF $82 $FF $83 $FF $84 $FF $85 $FB $86 $00 $87
 .db $00 $88 $00 $89 $FF $8A
 
-_LABEL_BD4_:
+setVDPWriteAddress:
 	ld a, e
 	out (Port_VDPAddress), a
 	ld a, d
@@ -1463,14 +1465,14 @@ _LABEL_BD4_:
 	out (Port_VDPAddress), a
 	ret
 
-_LABEL_BDD_:
+writeVDPCommandWord:
 	ld a, e
 	out (Port_VDPAddress), a
 	ld a, d
 	out (Port_VDPAddress), a
 	ret
 
-_LABEL_BE4_:
+writeVDPData:
 	out (Port_VDPData), a
 	ret
 
@@ -1486,7 +1488,7 @@ _LABEL_BEE_:
 	ld (_RAM_C101_), a
 	ld e, a
 	ld d, $81
-	jp _LABEL_BDD_
+	jp writeVDPCommandWord
 
 _LABEL_BFC_:
 	ld a, $03
@@ -4384,7 +4386,7 @@ _LABEL_264A_:
 	ex de, hl
 	rst $18	; _LABEL_18_
 	ld a, $18
-	call _LABEL_BE4_
+	call writeVDPData
 	ex de, hl
 	inc hl
 	inc hl
@@ -4397,7 +4399,7 @@ _LABEL_264A_:
 	ex de, hl
 	rst $18	; _LABEL_18_
 	ld a, $18
-	call _LABEL_BE4_
+	call writeVDPData
 	ex de, hl
 	inc hl
 	inc hl
@@ -5078,7 +5080,7 @@ _LABEL_2B98_:
 	pop bc
 	djnz -
 	ld de, $8900
-	jp _LABEL_BDD_
+	jp writeVDPCommandWord
 
 _LABEL_2C40_:
 	call _LABEL_2D11_
@@ -5118,7 +5120,7 @@ _LABEL_2C66_:
 	ld (_RAM_C310_), a
 	ld e, a
 	ld d, $89
-	jp _LABEL_BDD_
+	jp writeVDPCommandWord
 
 _LABEL_2C88_:
 	push de
