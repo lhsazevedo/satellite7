@@ -81,7 +81,7 @@ _LABEL_38_:
 	jp _LABEL_1AF_
 
 ; Data from 3B to 5A (32 bytes)
-_DATA_3B_:
+palette:
 .db $0A $06 $05 $00 $29 $25 $3A $3F $34 $3B $03 $0F $0C $08 $0B $02
 .db $00 $00 $03 $00 $3F $3F $3A $02 $0B $0C $08 $0F $34 $22 $21 $02
 
@@ -129,7 +129,7 @@ _LABEL_69_:
 	call _LABEL_16C_
 	call _LABEL_36A1_
 	call _LABEL_31B2_
-	ld hl, _DATA_3B_
+	ld hl, palette
 	ld de, $C000
 	ld bc, $0020
 	rst $20	; _LABEL_20_
