@@ -1728,7 +1728,7 @@ _LABEL_EBF_:
 	ld a, (iy+5)
 	ld hl, _DATA_EEC_
 	ld bc, $000E
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld c, a
 	ld a, (_RAM_C103_)
 	bit 0, a
@@ -1842,7 +1842,7 @@ _LABEL_1049_:
 	ld (iy+20), l
 	ret
 
-_LABEL_1050_:
+memcpyIYToHL:
 	push iy
 	pop de
 	ldir
@@ -2037,7 +2037,7 @@ updateEnemy1:
 	ld (iy+27), $00
 	ld hl, _DATA_1214_
 	ld bc, $0011
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld (iy+29), $08
 	ld de, $0208
 	ld (iy+24), e
@@ -2120,7 +2120,7 @@ _LABEL_12BA_:
 	jp nz, _LABEL_1362_
 	ld hl, _DATA_1316_
 	ld bc, $0010
-	call _LABEL_1050_
+	call memcpyIYToHL
 	call _LABEL_12F7_
 	ld hl, $0210
 	call _LABEL_1049_
@@ -2337,7 +2337,7 @@ _LABEL_149D_:
 	ld (iy+28), $08
 	ld hl, _DATA_14C7_
 	ld bc, $0011
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld a, (_RAM_C308_)
 	or a
 	ret z
@@ -2413,7 +2413,7 @@ _LABEL_156A_:
 	ld (_RAM_C321_), a
 	ld hl, _DATA_158E_
 	ld bc, $0009
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld hl, $0210
 	jp _LABEL_1049_
 
@@ -2671,7 +2671,7 @@ _LABEL_1770_:
 	jp nz, _LABEL_1805_
 	ld hl, _DATA_17B7_
 	ld bc, $0009
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld a, r
 	and $03
 	inc a
@@ -2805,7 +2805,7 @@ _LABEL_189A_:
 	jp nz, _LABEL_191F_
 	ld hl, _DATA_18FA_
 	ld bc, $0007
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld (iy+24), $01
 	ld (iy + Entity.xPos.low), $00
 	call _LABEL_2D2A_
@@ -2905,7 +2905,7 @@ _LABEL_199B_:
 	jr nz, _LABEL_1A0B_
 	ld hl, _DATA_19DF_
 	ld bc, $000E
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld hl, $020A
 	call _LABEL_1049_
 	ld (iy+24), $06
@@ -2998,7 +2998,7 @@ _LABEL_1A6B_:
 	jr nz, _LABEL_1ACC_
 	ld hl, _DATA_1A9F_
 	ld bc, $000F
-	call _LABEL_1050_
+	call memcpyIYToHL
 	call _LABEL_1A80_
 	jp _LABEL_12F7_
 
@@ -3054,7 +3054,7 @@ updateEnemy2:
 	jr nz, _LABEL_1B5A_
 	ld hl, _DATA_1B2D_
 	ld bc, $0015
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld (iy+24), $FF
 	ld (iy+25), $E8
 	ld (iy+26), $50
@@ -3124,7 +3124,7 @@ _LABEL_1BA5_:
 	ld (iy+26), $18
 	ld hl, _DATA_1BDB_
 	ld bc, $0007
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld c, $03
 	call _LABEL_2D2A_
 	and $0F
@@ -3162,7 +3162,7 @@ _LABEL_1C11_:
 	jp nz, _LABEL_1C69_
 	ld hl, _DATA_1D64_
 	ld bc, $000E
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld hl, $0206
 	call _LABEL_1049_
 	ld a, (_RAM_C103_)
@@ -3360,7 +3360,7 @@ _LABEL_1D72_:
 	jr nz, ++
 	ld hl, _DATA_1DA4_
 	ld bc, $0009
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld (iy + Entity.yVel.high), $55
 	ld hl, $0308
 	call _LABEL_1049_
@@ -3400,7 +3400,7 @@ _LABEL_1DBE_:
 	call _LABEL_1049_
 	ld hl, _DATA_1E02_
 	ld bc, $0009
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld (iy + Entity.yVel.high), $55
 	ld a, (_RAM_C316_)
 	cp $07
@@ -3516,7 +3516,7 @@ _LABEL_1EE9_:
 	jp nz, _LABEL_1F85_
 	ld hl, _DATA_1F16_
 	ld bc, $0009
-	call _LABEL_1050_
+	call memcpyIYToHL
 	ld (iy+24), $02
 _LABEL_1EFD_:
 	ld (iy + Entity.yVel.low), $FF
@@ -3607,7 +3607,7 @@ _LABEL_2011_:
 	ld (iy+31), $80
 	ld hl, _DATA_2024_
 	ld bc, $0009
-	jp _LABEL_1050_
+	jp memcpyIYToHL
 
 ; Data from 2024 to 2032 (15 bytes)
 _DATA_2024_:
@@ -3686,7 +3686,7 @@ _LABEL_20AA_:
 	jr nz, _LABEL_2101_
 	ld hl, _DATA_20BC_
 	ld bc, $0009
-	call _LABEL_1050_
+	call memcpyIYToHL
 	jp _LABEL_2A9A_
 
 ; Data from 20BC to 2100 (69 bytes)
@@ -3713,7 +3713,7 @@ _LABEL_2114_:
 	jr nz, +
 	ld hl, _DATA_2123_
 	ld bc, $0009
-	jp _LABEL_1050_
+	jp memcpyIYToHL
 
 ; Data from 2123 to 212B (9 bytes)
 _DATA_2123_:
@@ -3735,7 +3735,7 @@ _LABEL_213F_:
 	jr nz, +
 	ld hl, _DATA_214E_
 	ld bc, $0009
-	jp _LABEL_1050_
+	jp memcpyIYToHL
 
 ; Data from 214E to 215A (13 bytes)
 _DATA_214E_:
@@ -3790,7 +3790,7 @@ _LABEL_21AE_:
 	ld (iy+24), $01
 	ld hl, _DATA_21C1_
 	ld bc, $0009
-	jp _LABEL_1050_
+	jp memcpyIYToHL
 
 ; Data from 21C1 to 21CD (13 bytes)
 _DATA_21C1_:
