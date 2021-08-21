@@ -2,7 +2,7 @@
 .STRUCT Entity
     data00 db       ; $00 00
     data01 db       ; $01 01
-    data02 db       ; $02 02
+    type db         ; $02 02
     data03 db       ; $03 03
     data04 db       ; $04 04
     data05 db       ; $05 05

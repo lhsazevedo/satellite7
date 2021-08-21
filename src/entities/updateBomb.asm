@@ -2,11 +2,11 @@
 updateBomb:
 	ld d, $00
 	ld e, (iy+24)
-	ld h, (iy+13)
-	ld l, (iy+14)
+	ld h, (iy + Entity.yVel.low)
+	ld l, (iy + Entity.yVel.high)
 	add hl, de
-	ld (iy+13), h
-	ld (iy+14), l
+	ld (iy + Entity.yVel.low), h
+	ld (iy + Entity.yVel.high), l
 	ex de, hl
 	ld e, $00
 	call updateEntityYWith

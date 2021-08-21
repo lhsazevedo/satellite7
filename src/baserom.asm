@@ -1328,10 +1328,10 @@ _LABEL_A63_:
 	ld a, (_RAM_C943_)
 	or a
 	jp nz, putIYEntityOffscreen
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	sub $04
 	ld (_RAM_C948_), a
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	sub $04
 	ld (_RAM_C946_), a
 	ret
@@ -1596,7 +1596,7 @@ updateEntities:
 -:
 	push bc
 	push iy
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	or a
 	call nz, +
 	pop iy
@@ -1669,8 +1669,8 @@ _LABEL_E2C_:
 	ld (iy+0), l
 	ld (iy+1), h
 	ld hl, $0008
-	ld (iy+13), h
-	ld (iy+14), l
+	ld (iy + Entity.yVel.low), h
+	ld (iy + Entity.yVel.high), l
 	ld (iy+20), l
 	ld (iy+17), h
 	ld (iy+18), $04
@@ -1733,11 +1733,11 @@ _LABEL_EBF_:
 	ld a, (_RAM_C103_)
 	bit 0, a
 	ret z
-	ld (iy+8), $70
+	ld (iy + Entity.xPos.low), $70
 	ld a, c
 	dec a
 	ret z
-	ld (iy+8), $40
+	ld (iy + Entity.xPos.low), $40
 	ld (iy+17), $01
 	ld (iy+5), c
 	ret
@@ -1752,7 +1752,7 @@ _DATA_EEC_:
 .db $10 $00 $4F $10 $08 $56 $10 $10 $45 $10 $18 $52
 
 _LABEL_F48_:
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $80
 	jp nc, updateEntityY
 	ld hl, _RAM_C133_
@@ -1775,8 +1775,8 @@ _LABEL_FC0_:
 	ld a, (iy+22)
 	or a
 	jr nz, +
-	ld (iy+13), $00
-	ld (iy+14), $55
+	ld (iy + Entity.yVel.low), $00
+	ld (iy + Entity.yVel.high), $55
 	ld hl, _DATA_FE5_
 	ld (iy+0), l
 	ld (iy+1), h
@@ -1791,7 +1791,7 @@ _DATA_FE5_:
 .db $E7 $0F $04 $00 $00 $1A $00 $08 $1B $08 $00 $1C $08 $08 $1D
 
 +:
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $C0
 	jp nc, putIYEntityOffscreen
 	jp updateEntityY
@@ -1868,13 +1868,13 @@ _LABEL_1070_:
 	ld a, (iy+3)
 	or a
 	jr z, _LABEL_1091_
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $C4
 	jr c, +
 	cp $E0
 	jr c, ++
 +:
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	cp $B5
 	jr nc, ++
 _LABEL_1091_:
@@ -1883,10 +1883,10 @@ _LABEL_1091_:
 	ret
 
 ++:
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $0E
 	call z, ++
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $11
 	jr z, +
 	cp $18
@@ -1981,11 +1981,11 @@ _LABEL_115F_:
 	ld (iy+0), l
 	ld (iy+1), h
 	ld a, $04
-	add a, (iy+6)
-	ld (iy+6), a
+	add a, (iy + Entity.yPos.low)
+	ld (iy + Entity.yPos.low), a
 	ld a, $04
-	add a, (iy+8)
-	ld (iy+8), a
+	add a, (iy + Entity.xPos.low)
+	ld (iy + Entity.xPos.low), a
 	ret
 
 _LABEL_1183_:
@@ -1998,10 +1998,10 @@ _LABEL_1183_:
 	ld d, l
 	ld e, h
 	call _LABEL_30BC_
-	ld (iy+13), d
-	ld (iy+14), e
-	ld (iy+15), h
-	ld (iy+16), l
+	ld (iy + Entity.yVel.low), d
+	ld (iy + Entity.yVel.high), e
+	ld (iy + Entity.xVel.low), h
+	ld (iy + Entity.xVel.high), l
 	ret
 
 ; Data from 11A2 to 11A7 (6 bytes)
@@ -2058,8 +2058,8 @@ updateEnemy1:
 	or a
 	ret z
 	ld (iy+27), $01
-	ld (iy+8), e
-	ld (iy+15), d
+	ld (iy + Entity.xPos.low), e
+	ld (iy + Entity.xVel.low), d
 	ld hl, _DATA_122B_
 	ld (iy+0), l
 	ld (iy+1), h
@@ -2090,14 +2090,14 @@ _LABEL_1265_:
 	ld (iy+19), $0C
 	ld hl, $0001
 	ld (iy+26), l
-	ld (iy+13), l
-	ld (iy+14), h
-	ld (iy+15), l
-	ld (iy+16), h
+	ld (iy + Entity.yVel.low), l
+	ld (iy + Entity.yVel.high), h
+	ld (iy + Entity.xVel.low), l
+	ld (iy + Entity.xVel.high), h
 	ld a, (iy+27)
 	or a
 	jp z, _LABEL_3063_
-	ld (iy+15), $FF
+	ld (iy + Entity.xVel.low), $FF
 	jp _LABEL_3063_
 
 +:
@@ -2156,13 +2156,13 @@ _LABEL_12F7_:
 	jr c, +
 	ld a, b
 	add a, $50
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
 	ret
 
 +:
 	ld a, $55
 	sub b
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
 	ret
 
 ; Data from 1316 to 1343 (46 bytes)
@@ -2193,13 +2193,13 @@ _LABEL_1362_:
 +:
 	ld a, l
 	sub $30
-	cp (iy+6)
+	cp (iy + Entity.yPos.low)
 	ret nc
 	ld (iy+24), $01
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	cp h
 	ret nc
-	ld (iy+15), $01
+	ld (iy + Entity.xVel.low), $01
 	ld hl, _DATA_1344_
 	ld (iy+0), l
 	ld (iy+1), h
@@ -2213,7 +2213,7 @@ _LABEL_1362_:
 	ld a, (iy+5)
 	ld c, a
 	call _LABEL_2F92_
-	ld (iy+2), $08
+	ld (iy + Entity.type), $08
 	ret
 
 _LABEL_13B0_:
@@ -2259,7 +2259,7 @@ _LABEL_13D3_:
 	push hl
 	push bc
 	ld hl, _DATA_1416_
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $0C
 	jr z, +
 	ld hl, _DATA_1423_
@@ -2297,7 +2297,7 @@ _LABEL_144B_:
 	or a
 	jr nz, +
 	ld de, $0400
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $40
 	jp c, updateEntityYWith
 	ld (iy+24), $30
@@ -2323,7 +2323,7 @@ _LABEL_144B_:
 	dec (iy+26)
 	ret nz
 	ld (iy+26), $20
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $13
 	ret z
 	jp _LABEL_3063_
@@ -2341,9 +2341,9 @@ _LABEL_149D_:
 	ld a, (_RAM_C308_)
 	or a
 	ret z
-	ld (iy+8), $00
-	ld (iy+15), $05
-	ld (iy+16), $00
+	ld (iy + Entity.xPos.low), $00
+	ld (iy + Entity.xVel.low), $05
+	ld (iy + Entity.xVel.high), $00
 	ret
 
 ; Data from 14C7 to 1510 (74 bytes)
@@ -2359,8 +2359,8 @@ _LABEL_1511_:
 	call z, +++
 	call ++++
 	call updateEntityY
-	ld h, (iy+15)
-	ld l, (iy+16)
+	ld h, (iy + Entity.xVel.low)
+	ld l, (iy + Entity.xVel.high)
 	ld e, (iy+24)
 	ld d, $00
 	ld a, (_RAM_C308_)
@@ -2373,8 +2373,8 @@ _LABEL_1511_:
 	xor a
 	sbc hl, de
 ++:
-	ld (iy+15), h
-	ld (iy+16), l
+	ld (iy + Entity.xVel.low), h
+	ld (iy + Entity.xVel.high), l
 	ex de, hl
 	ld e, $00
 	jp updateEntityXWith
@@ -2385,7 +2385,7 @@ _LABEL_1511_:
 
 ++++:
 	ld (iy+17), $01
-	ld a, (iy+15)
+	ld a, (iy + Entity.xVel.low)
 	or a
 	ret z
 	ld (iy+17), $04
@@ -2426,7 +2426,7 @@ _DATA_158E_:
 _LABEL_15B5_:
 	ld de, $0040
 	call updateEntityYWith
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	ld (_RAM_C320_), a
 	jp _LABEL_1027_
 
@@ -2437,19 +2437,19 @@ _LABEL_15C4_:
 	jp nz, +
 	ld hl, _DATA_1AAE_
 	call _LABEL_15E0_
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	cp $58
 	jp c, _LABEL_1A80_
-	ld (iy+15), $FF
+	ld (iy + Entity.xVel.low), $FF
 	jp _LABEL_1A80_
 
 _LABEL_15E0_:
 	ld (iy+3), $01
 	ld (iy+0), l
 	ld (iy+1), h
-	ld (iy+13), $FE
-	ld (iy+14), $00
-	ld (iy+16), $80
+	ld (iy + Entity.yVel.low), $FE
+	ld (iy + Entity.yVel.high), $00
+	ld (iy + Entity.xVel.high), $80
 	ret
 
 +:
@@ -2458,14 +2458,14 @@ _LABEL_15E0_:
 	jp nz, _LABEL_1AD4_
 _LABEL_15FE_:
 	ld de, $0020
-	ld h, (iy+13)
-	ld l, (iy+14)
+	ld h, (iy + Entity.yVel.low)
+	ld l, (iy + Entity.yVel.high)
 	ld a, h
 	cp $02
 	jr z, +
 	add hl, de
-	ld (iy+13), h
-	ld (iy+14), l
+	ld (iy + Entity.yVel.low), h
+	ld (iy + Entity.yVel.high), l
 +:
 	ex de, hl
 	call updateEntityYWith
@@ -2686,16 +2686,16 @@ _LABEL_1770_:
 	ld hl, _DATA_17ED_
 	add hl, de
 	ld a, (hl)
-	ld (iy+6), a
+	ld (iy + Entity.yPos.low), a
 	inc hl
 	ld a, (hl)
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
 	inc hl
 	ld a, (hl)
-	ld (iy+13), a
+	ld (iy + Entity.yVel.low), a
 	inc hl
 	ld a, (hl)
-	ld (iy+15), a
+	ld (iy + Entity.xVel.low), a
 	inc hl
 	ld a, (hl)
 	ld (iy+25), a
@@ -2725,13 +2725,13 @@ _LABEL_1805_:
 	ld a, (iy+24)
 	rrca
 	jr nc, +
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	cp $78
 	jr c, +++
 	jp ++
 
 +:
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	cp $E0
 	jr nc, ++
 	cp $38
@@ -2764,11 +2764,11 @@ _LABEL_1859_:
 	ld d, (iy+25)
 	ld e, (iy+26)
 _LABEL_185F_:
-	ld h, (iy+15)
-	ld l, (iy+16)
+	ld h, (iy + Entity.xVel.low)
+	ld l, (iy + Entity.xVel.high)
 	add hl, de
-	ld (iy+15), h
-	ld (iy+16), l
+	ld (iy + Entity.xVel.low), h
+	ld (iy + Entity.xVel.high), l
 	jp updateEntityXY
 
 ++++:
@@ -2782,11 +2782,11 @@ _LABEL_185F_:
 	jp _LABEL_2F92_
 
 _LABEL_1884_:
-	ld c, (iy+8)
+	ld c, (iy + Entity.xPos.low)
 	jr +
 
 _LABEL_1889_:
-	ld c, (iy+6)
+	ld c, (iy + Entity.yPos.low)
 +:
 	add a, $F0
 	ld h, a
@@ -2807,12 +2807,12 @@ _LABEL_189A_:
 	ld bc, $0007
 	call _LABEL_1050_
 	ld (iy+24), $01
-	ld (iy+8), $00
+	ld (iy + Entity.xPos.low), $00
 	call _LABEL_2D2A_
 	rrca
 	jr c, +
 	ld (iy+24), $02
-	ld (iy+8), $B4
+	ld (iy + Entity.xPos.low), $B4
 +:
 	ld (iy+5), $01
 	ld a, (_RAM_C603_)
@@ -2828,16 +2828,16 @@ _LABEL_189A_:
 	ld (iy+5), $02
 ++:
 	call _LABEL_1183_
-	ld h, (iy+13)
-	ld l, (iy+14)
+	ld h, (iy + Entity.yVel.low)
+	ld l, (iy + Entity.yVel.high)
 	add hl, hl
-	ld (iy+13), h
-	ld (iy+14), l
-	ld h, (iy+15)
-	ld l, (iy+16)
+	ld (iy + Entity.yVel.low), h
+	ld (iy + Entity.yVel.high), l
+	ld h, (iy + Entity.xVel.low)
+	ld l, (iy + Entity.xVel.high)
 	add hl, hl
-	ld (iy+15), h
-	ld (iy+16), l
+	ld (iy + Entity.xVel.low), h
+	ld (iy + Entity.xVel.high), l
 	ret
 
 ; Data from 18FA to 191E (37 bytes)
@@ -2875,17 +2875,17 @@ _LABEL_191F_:
 	call _LABEL_2F92_
 	ld (iy+19), $10
 	ld hl, $00FF
-	ld (iy+15), l
-	ld (iy+16), h
-	ld (iy+13), l
-	ld (iy+14), $80
+	ld (iy + Entity.xVel.low), l
+	ld (iy + Entity.xVel.high), h
+	ld (iy + Entity.yVel.low), l
+	ld (iy + Entity.yVel.high), $80
 	ld a, (iy+24)
 	cp $01
 	ret z
-	ld (iy+15), $01
-	ld (iy+16), h
-	ld (iy+13), l
-	ld (iy+14), $80
+	ld (iy + Entity.xVel.low), $01
+	ld (iy + Entity.xVel.high), h
+	ld (iy + Entity.yVel.low), l
+	ld (iy + Entity.yVel.high), $80
 	ret
 
 ; 19th entry of Jump Table from C64 (indexed by _RAM_C602_)
@@ -2914,13 +2914,13 @@ _LABEL_199B_:
 	ld a, (_RAM_C30C_)
 	inc a
 	ld (iy+25), a
-	ld (iy+8), $58
+	ld (iy + Entity.xPos.low), $58
 	dec a
 	jr z, +
-	ld (iy+8), $90
+	ld (iy + Entity.xPos.low), $90
 	dec a
 	ret z
-	ld (iy+8), $18
+	ld (iy + Entity.xPos.low), $18
 	ret
 
 +:
@@ -2955,17 +2955,17 @@ _LABEL_1A0B_:
 _LABEL_1A2A_:
 	ld e, (iy+24)
 	ld d, $00
-	ld h, (iy+13)
-	ld l, (iy+14)
+	ld h, (iy + Entity.yVel.low)
+	ld l, (iy + Entity.yVel.high)
 	xor a
 	sbc hl, de
-	ld (iy+13), h
-	ld (iy+14), l
+	ld (iy + Entity.yVel.low), h
+	ld (iy + Entity.yVel.high), l
 	ex de, hl
 	jp updateEntityYWith
 
 +:
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	sub $10
 	ld h, a
 	add a, $30
@@ -3069,8 +3069,8 @@ updateEnemy2:
 	ret c
 	ld (iy+24), $00
 	ld (iy+25), $14
-	ld (iy+15), $FB
-	ld (iy+8), $B4
+	ld (iy + Entity.xVel.low), $FB
+	ld (iy + Entity.xPos.low), $B4
 	ret
 
 ; Data from 1B2D to 1B59 (45 bytes)
@@ -3103,8 +3103,8 @@ _LABEL_1B5A_:
 	ld de, $0018
 	ld hl, $FD00
 +:
-	ld (iy+15), h
-	ld (iy+16), l
+	ld (iy + Entity.xVel.low), h
+	ld (iy + Entity.xVel.high), l
 	ld (iy+24), d
 	ld (iy+25), e
 	ld (iy+26), $38
@@ -3134,9 +3134,9 @@ _LABEL_1BA5_:
 	cp $0A
 	jr c, +
 	ld c, $01
-	ld (iy+14), $80
+	ld (iy + Entity.yVel.high), $80
 +:
-	ld (iy+13), c
+	ld (iy + Entity.yVel.low), c
 	call _LABEL_12F7_
 	ld hl, $0208
 	jp _LABEL_1049_
@@ -3248,10 +3248,10 @@ _DATA_1CA8_:
 _LABEL_1CAE_:
 	ld a, (iy+26)
 	add a, $14
-	ld (iy+8), a
-	ld a, (iy+6)
+	ld (iy + Entity.xPos.low), a
+	ld a, (iy + Entity.yPos.low)
 	add a, $08
-	ld (iy+6), a
+	ld (iy + Entity.yPos.low), a
 	sub (iy+25)
 	ret c
 	cp $08
@@ -3301,41 +3301,41 @@ _LABEL_1CCA_:
 +:
 	ld a, (hl)
 	add a, (iy+26)
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
 	inc hl
 	ld a, (hl)
 	add a, (iy+25)
-	ld (iy+6), a
+	ld (iy + Entity.yPos.low), a
 	ret
 
 ++:
 	ld a, (hl)
 	add a, (iy+25)
-	ld (iy+6), a
+	ld (iy + Entity.yPos.low), a
 	inc hl
 	ld a, (iy+26)
 	sub (hl)
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
 	ret
 
 +++:
 	ld a, (iy+26)
 	sub (hl)
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
 	ld a, (iy+25)
 	inc hl
 	sub (hl)
-	ld (iy+6), a
+	ld (iy + Entity.yPos.low), a
 	ret
 
 ++++:
 	ld a, (iy+25)
 	sub (hl)
-	ld (iy+6), a
+	ld (iy + Entity.yPos.low), a
 	inc hl
 	ld a, (hl)
 	add a, (iy+26)
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
 	ret
 
 ; Data from 1D4E to 1D55 (8 bytes)
@@ -3344,8 +3344,8 @@ _DATA_1D4E_:
 
 ; 3rd entry of Jump Table from 1CA8 (indexed by _RAM_C61B_)
 _LABEL_1D56_:
-	ld (iy+13), $FD
-	ld (iy+15), $FE
+	ld (iy + Entity.yVel.low), $FD
+	ld (iy + Entity.xVel.low), $FE
 	call updateEntityY
 	jp updateEntityX
 
@@ -3361,7 +3361,7 @@ _LABEL_1D72_:
 	ld hl, _DATA_1DA4_
 	ld bc, $0009
 	call _LABEL_1050_
-	ld (iy+14), $55
+	ld (iy + Entity.yVel.high), $55
 	ld hl, $0308
 	call _LABEL_1049_
 	ld (iy+24), $20
@@ -3370,10 +3370,10 @@ _LABEL_1D72_:
 	rrca
 	jr c, +
 	ld b, $01
-	ld (iy+8), b
+	ld (iy + Entity.xPos.low), b
 +:
-	ld (iy+15), b
-	ld (iy+16), c
+	ld (iy + Entity.xVel.low), b
+	ld (iy + Entity.xVel.high), c
 	ret
 
 ; Data from 1DA4 to 1DAC (9 bytes)
@@ -3401,7 +3401,7 @@ _LABEL_1DBE_:
 	ld hl, _DATA_1E02_
 	ld bc, $0009
 	call _LABEL_1050_
-	ld (iy+14), $55
+	ld (iy + Entity.yVel.high), $55
 	ld a, (_RAM_C316_)
 	cp $07
 	ret z
@@ -3409,14 +3409,14 @@ _LABEL_1DBE_:
 	ret z
 	cp $42
 	ret z
-	ld (iy+8), $98
+	ld (iy + Entity.xPos.low), $98
 	cp $23
 	ret z
 	cp $28
 	ret z
 	cp $4B
 	ret z
-	ld (iy+8), $30
+	ld (iy + Entity.xPos.low), $30
 	ret
 
 ; Data from 1E02 to 1E37 (54 bytes)
@@ -3497,10 +3497,10 @@ _LABEL_1E99_:
 	ld hl, _DATA_1EC8_
 ++:
 	call _LABEL_15E0_
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	cp $58
 	ret c
-	ld (iy+15), $FF
+	ld (iy + Entity.xVel.low), $FF
 	ret
 
 ; Data from 1EC8 to 1EE8 (33 bytes)
@@ -3519,11 +3519,11 @@ _LABEL_1EE9_:
 	call _LABEL_1050_
 	ld (iy+24), $02
 _LABEL_1EFD_:
-	ld (iy+13), $FF
-	ld (iy+14), $00
+	ld (iy + Entity.yVel.low), $FF
+	ld (iy + Entity.yVel.high), $00
 	ld (iy+30), $00
 	ld (iy+31), $08
-	ld (iy+16), $80
+	ld (iy + Entity.xVel.high), $80
 	ld (iy+27), $00
 	ret
 
@@ -3544,7 +3544,7 @@ _LABEL_1F85_:
 	ld a, (iy+25)
 	or a
 	jr nz, ++
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $30
 	jp c, +
 	cp $D0
@@ -3567,11 +3567,11 @@ _LABEL_1FA9_:
 	call updateEntityX
 	ld d, (iy+30)
 	ld e, (iy+31)
-	ld h, (iy+13)
-	ld l, (iy+14)
+	ld h, (iy + Entity.yVel.low)
+	ld l, (iy + Entity.yVel.high)
 	add hl, de
-	ld (iy+13), h
-	ld (iy+14), l
+	ld (iy + Entity.yVel.low), h
+	ld (iy + Entity.yVel.high), l
 	call updateEntityY
 	inc (iy+26)
 	ld a, (iy+26)
@@ -3581,19 +3581,19 @@ _LABEL_1FA9_:
 	dec (iy+24)
 	jr nz, +
 	ld (iy+24), $04
-	ld (iy+15), $00
+	ld (iy + Entity.xVel.low), $00
 	ld a, (iy+29)
 	cpl
 	ld (iy+29), a
 	or a
 	jr z, +
-	ld (iy+15), $FF
+	ld (iy + Entity.xVel.low), $FF
 +:
 	ld a, (iy+27)
 	or a
 	jp nz, _LABEL_1EFD_
-	ld (iy+13), $01
-	ld (iy+14), $00
+	ld (iy + Entity.yVel.low), $01
+	ld (iy + Entity.yVel.high), $00
 	ld (iy+30), $FF
 	ld (iy+31), $F8
 	ld (iy+27), $01
@@ -3626,10 +3626,10 @@ _LABEL_2039_:
 +:
 	ld a, (_RAM_C766_)
 	add a, h
-	ld (iy+6), a
+	ld (iy + Entity.yPos.low), a
 	ld a, (_RAM_C768_)
 	add a, l
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
 	ret
 
 ++:
@@ -3669,11 +3669,11 @@ _LABEL_2039_:
 	ld a, (ix+3)
 	or a
 	ret nz
-	ld (ix+2), $20
+	ld (ix + Entity.type), $20
 	ld (ix+5), c
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	ld (ix+6), a
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	ld (ix+8), a
 ++++:
 	ld (hl), b
@@ -3974,7 +3974,7 @@ _LABEL_2301_:
 	or a
 	jr nz, +
 	ld ix, _RAM_C600_
-	ld a, (ix+2)
+	ld a, (ix + Entity.type)
 	cp $01
 	jr nz, +
 	ld iy, _RAM_C640_
@@ -3997,7 +3997,7 @@ _LABEL_2301_:
 	or a
 	ret nz
 	ld ix, _RAM_C620_
-	ld a, (ix+2)
+	ld a, (ix + Entity.type)
 	cp $02
 	ret nz
 	ld iy, _RAM_C6C0_
@@ -4109,10 +4109,10 @@ _LABEL_2401_:
 	ld a, (ix+5)
 	ld (iy+5), a
 	ld a, (ix+6)
-	ld (iy+6), a
+	ld (iy + Entity.yPos.low), a
 	ld a, (ix+8)
 	add a, $04
-	ld (iy+8), a
+	ld (iy + Entity.xPos.low), a
 	ld (iy+24), $10
 	call _LABEL_2456_
 	ld a, $86
@@ -4140,7 +4140,7 @@ _LABEL_2456_:
 _LABEL_246F_:
 	ld b, $03
 -:
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	or a
 	jr z, +
 	push de
@@ -4182,7 +4182,7 @@ _LABEL_2484_:
 
 +++:
 	ld iy, _RAM_C600_
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $05
 	jr z, +
 	call ++
@@ -4243,7 +4243,7 @@ _LABEL_24E4_:
 	inc de
 -:
 	ld a, (de)
-	add a, (iy+6)
+	add a, (iy + Entity.yPos.low)
 	ld (hl), a
 	inc hl
 	inc de
@@ -4264,7 +4264,7 @@ _LABEL_24E4_:
 	inc de
 	inc de
 	ld a, (de)
-	add a, (iy+8)
+	add a, (iy + Entity.xPos.low)
 	ld (hl), a
 	inc hl
 	inc de
@@ -4287,7 +4287,7 @@ _LABEL_24E4_:
 	inc iy
 	djnz -
 	pop iy
-	ld (iy+6), $D8
+	ld (iy + Entity.yPos.low), $D8
 	ret
 
 _LABEL_255E_:
@@ -4478,13 +4478,13 @@ _LABEL_2688_:
 	ld a, (_RAM_C133_)
 	and $20
 	jp nz, _LABEL_2717_
-	ld l, (iy+8)
+	ld l, (iy + Entity.xPos.low)
 	call _LABEL_26B6_
 	ld c, (ix+8)
 	call _LABEL_26E4_
 	call _LABEL_26AC_
 	ret nc
-	ld l, (iy+6)
+	ld l, (iy + Entity.yPos.low)
 	call _LABEL_26CA_
 	ld c, (ix+6)
 	call _LABEL_26FC_
@@ -4503,7 +4503,7 @@ _LABEL_26AC_:
 
 _LABEL_26B6_:
 	ld de, $0007
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $03
 	jr z, +
 	cp $04
@@ -4513,7 +4513,7 @@ _LABEL_26B6_:
 
 _LABEL_26CA_:
 	ld de, $F810
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $03
 	jr z, +
 	ld de, $0007
@@ -4530,7 +4530,7 @@ _LABEL_26CA_:
 
 _LABEL_26E4_:
 	ld de, $0206
-	ld a, (ix+2)
+	ld a, (ix + Entity.type)
 	cp $07
 	jr z, _LABEL_2711_
 	cp $16
@@ -4542,7 +4542,7 @@ _LABEL_26E4_:
 
 _LABEL_26FC_:
 	ld de, $0206
-	ld a, (ix+2)
+	ld a, (ix + Entity.type)
 	cp $07
 	jr z, _LABEL_2711_
 	cp $16
@@ -4559,13 +4559,13 @@ _LABEL_2711_:
 	ret
 
 _LABEL_2717_:
-	ld l, (iy+8)
+	ld l, (iy + Entity.xPos.low)
 	call _LABEL_26B6_
 	ld c, (ix+8)
 	call +
 	call _LABEL_26AC_
 	ret nc
-	ld l, (iy+6)
+	ld l, (iy + Entity.yPos.low)
 	call _LABEL_26CA_
 	ld c, (ix+6)
 	call ++
@@ -4573,7 +4573,7 @@ _LABEL_2717_:
 
 +:
 	ld de, $F810
-	ld a, (ix+2)
+	ld a, (ix + Entity.type)
 	cp $11
 	jp z, _LABEL_2711_
 	ld de, $001F
@@ -4584,7 +4584,7 @@ _LABEL_2717_:
 
 ++:
 	ld de, $0018
-	ld a, (ix+2)
+	ld a, (ix + Entity.type)
 	cp $14
 	jp z, _LABEL_2711_
 	ld de, $000C
@@ -4725,7 +4725,7 @@ _LABEL_284B_:
 	and $04
 	ld (_RAM_C337_), a
 	ld iy, _RAM_C600_
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $01
 	jr nz, +
 	ld bc, $0111
@@ -4740,7 +4740,7 @@ _LABEL_284B_:
 	ret nz
 	ld bc, $0111
 	ld iy, _RAM_C620_
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $02
 	ret nz
 	jp _LABEL_28B9_
@@ -4793,20 +4793,20 @@ _LABEL_28B9_:
 	ld a, (ix+21)
 	or a
 	ret nz
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $10
 	ret c
 	call _LABEL_2688_
 	ret nc
-	ld a, (iy+2)
+	ld a, (iy + Entity.type)
 	cp $01
 	jp z, _LABEL_294A_
 	cp $02
 	jp z, _LABEL_294A_
 	cp $05
 	ret z
-	ld c, (iy+2)
-	ld a, (ix+2)
+	ld c, (iy + Entity.type)
+	ld a, (ix + Entity.type)
 	cp $08
 	ret c
 	add a, a
@@ -4832,7 +4832,7 @@ _LABEL_294A_:
 	ld a, (_RAM_C103_)
 	rlca
 	ret c
-	ld a, (ix+2)
+	ld a, (ix + Entity.type)
 	cp $08
 	ret z
 	cp $22
@@ -4866,16 +4866,16 @@ _LABEL_294A_:
 	ld a, (_RAM_C337_)
 	bit 2, a
 	jr nz, +
-	ld (iy+2), $05
+	ld (iy + Entity.type), $05
 	jp _LABEL_1063_
 
 +:
-	ld (ix+2), $08
+	ld (ix + Entity.type), $08
 	ld c, $0A
 	jp _LABEL_255E_
 
 ++:
-	ld (iy+2), $05
+	ld (iy + Entity.type), $05
 	ret
 
 _LABEL_29A5_:
@@ -4891,7 +4891,7 @@ _LABEL_29B9_:
 	ld a, (ix+28)
 	or a
 	ret nz
-	ld (iy+2), $05
+	ld (iy + Entity.type), $05
 	ret
 
 _LABEL_29C3_:
