@@ -1666,8 +1666,8 @@ _LABEL_E2C_:
 	jr nz, _LABEL_E9B_
 	ld (iy+22), $01
 	ld hl, _DATA_E75_
-	ld (iy+0), l
-	ld (iy+1), h
+	ld (iy + Entity.animationDescriptorPointer.low), l
+	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld hl, $0008
 	ld (iy + Entity.yVel.low), h
 	ld (iy + Entity.yVel.high), l
@@ -1778,8 +1778,8 @@ _LABEL_FC0_:
 	ld (iy + Entity.yVel.low), $00
 	ld (iy + Entity.yVel.high), $55
 	ld hl, _DATA_FE5_
-	ld (iy+0), l
-	ld (iy+1), h
+	ld (iy + Entity.animationDescriptorPointer.low), l
+	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld (iy+22), $01
 	ld (iy+17), $00
 	ld a, $88
@@ -1950,8 +1950,8 @@ _LABEL_110C_:
 -:
 	xor a
 	ld (iy+27), a
-	ld (iy+0), l
-	ld (iy+1), h
+	ld (iy + Entity.animationDescriptorPointer.low), l
+	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld (iy+17), a
 	ld (iy+18), $08
 	ld (iy+19), a
@@ -1978,8 +1978,8 @@ _LABEL_115F_:
 	ld a, $01
 	ld (iy+3), a
 	ld (iy+4), a
-	ld (iy+0), l
-	ld (iy+1), h
+	ld (iy + Entity.animationDescriptorPointer.low), l
+	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld a, $04
 	add a, (iy + Entity.yPos.low)
 	ld (iy + Entity.yPos.low), a
@@ -2034,12 +2034,17 @@ updateEnemy1:
 	ld a, (iy+3)
 	or a
 	jp nz, _LABEL_1265_
+
 	ld (iy+27), $00
-	ld hl, _DATA_1214_
+	ld hl, enemy1Data
 	ld bc, $0011
 	call memcpyIYToHL
+
 	ld (iy+29), $08
+
+	; X velocity and postion
 	ld de, $0208
+
 	ld (iy+24), e
 	ld hl, _RAM_C30E_
 	inc (hl)
@@ -2060,22 +2065,66 @@ updateEnemy1:
 	ld (iy+27), $01
 	ld (iy + Entity.xPos.low), e
 	ld (iy + Entity.xVel.low), d
-	ld hl, _DATA_122B_
-	ld (iy+0), l
-	ld (iy+1), h
+	ld hl, enemy1AnimationDescriptor2
+	ld (iy + Entity.animationDescriptorPointer.low), l
+	ld (iy + Entity.animationDescriptorPointer.high), h
 	ret
 
-; Data from 1214 to 122A (23 bytes)
-_DATA_1214_:
-.db $25 $12 $0A $01 $04 $00 $F8 $00 $A0 $00 $00 $02 $02 $02 $00 $FE
-.db $00 $58 $12 $4B $12 $31 $12
+enemy1Data:
+.dw enemy1AnimationDescriptor1
+.db $0A ; type
+.db $01 ; data03
+.db $04 ; data04
+.db $00 ; data05
+.db $F8 ; yPos.low
+.db $00 ; yPos.high
+.db $A0 ; xPos.low
+.db $00 ; xPos.high
+.db $00 ; data0a
+.db $02 ; data0b
+.db $02 ; data0c
+.db $02 ; yVel.low
+.db $00 ; yVel.high
+.db $FE ; xVel.low
+.db $00 ; xVel.high
 
-; Data from 122B to 1264 (58 bytes)
-_DATA_122B_:
-.db $31 $12 $3E $12 $58 $12 $04 $00 $00 $64 $00 $08 $65 $08 $00 $66
-.db $08 $08 $67 $04 $00 $00 $68 $00 $08 $69 $08 $00 $6A $08 $08 $6B
-.db $04 $00 $00 $6C $00 $08 $6D $08 $00 $6E $08 $08 $6F $04 $00 $00
-.db $70 $00 $08 $71 $08 $00 $72 $08 $08 $73
+enemy1AnimationDescriptor1:
+.dw _DATA_1258_
+.dw _DATA_124B_
+.dw _DATA_1231_
+
+enemy1AnimationDescriptor2:
+.dw _DATA_1231_
+.dw _DATA_123E_
+.dw _DATA_1258_
+
+_DATA_1231_:
+.db $04
+.db $00 $00 $64
+.db $00 $08 $65
+.db $08 $00 $66
+.db $08 $08 $67
+
+_DATA_123E_:
+.db $04
+.db $00 $00 $68
+.db $00 $08 $69
+.db $08 $00 $6A
+.db $08 $08 $6B
+
+_DATA_124B_:
+.db $04
+.db $00 $00 $6C
+.db $00 $08 $6D
+.db $08 $00 $6E
+.db $08 $08 $6F
+
+_DATA_1258_:
+.db $04
+.db $00 $00 $70
+.db $00 $08 $71
+.db $08 $00 $72
+.db $08 $08 $73
 
 _LABEL_1265_:
 	dec (iy+29)
@@ -2201,8 +2250,8 @@ _LABEL_1362_:
 	ret nc
 	ld (iy + Entity.xVel.low), $01
 	ld hl, _DATA_1344_
-	ld (iy+0), l
-	ld (iy+1), h
+	ld (iy + Entity.animationDescriptorPointer.low), l
+	ld (iy + Entity.animationDescriptorPointer.high), h
 	ret
 
 ++:
@@ -2304,8 +2353,8 @@ _LABEL_144B_:
 	ld (iy+25), $01
 	ld (iy+26), $01
 	ld de, _DATA_143F_
-	ld (iy+0), e
-	ld (iy+1), d
+	ld (iy + Entity.animationDescriptorPointer.low), e
+	ld (iy + Entity.animationDescriptorPointer.high), d
 	ld hl, $0206
 	jp _LABEL_1049_
 
@@ -2445,8 +2494,8 @@ _LABEL_15C4_:
 
 _LABEL_15E0_:
 	ld (iy+3), $01
-	ld (iy+0), l
-	ld (iy+1), h
+	ld (iy + Entity.animationDescriptorPointer.low), l
+	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld (iy + Entity.yVel.low), $FE
 	ld (iy + Entity.yVel.high), $00
 	ld (iy + Entity.xVel.high), $80
@@ -4224,8 +4273,8 @@ _LABEL_24E4_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld l, (iy+0)
-	ld h, (iy+1)
+	ld l, (iy + Entity.animationDescriptorPointer.low)
+	ld h, (iy + Entity.animationDescriptorPointer.high)
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -4283,7 +4332,7 @@ _LABEL_24E4_:
 	ld b, $20
 	push iy
 -:
-	ld (iy+0), $00
+	ld (iy + Entity.animationDescriptorPointer.low), $00
 	inc iy
 	djnz -
 	pop iy
