@@ -31,7 +31,7 @@ BANKS 2
 .BANK 0 SLOT 0
 .ORG $0000
 
-_LABEL_0_:
+start:
 	di
 	ld sp, $C0FF
 	im 1
@@ -50,7 +50,7 @@ _LABEL_8_:
 ; Data from 14 to 17 (4 bytes)
 .db $06 $05 $13 $05
 
-_LABEL_18_:
+writeToVdpAddress:
 	push af
 	call setVDPWriteAddress
 	pop af
@@ -77,8 +77,8 @@ _LABEL_20_:
 ; Data from 36 to 37 (2 bytes)
 .db $57 $21
 
-_LABEL_38_:
-	jp _LABEL_1AF_
+handleInterruptEntrypoint:
+	jp handleInterrupt
 
 ; Data from 3B to 5A (32 bytes)
 palette:
@@ -109,7 +109,7 @@ _LABEL_69_:
 	call _LABEL_BA9_
 	call _LABEL_BE7_
 	call _LABEL_159_
-	call _LABEL_B3F_
+	call clearTilemap
 	ld hl, (_DATA_58D5_)
 	ld bc, $58D5
 	ld de, $2000
@@ -270,7 +270,7 @@ _LABEL_189_:
 	inc hl
 	jp _LABEL_189_
 
-_LABEL_1AF_:
+handleInterrupt:
 	push af
 	in a, (Port_VDPStatus)
 	push bc
@@ -645,7 +645,7 @@ _LABEL_46C_:
 	ld de, $3DB8
 ++:
 	ld a, b
-	jp _LABEL_18_
+	jp writeToVdpAddress
 
 _LABEL_48D_:
 	ld a, (_RAM_C104_)
@@ -941,88 +941,118 @@ _LABEL_724_:
 
 ; Jump Table from 745 to 76C (20 entries, indexed by _RAM_C10A_)
 _DATA_745_:
-.dw _LABEL_76D_ _LABEL_8E9_ _LABEL_7A7_ _LABEL_7B5_ _LABEL_770_ _LABEL_8FA_ _LABEL_906_ _LABEL_9BD_
-.dw _LABEL_9C9_ _LABEL_9D5_ _LABEL_A3E_ _LABEL_A90_ _LABEL_A9C_ _LABEL_ABB_ _LABEL_AC1_ _LABEL_AD8_
-.dw _LABEL_B0F_ _LABEL_B2C_ _LABEL_B2C_ _LABEL_B2C_
+.dw jumpToClearTilemap
+.dw drawBlueBG
+.dw setBGColorsToBlack
+.dw drawMenu
+.dw drawMark3Logo
+.dw clearSprites
+.dw _LABEL_906_
+.dw _LABEL_9BD_
+.dw _LABEL_9C9_
+.dw _LABEL_9D5_
+.dw _LABEL_A3E_
+.dw _LABEL_A90_
+.dw _LABEL_A9C_
+.dw _LABEL_ABB_
+.dw _LABEL_AC1_
+.dw _LABEL_AD8_
+.dw _LABEL_B0F_
+.dw _LABEL_B2C_
+.dw _LABEL_B2C_
+.dw _LABEL_B2C_
 
 ; 1st entry of Jump Table from 745 (indexed by _RAM_C10A_)
-_LABEL_76D_:
-	jp _LABEL_B3F_
+jumpToClearTilemap:
+	jp clearTilemap
 
 ; 5th entry of Jump Table from 745 (indexed by _RAM_C10A_)
-_LABEL_770_:
+drawMark3Logo:
 	ld a, $08
 	ld (_RAM_C12B_), a
 	ld de, $3A4C
-	ld hl, _DATA_781_
+	ld hl, segaMark3Logo
 	ld bc, $0213
 	jp _LABEL_B5E_
 
 ; Data from 781 to 7A6 (38 bytes)
-_DATA_781_:
+segaMark3Logo:
 .db $46 $4A $46 $4A $46 $4A $4B $E4 $00 $E5 $E6 $4B $E4 $E7 $E8 $E9
 .db $EA $EB $EC $ED $EE $EF $F0 $F1 $F2 $F3 $F4 $00 $F5 $F6 $F3 $F4
 .db $F7 $F8 $F9 $57 $58 $44
 
 ; 3rd entry of Jump Table from 745 (indexed by _RAM_C10A_)
-_LABEL_7A7_:
+setBGColorsToBlack:
+	; Set PAL1 1st color to black
 	ld a, $00
 	ld de, $C010
-	rst $18	; _LABEL_18_
+	rst $18	; writeToVdpAddress
+
+	; Set PAL0 4th color to black
 	ld a, $00
 	ld de, $C003
-	jp _LABEL_18_
+	jp writeToVdpAddress
 
 ; 4th entry of Jump Table from 745 (indexed by _RAM_C10A_)
-_LABEL_7B5_:
-	ld hl, _DATA_841_
+drawMenu:
+	ld hl, logo
 	ld de, $390A
 	ld bc, $042A
-	call _LABEL_B7B_
-	ld hl, _DATA_841_ - 2
+	call drawTileArea
+
+	ld hl, sevenTop
 	ld de, $38EE
 	ld b, $02
 	ld a, $08
 	ld (_RAM_C12B_), a
-	call _LABEL_B2D_
+	call drawTiles
 	ld a, $D6
 	out (Port_VDPData), a
 	push af
 	pop af
 	ld a, $0A
 	out (Port_VDPData), a
+
+	; Draw player 1 push start text
 	ld de, $3B88
-	ld hl, _DATA_80D_
+	ld hl, pushStartText
 	ld b, $18
-	call _LABEL_B2D_
+	call drawTiles
 	ld de, $3C1A
-	ld hl, _DATA_825_
+	ld hl, orText
 	ld b, $02
-	call _LABEL_B2D_
+	call drawTiles
+
+	; Draw player 2 push start text
 	ld de, $3C88
-	ld hl, _DATA_80D_
+	ld hl, pushStartText
 	ld b, $18
-	call _LABEL_B2D_
+	call drawTiles
 	ld a, $32
 	ld de, $3C92
-	rst $18	; _LABEL_18_
-	ld de, $3DC8
-	ld hl, _DATA_825_ + 2
-	ld b, $18
-	jp _LABEL_B2D_
+	rst $18	; writeToVdpAddress
 
-; Data from 80D to 824 (24 bytes)
-_DATA_80D_:
+	; Draw copyright text
+	ld de, $3DC8
+	ld hl, copyrightText
+	ld b, $18
+	jp drawTiles
+
+pushStartText:
 .db $50 $55 $53 $48 $20 $31 $20 $50 $4C $41 $59 $20 $53 $54 $41 $52
 .db $54 $20 $42 $55 $54 $54 $4F $4E
 
-; Data from 825 to 840 (28 bytes)
-_DATA_825_:
-.db $4F $52 $4F $52 $49 $47 $49 $4E $41 $4C $20 $47 $41 $4D $45 $20
-.db $5B $5C $5D $5E $5F $20 $31 $39 $38 $35 $D6 $BD
+orText:
+.db $4F $52
 
-; Data from 841 to 8E8 (168 bytes)
-_DATA_841_:
+copyrightText:
+.db $4F $52 $49 $47 $49 $4E $41 $4C $20 $47 $41 $4D $45 $20
+.db $5B $5C $5D $5E $5F $20 $31 $39 $38 $35
+
+sevenTop:
+.db $D6 $BD
+
+logo:
 .db $BE $08 $BF $08 $C0 $08 $C0 $0A $C1 $08 $C1 $0A $C2 $08 $C3 $08
 .db $C4 $08 $00 $08 $C4 $08 $00 $08 $C4 $08 $C1 $08 $C1 $0A $C2 $08
 .db $C3 $08 $00 $08 $D6 $0C $C5 $08 $C6 $08 $C7 $08 $CD $0E $C8 $08
@@ -1036,25 +1066,31 @@ _DATA_841_:
 .db $00 $08 $D4 $08 $D5 $08 $00 $08
 
 ; 2nd entry of Jump Table from 745 (indexed by _RAM_C10A_)
-_LABEL_8E9_:
+drawBlueBG:
+	; Set PAL1 1st color to blue
 	ld a, $34
 	ld de, $C010
-	rst $18	; _LABEL_18_
+	rst $18	; writeToVdpAddress
+
+	; Set PAL0 4th color to blue
 	ld de, $C003
-	rst $18	; _LABEL_18_
+	rst $18	; writeToVdpAddress
+
+	; Fill BG with blue tile
 	ld h, $08
 	ld l, $20
-	jp _LABEL_B42_
+	jp fillTilemap
 
 ; 6th entry of Jump Table from 745 (indexed by _RAM_C10A_)
-_LABEL_8FA_:
+clearSprites:
 	ld de, $3F00
 	ld bc, $0020
 	ld hl, $D0D0
-	jp _LABEL_B48_
+	jp fillVram
 
 ; 7th entry of Jump Table from 745 (indexed by _RAM_C10A_)
 _LABEL_906_:
+	; @TODO
 	ld de, $382E
 	ld b, $1C
 --:
@@ -1063,10 +1099,10 @@ _LABEL_906_:
 -:
 	push bc
 	ld a, $00
-	rst $18	; _LABEL_18_
+	rst $18	; writeToVdpAddress
 	inc de
 	ld a, $11
-	rst $18	; _LABEL_18_
+	rst $18	; writeToVdpAddress
 	inc de
 	pop bc
 	djnz -
@@ -1075,57 +1111,84 @@ _LABEL_906_:
 	ex de, hl
 	pop bc
 	djnz --
+
 	ld a, $08
 	ld (_RAM_C12B_), a
+
+	; Draw "TOP"
 	ld de, $3870
 	ld hl, _DATA_9A9_ + 1
 	ld b, $03
-	call _LABEL_B2D_
+	call drawTiles
+
+	; Draw "1UP"
 	ld de, $3930
 	ld hl, _DATA_9AD_
 	ld b, $03
-	call _LABEL_B2D_
+	call drawTiles
+
+	; Draw life count
 	ld de, $3D36
 	call _LABEL_9A1_
+
+	; @TODO: Related to high scores
 	call _LABEL_2638_
+
+	; Draw high score
 	ld hl, _DATA_9A9_
 	ld de, $38BC
 	ld b, $01
-	call _LABEL_B2D_
+	call drawTiles
+
+	; Draw P1 score
 	ld hl, _DATA_9A9_
 	ld de, $397C
 	ld b, $01
-	call _LABEL_B2D_
+	call drawTiles
+
+	; Draw P1 life icon
 	ld de, $3CF2
 	ld hl, _DATA_9B3_ + 2
 	ld bc, $0202
 	ld a, $08
 	ld (_RAM_C12B_), a
 	call _LABEL_B5E_
+
+	; Return if single player
 	ld a, (_RAM_C103_)
 	rrca
 	ret nc
+
+	; Draw P2 life icon
 	ld de, $3D72
 	ld hl, _DATA_9B9_
 	ld bc, $0202
 	ld a, $08
 	ld (_RAM_C12B_), a
 	call _LABEL_B5E_
+
+	; @TODO
 	ld a, $08
 	ld (_RAM_C12B_), a
+
+	; Draw "2UP"
 	ld de, $39F0
 	ld hl, _DATA_9B0_
 	ld b, $03
-	call _LABEL_B2D_
+	call drawTiles
+
+	; Draw P2 score
 	ld hl, _DATA_9A9_
 	ld de, $3A3C
 	ld b, $01
-	call _LABEL_B2D_
+	call drawTiles
+
+	; Draw P2 life count
 	ld de, $3DB6
 _LABEL_9A1_:
 	ld hl, _DATA_9B3_
 	ld b, $02
-	jp _LABEL_B2D_
+	jp drawTiles
 
 ; Data from 9A9 to 9AC (4 bytes)
 _DATA_9A9_:
@@ -1141,7 +1204,7 @@ _DATA_9B0_:
 
 ; Data from 9B3 to 9B8 (6 bytes)
 _DATA_9B3_:
-.db $5A $32 $10 $11 $12 $13
+.db $5A ($30 + INITIAL_LIVES) $10 $11 $12 $13
 
 ; Data from 9B9 to 9BC (4 bytes)
 _DATA_9B9_:
@@ -1190,7 +1253,7 @@ _LABEL_9D5_:
 	add hl, de
 	ex de, hl
 	ld a, (_RAM_C145_)
-	rst $18	; _LABEL_18_
+	rst $18	; writeToVdpAddress
 	ld a, $08
 	call writeVDPData
 	pop hl
@@ -1239,7 +1302,7 @@ _LABEL_A3E_:
 	ld d, (iy+30)
 	ld e, (iy+31)
 	ld a, $3F
-	rst $18	; _LABEL_18_
+	rst $18	; writeToVdpAddress
 	ld a, $08
 	out (Port_VDPData), a
 	ld a, $0F
@@ -1331,7 +1394,7 @@ _LABEL_AD8_:
 	add hl, de
 	ld de, $3C72
 	ld b, $02
-	jp _LABEL_B2D_
+	jp drawTiles
 
 ; Data from AF9 to B04 (12 bytes)
 _DATA_AF9_:
@@ -1359,7 +1422,7 @@ _DATA_B20_:
 _LABEL_B2C_:
 	ret
 
-_LABEL_B2D_:
+drawTiles:
 	call setVDPWriteAddress
 	ld c, Port_VDPData
 -:
@@ -1371,12 +1434,14 @@ _LABEL_B2D_:
 	jp nz, -
 	ret
 
-_LABEL_B3F_:
+clearTilemap:
 	ld hl, $0100
-_LABEL_B42_:
+fillTilemap:
+	; Tilemap base address
 	ld de, $3800
+	; 38 x 28 tiles = $380
 	ld bc, $0380
-_LABEL_B48_:
+fillVram:
 	call setVDPWriteAddress
 	ld a, c
 	or a
@@ -1414,7 +1479,7 @@ _LABEL_B5E_:
 	djnz _LABEL_B5E_
 	ret
 
-_LABEL_B7B_:
+drawTileArea:
 	push bc
 	call setVDPWriteAddress
 	ld b, c
@@ -1429,7 +1494,7 @@ _LABEL_B7B_:
 	add hl, bc
 	ex de, hl
 	pop bc
-	djnz _LABEL_B7B_
+	djnz drawTileArea
 	ret
 
 _LABEL_B93_:
@@ -1505,8 +1570,7 @@ _LABEL_BFC_:
 	ld (_RAM_C151_), a
 
 	; Initial lives
-	; @TODO: Display text still starts with 2
-	ld a, $02
+	ld a, INITIAL_LIVES
 	ld (p1Lives), a
 
 	ld (_RAM_C106_), a
@@ -2572,12 +2636,12 @@ _LABEL_170F_:
 	ld l, a
 	ld h, $08
 	ld bc, $0005
-	jp _LABEL_B48_
+	jp fillVram
 
 +:
 	ld hl, $0800
 	ld bc, $0005
-	jp _LABEL_B48_
+	jp fillVram
 
 ++:
 	xor a
@@ -4384,7 +4448,7 @@ _LABEL_264A_:
 	ex af, af'
 	add a, $30
 	ex de, hl
-	rst $18	; _LABEL_18_
+	rst $18	; writeToVdpAddress
 	ld a, $18
 	call writeVDPData
 	ex de, hl
@@ -4397,7 +4461,7 @@ _LABEL_264A_:
 	push af
 	ld a, $20
 	ex de, hl
-	rst $18	; _LABEL_18_
+	rst $18	; writeToVdpAddress
 	ld a, $18
 	call writeVDPData
 	ex de, hl
@@ -5072,7 +5136,7 @@ _LABEL_2B98_:
 	ld hl, $0100
 	ld bc, $0016
 	push bc
-	call _LABEL_B48_
+	call fillVram
 	pop bc
 	ld hl, $0040
 	add hl, de
@@ -5140,19 +5204,25 @@ _LABEL_2C88_:
 	ld d, $01
 ++:
 	push de
-	ld hl, _DATA_6469_
+
+	; Extract tile indexes
+	ld hl, level1BlocksPointers
 	call +
 	ld de, _RAM_D000_
-	call _LABEL_2CCB_
+	call extractMapBlock
+
+	; Extract tile attributes
 	pop de
 	ld hl, _DATA_6655_
 	call +
 	ld de, _RAM_D001_
-	call _LABEL_2CCB_
+	call extractMapBlock
+
+	; Draw tiles
 	ld hl, _RAM_D000_
 	pop de
 	ld bc, $022C
-	jp _LABEL_B7B_
+	jp drawTileArea
 
 +:
 	add hl, de
@@ -5162,13 +5232,16 @@ _LABEL_2C88_:
 	ex de, hl
 	ret
 
-_LABEL_2CCB_:
+; Related to map reading
+extractMapBlock:
 	ld a, e
 	cp $58
 	ret nc
 	ld a, (hl)
 	bit 7, a
 	jr nz, +
+
+	; Repetição
 	ld b, a
 	inc hl
 	ld a, (hl)
@@ -5178,9 +5251,11 @@ _LABEL_2CCB_:
 	inc e
 	djnz -
 	inc hl
-	jp _LABEL_2CCB_
+	jp extractMapBlock
 
 +:
+	; Se for 1, segue aqui.
+	; Sequencial
 	and $7F
 	ld b, a
 -:
@@ -5191,7 +5266,7 @@ _LABEL_2CCB_:
 	inc e
 	djnz -
 	inc hl
-	jp _LABEL_2CCB_
+	jp extractMapBlock
 
 ; Data from 2CEE to 2D00 (19 bytes)
 .db $11 $82 $3D $7A $FE $37 $C8 $D5 $CD $88 $2C $E1 $11 $80 $FF $19
