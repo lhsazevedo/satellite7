@@ -6,7 +6,7 @@ updateExplosion:
 	ld hl, _DATA_F8C_
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
-	ld (iy+17), $00
+	ld (iy + Entity.frame), $00
 	ld (iy+18), $04
 	ld (iy+19), $00
 	ld (iy+20), $08
@@ -40,8 +40,8 @@ _DATA_0FA3_:
 
 _LABEL_FB0_:
 	call _LABEL_1027_
-	ld a, (iy+17)
+	ld a, (iy + Entity.frame)
 	cp $03
 	ret c
-	ld (iy+17), $00
+	ld (iy + Entity.frame), $00
 	jp putIYEntityOffscreen

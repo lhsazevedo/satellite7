@@ -100,7 +100,7 @@ _RAM_C30A_ db
 _RAM_C30B_ db
 _RAM_C30C_ db
 _RAM_C30D_ db
-_RAM_C30E_ db
+enemy1Counter db
 .ende
 
 .enum $C310 export

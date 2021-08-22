@@ -14,13 +14,13 @@ updateBomb:
 	ld a, (iy+19)
 	cp $08
 	ret c
-	ld (iy+17), $01
+	ld (iy + Entity.frame), $01
 	cp $16
 	ret c
-	ld (iy+17), $02
+	ld (iy + Entity.frame), $02
 	cp $23
 	ret c
-	ld (iy+17), $03
+	ld (iy + Entity.frame), $03
 	cp $2A
 	jp nc, putIYEntityOffscreen
 	ld a, (_RAM_C133_)

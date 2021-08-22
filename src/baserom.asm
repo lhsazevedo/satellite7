@@ -1672,7 +1672,7 @@ _LABEL_E2C_:
 	ld (iy + Entity.yVel.low), h
 	ld (iy + Entity.yVel.high), l
 	ld (iy+20), l
-	ld (iy+17), h
+	ld (iy + Entity.frame), h
 	ld (iy+18), $04
 	ld (iy+30), $60
 	ld a, $8A
@@ -1699,7 +1699,7 @@ _DATA_E75_:
 .db $08 $1D $01 $00 $00 $00
 
 _LABEL_E9B_:
-	ld a, (iy+17)
+	ld a, (iy + Entity.frame)
 	cp $03
 	call c, _LABEL_1027_
 	dec (iy+30)
@@ -1738,7 +1738,7 @@ _LABEL_EBF_:
 	dec a
 	ret z
 	ld (iy + Entity.xPos.low), $40
-	ld (iy+17), $01
+	ld (iy + Entity.frame), $01
 	ld (iy+5), c
 	ret
 
@@ -1781,7 +1781,7 @@ _LABEL_FC0_:
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld (iy+22), $01
-	ld (iy+17), $00
+	ld (iy + Entity.frame), $00
 	ld a, $88
 	ld (_RAM_CD00_), a
 	ret
@@ -1824,11 +1824,11 @@ _LABEL_1027_:
 	cp (iy+20)
 	jr nz, ++
 	ld (iy+19), $00
-	inc (iy+17)
-	ld a, (iy+17)
+	inc (iy + Entity.frame)
+	ld a, (iy + Entity.frame)
 	cp (iy+18)
 	jr nz, +
-	ld (iy+17), $00
+	ld (iy + Entity.frame), $00
 +:
 	scf
 	ret
@@ -1952,7 +1952,7 @@ _LABEL_110C_:
 	ld (iy+27), a
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
-	ld (iy+17), a
+	ld (iy + Entity.frame), a
 	ld (iy+18), $08
 	ld (iy+19), a
 	ret
@@ -2029,138 +2029,7 @@ _LABEL_11A8_:
 _DATA_11C8_:
 .db $CA $11 $01 $00 $00 $40
 
-; 10th entry of Jump Table from C64 (indexed by _RAM_C602_)
-updateEnemy1:
-	ld a, (iy+3)
-	or a
-	jp nz, _LABEL_1265_
-
-	ld (iy+27), $00
-	ld hl, enemy1Data
-	ld bc, $0011
-	call memcpyIYToHL
-
-	ld (iy+29), $08
-
-	; X velocity and postion
-	ld de, $0208
-
-	ld (iy+24), e
-	ld hl, _RAM_C30E_
-	inc (hl)
-	ld a, (hl)
-	cp $09
-	jr c, +
-	ld (hl), $01
-	inc hl
-	ld a, (hl)
-	cpl
-	ld (hl), a
-	dec hl
-+:
-	inc hl
-	ld a, (hl)
-	or a
-	ret z
-	ld (iy+27), $01
-	ld (iy + Entity.xPos.low), e
-	ld (iy + Entity.xVel.low), d
-	ld hl, enemy1AnimationDescriptor2
-	ld (iy + Entity.animationDescriptorPointer.low), l
-	ld (iy + Entity.animationDescriptorPointer.high), h
-	ret
-
-enemy1Data:
-.dw enemy1AnimationDescriptor1
-.db $0A ; type
-.db $01 ; data03
-.db $04 ; data04
-.db $00 ; data05
-.db $F8 ; yPos.low
-.db $00 ; yPos.high
-.db $A0 ; xPos.low
-.db $00 ; xPos.high
-.db $00 ; data0a
-.db $02 ; data0b
-.db $02 ; data0c
-.db $02 ; yVel.low
-.db $00 ; yVel.high
-.db $FE ; xVel.low
-.db $00 ; xVel.high
-
-enemy1AnimationDescriptor1:
-.dw _DATA_1258_
-.dw _DATA_124B_
-.dw _DATA_1231_
-
-enemy1AnimationDescriptor2:
-.dw _DATA_1231_
-.dw _DATA_123E_
-.dw _DATA_1258_
-
-_DATA_1231_:
-.db $04
-.db $00 $00 $64
-.db $00 $08 $65
-.db $08 $00 $66
-.db $08 $08 $67
-
-_DATA_123E_:
-.db $04
-.db $00 $00 $68
-.db $00 $08 $69
-.db $08 $00 $6A
-.db $08 $08 $6B
-
-_DATA_124B_:
-.db $04
-.db $00 $00 $6C
-.db $00 $08 $6D
-.db $08 $00 $6E
-.db $08 $08 $6F
-
-_DATA_1258_:
-.db $04
-.db $00 $00 $70
-.db $00 $08 $71
-.db $08 $00 $72
-.db $08 $08 $73
-
-_LABEL_1265_:
-	dec (iy+29)
-	call z, _LABEL_3063_
-	ld a, (iy+26)
-	or a
-	jr nz, ++
-	inc (iy+25)
-	ld a, (iy+25)
-	cp $48
-	jr c, +
-	ld (iy+19), $0C
-	ld hl, $0001
-	ld (iy+26), l
-	ld (iy + Entity.yVel.low), l
-	ld (iy + Entity.yVel.high), h
-	ld (iy + Entity.xVel.low), l
-	ld (iy + Entity.xVel.high), h
-	ld a, (iy+27)
-	or a
-	jp z, _LABEL_3063_
-	ld (iy + Entity.xVel.low), $FF
-	jp _LABEL_3063_
-
-+:
-	call _LABEL_1A2A_
-	jp updateEntityX
-
-++:
-	ld (iy+17), $02
-	ld a, (iy+19)
-	or a
-	jp z, updateEntityXY
-	ld (iy+17), $01
-	dec (iy+19)
-	jp updateEntityXY
+.INCLUDE "entities/updateEnemy1.asm"
 
 ; 11th entry of Jump Table from C64 (indexed by _RAM_C602_)
 _LABEL_12BA_:
@@ -2433,20 +2302,20 @@ _LABEL_1511_:
 	jp _LABEL_3063_
 
 ++++:
-	ld (iy+17), $01
+	ld (iy + Entity.frame), $01
 	ld a, (iy + Entity.xVel.low)
 	or a
 	ret z
-	ld (iy+17), $04
+	ld (iy + Entity.frame), $04
 	cp $03
 	ret c
-	ld (iy+17), $03
+	ld (iy + Entity.frame), $03
 	cp $FE
 	ret nc
-	ld (iy+17), $00
+	ld (iy + Entity.frame), $00
 	rlca
 	ret nc
-	ld (iy+17), $02
+	ld (iy + Entity.frame), $02
 	ret
 
 ; 14th entry of Jump Table from C64 (indexed by _RAM_C602_)
@@ -2896,12 +2765,12 @@ _DATA_18FA_:
 .db $00 $B2 $08 $08 $B3
 
 _LABEL_191F_:
-	ld (iy+17), $00
+	ld (iy + Entity.frame), $00
 	ld a, (iy+19)
 	or a
 	jr z, +
 	dec (iy+19)
-	ld (iy+17), $01
+	ld (iy + Entity.frame), $01
 +:
 	ld a, (iy+26)
 	or a
@@ -2991,7 +2860,7 @@ _LABEL_1A0B_:
 	ld a, (iy+26)
 	or a
 	call z, +
-	call _LABEL_1A2A_
+	call subData18FromYVel
 	ld a, (iy+25)
 	dec a
 	ret z
@@ -3001,8 +2870,8 @@ _LABEL_1A0B_:
 	ld de, $0040
 	jp updateEntityXWith
 
-_LABEL_1A2A_:
-	ld e, (iy+24)
+subData18FromYVel:
+	ld e, (iy + Entity.data18)
 	ld d, $00
 	ld h, (iy + Entity.yVel.low)
 	ld l, (iy + Entity.yVel.high)
@@ -3068,7 +2937,7 @@ _LABEL_1A80_:
 	jr c, +
 	inc c
 +:
-	ld (iy+17), c
+	ld (iy + Entity.frame), c
 	ret
 
 ; Data from 1A9F to 1AAD (15 bytes)
@@ -3087,7 +2956,7 @@ _LABEL_1ACC_:
 	ret z
 _LABEL_1AD4_:
 	ld (iy+24), $00
-	ld a, (iy+17)
+	ld a, (iy + Entity.frame)
 	add a, $3A
 	ld (_RAM_C145_), a
 	ld a, $0A
@@ -3539,7 +3408,7 @@ _LABEL_1E99_:
 	ld c, $0D
 	cp $8C
 	jp nz, +
-	ld (iy+17), $01
+	ld (iy + Entity.frame), $01
 	ld c, $0F
 +:
 	call _LABEL_255E_
@@ -3748,7 +3617,7 @@ _DATA_20BC_:
 
 _LABEL_2101_:
 	ld a, (_RAM_C331_)
-	ld (iy+17), a
+	ld (iy + Entity.frame), a
 	ld a, (iy+28)
 	or a
 	jp nz, _LABEL_1FA9_
@@ -3770,7 +3639,7 @@ _DATA_2123_:
 
 +:
 	ld a, (_RAM_C330_)
-	ld (iy+17), a
+	ld (iy + Entity.frame), a
 	ld a, (iy+28)
 	or a
 	jp nz, _LABEL_1FA9_
@@ -4098,7 +3967,7 @@ _LABEL_2371_:
 
 	call _LABEL_2456_
 
-	ld a, (ix + Entity.data11)
+	ld a, (ix + Entity.frame)
 	add a, a
 	add a, a
 	ld e, a
@@ -4269,7 +4138,7 @@ _LABEL_24E4_:
 	ret
 
 +++++:
-	ld a, (iy+17)
+	ld a, (iy + Entity.frame)
 	add a, a
 	ld e, a
 	ld d, $00
@@ -5722,6 +5591,7 @@ _LABEL_2FD2_:
 	ld (_RAM_C621_), a
 	ret
 
+; Related to enemy1 shoot
 _LABEL_3063_:
 	ld a, (_RAM_C316_)
 	cp $28

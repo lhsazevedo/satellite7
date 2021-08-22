@@ -17,7 +17,7 @@
     yVel.high db                        ; $0e 14
     xVel.low db                         ; $0f 15
     xVel.high db                        ; $10 16
-    data11 db                           ; $11 17
+    frame db                            ; $11 17
     data12 db                           ; $12 18
     data13 db                           ; $13 19
     data14 db                           ; $14 20

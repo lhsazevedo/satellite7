@@ -65,7 +65,7 @@ updatePlayer2:
 	xor a
 	ld (iy+24), a
 	ld (iy+25), a
-	ld (iy+17), a
+	ld (iy + Entity.frame), a
 	ld (iy+19), a
 	ret
 
