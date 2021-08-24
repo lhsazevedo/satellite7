@@ -1,3 +1,5 @@
+
+
 updateEnemy1:
 	ld a, (iy+3)
 	or a
@@ -108,11 +110,12 @@ realUpdateEnemy1:
 
 	ld a, (iy + Entity.data1a)
 	or a
-	jr nz, ++
+	jr nz, @turned
+
 	inc (iy + Entity.data19)
 	ld a, (iy + Entity.data19)
 	cp ENTITY_ENEMY_1_STATE1_TIMER
-	jr c, +
+	jr c, @turn
 
     ; First state, accelerate upwards and sideways?
 	ld (iy + Entity.data13), ENTITY_ENEMY_1_ANIMATION_TIMER
@@ -130,13 +133,13 @@ realUpdateEnemy1:
 
 ; Turn
 ; Second state, change in horizontal velocity
-+:
+@turn:
 	call subData18FromYVel
 	jp updateEntityX
 
 ; Turned
 ; Third state, already turned. Use data13 to update frame.
-++:
+@turned:
 	ld (iy + Entity.frame), $02
 	ld a, (iy + Entity.data13)
 	or a

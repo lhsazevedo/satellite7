@@ -2061,7 +2061,7 @@ _LABEL_12BA_:
 	ret
 
 _LABEL_12F7_:
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	ld c, a
 	and $37
 	ld b, a
@@ -2726,7 +2726,7 @@ _LABEL_189A_:
 	call memcpyIYToHL
 	ld (iy+24), $01
 	ld (iy + Entity.xPos.low), $00
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	rrca
 	jr c, +
 	ld (iy+24), $02
@@ -2736,7 +2736,7 @@ _LABEL_189A_:
 	ld a, (_RAM_C603_)
 	or a
 	jr z, +
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	rrca
 	jp c, ++
 +:
@@ -2843,7 +2843,7 @@ _LABEL_199B_:
 
 +:
 	ld (iy+25), $02
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	rrca
 	ret c
 	ld (iy+25), $03
@@ -2921,7 +2921,7 @@ _LABEL_1A6B_:
 	jp _LABEL_12F7_
 
 _LABEL_1A80_:
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	and $0F
 	ld c, $00
 	cp $05
@@ -2977,12 +2977,12 @@ updateEnemy2:
 	ld (iy+25), $E8
 	ld (iy+26), $50
 	ld (iy+29), $20
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	rrca
 	jr c, +
 	ld (iy+26), $30
 +:
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	rrca
 	ret c
 	ld (iy+24), $00
@@ -3044,7 +3044,7 @@ _LABEL_1BA5_:
 	ld bc, $0007
 	call memcpyIYToHL
 	ld c, $03
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	and $0F
 	cp $05
 	jr c, +
@@ -3283,7 +3283,7 @@ _LABEL_1D72_:
 	ld hl, $0308
 	call _LABEL_1049_
 	ld (iy+24), $20
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	ld bc, $FE80
 	rrca
 	jr c, +
@@ -5200,6 +5200,7 @@ _LABEL_2D01_:
 	xor a
 +:
 	ld (_RAM_C315_), a
+
 _LABEL_2D11_:
 	ld de, (_RAM_C313_)
 	push de
@@ -5215,7 +5216,7 @@ _LABEL_2D11_:
 	ld (_RAM_C313_), hl
 	ret
 
-_LABEL_2D2A_:
+rng_LABEL_2D2A_:
 	ld a, (_RAM_C12D_)
 	ld b, a
 	ld a, r
@@ -5503,7 +5504,7 @@ _LABEL_2FD2_:
 	ld a, (_RAM_C30B_)
 	cp $07
 	jr c, ++
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	and $03
 	cp $03
 	jr nz, +
@@ -5596,7 +5597,8 @@ _LABEL_3063_:
 	ld a, (_RAM_C316_)
 	cp $28
 	jr nc, ++
-	call _LABEL_2D2A_
+
+	call rng_LABEL_2D2A_
 	and $0F
 	ld c, a
 	ld a, (_RAM_C316_)
@@ -5623,7 +5625,7 @@ _LABEL_3063_:
 	ld a, (_RAM_C103_)
 	rrca
 	jr nc, +
-	call _LABEL_2D2A_
+	call rng_LABEL_2D2A_
 	rrca
 	jr nc, ++
 +:
