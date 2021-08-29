@@ -112,7 +112,7 @@ frame_parity_RAM_C311_ db
 timer_RAM_C312_ db
 half_timer_15_RAM_C313_ dw
 _RAM_C315_ db
-_RAM_C316_ db
+wave db
 .ende
 
 .enum $C318 export

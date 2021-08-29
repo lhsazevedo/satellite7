@@ -3320,7 +3320,7 @@ _LABEL_1DBE_:
 	ld bc, $0009
 	call memcpyIYToHL
 	ld (iy + Entity.yVel.high), $55
-	ld a, (_RAM_C316_)
+	ld a, (wave)
 	cp $07
 	ret z
 	cp $0F
@@ -5014,7 +5014,7 @@ _LABEL_2B98_:
 	ld hl, $0000
 	ld (_RAM_C134_), hl
 	xor a
-	ld (_RAM_C316_), a
+	ld (wave), a
 	ld (_RAM_C315_), a
 	ld hl, _RAM_C103_
 	res 7, (hl)
@@ -5047,7 +5047,7 @@ _LABEL_2B98_:
 	ld hl, $0000
 	ld (_RAM_C134_), hl
 	xor a
-	ld (_RAM_C316_), a
+	ld (wave), a
 	ld hl, $3D82
 	ld (half_timer_15_RAM_C313_), hl
 	ld b, $1C
@@ -5083,7 +5083,7 @@ _LABEL_2C40_:
 	ld de, $3E82
 	call _LABEL_2C88_
 	ld a, $01
-	ld (_RAM_C316_), a
+	ld (wave), a
 	xor a
 	jr ++
 
@@ -5198,7 +5198,7 @@ _LABEL_2D01_:
 	inc a
 	cp $0C
 	jr c, +
-	ld hl, _RAM_C316_
+	ld hl, wave
 	inc (hl)
 	xor a
 +:
@@ -5266,7 +5266,7 @@ _LABEL_2D63_:
 	bit 3, a
 	ret z
 +:
-	ld a, (_RAM_C316_)
+	ld a, (wave)
 	ld hl, _RAM_C322_
 	cp (hl)
 	jr z, +
@@ -5597,14 +5597,14 @@ _LABEL_2FD2_:
 
 ; Related to enemy1 shoot
 _LABEL_3063_:
-	ld a, (_RAM_C316_)
+	ld a, (wave)
 	cp $28
 	jr nc, ++
 
 	call rng_LABEL_2D2A_
 	and $0F
 	ld c, a
-	ld a, (_RAM_C316_)
+	ld a, (wave)
 	cp $04
 	jr nc, +
 	ld a, c
