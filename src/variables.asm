@@ -121,7 +121,7 @@ _RAM_C319_ db
 .ende
 
 .enum $C31F export
-_RAM_C31F_ db
+curvedBullet_RAM_C31F_ db
 _RAM_C320_ db
 _RAM_C321_ db
 _RAM_C322_ db

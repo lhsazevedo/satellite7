@@ -1,5 +1,6 @@
 updateBullet:
 	inc (iy + Entity.data1f)
+
 	ld a, (iy + Entity.yPos.low)
 	cp $C0
 	jp nc, putIYEntityOffscreen
@@ -8,7 +9,7 @@ updateBullet:
 	cp $B8
 	jp nc, putIYEntityOffscreen
 
-	ld a, (_RAM_C31F_)
+	ld a, (curvedBullet_RAM_C31F_)
 	or a
 	call nz, +
 

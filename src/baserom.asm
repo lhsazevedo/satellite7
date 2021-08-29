@@ -1907,7 +1907,7 @@ _LABEL_1091_:
 
 ++:
 	xor a
-	ld (_RAM_C31F_), a
+	ld (curvedBullet_RAM_C31F_), a
 	ld (_RAM_C320_), a
 	ld (_RAM_C321_), a
 	ret
@@ -2324,7 +2324,7 @@ _LABEL_156A_:
 	or a
 	jr nz, _LABEL_15B5_
 	ld a, $01
-	ld (_RAM_C31F_), a
+	ld (curvedBullet_RAM_C31F_), a
 	ld a, $FC
 	ld (_RAM_C320_), a
 	ld a, $50
