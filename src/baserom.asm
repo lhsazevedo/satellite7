@@ -2138,7 +2138,7 @@ _LABEL_13B0_:
 	dec (iy+25)
 	ret nz
 	ld (iy+25), $38
-	jp _LABEL_3063_
+	jp fire_LABEL_3063_
 
 loadPlayer1XYPosToHL:
 	ld a, (player1.xPos.low)
@@ -2244,7 +2244,7 @@ _LABEL_144B_:
 	ld a, (iy + Entity.type)
 	cp $13
 	ret z
-	jp _LABEL_3063_
+	jp fire_LABEL_3063_
 
 ; 13th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_149D_:
@@ -2299,7 +2299,7 @@ _LABEL_1511_:
 
 +++:
 	ld (iy+28), $38
-	jp _LABEL_3063_
+	jp fire_LABEL_3063_
 
 ++++:
 	ld (iy + Entity.frame), $01
@@ -2676,7 +2676,7 @@ _LABEL_1805_:
 	ld a, (_RAM_C30A_)
 	rrca
 	ret c
-	jp _LABEL_3063_
+	jp fire_LABEL_3063_
 
 _LABEL_1859_:
 	ld d, (iy+25)
@@ -3032,7 +3032,7 @@ _LABEL_1B5A_:
 	dec (iy+29)
 	ret nz
 	ld (iy+29), $80
-	jp _LABEL_3063_
+	jp fire_LABEL_3063_
 
 ; 26th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1BA5_:
@@ -3071,7 +3071,7 @@ _LABEL_1C00_:
 	dec (iy+26)
 	ret nz
 	ld (iy+26), $50
-	jp _LABEL_3063_
+	jp fire_LABEL_3063_
 
 ; 27th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1C11_:
@@ -3304,7 +3304,7 @@ _DATA_1DA4_:
 	dec (iy+24)
 	ret nz
 	ld (iy+24), $40
-	jp _LABEL_3063_
+	jp fire_LABEL_3063_
 
 ; 29th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1DBE_:
@@ -3362,7 +3362,7 @@ _LABEL_1E38_:
 	dec (iy+26)
 	jr nz, +
 	ld (iy+26), $48
-	call _LABEL_3063_
+	call fire_LABEL_3063_
 +:
 	dec (iy+25)
 	ret nz
@@ -3554,7 +3554,7 @@ _LABEL_2039_:
 	dec (iy+31)
 	jr nz, +
 	ld (iy+31), $20
-	call _LABEL_3063_
+	call fire_LABEL_3063_
 +:
 	ld hl, _RAM_C75E_
 	ld a, (hl)
@@ -5596,7 +5596,7 @@ _LABEL_2FD2_:
 	ret
 
 ; Related to enemy1 shoot
-_LABEL_3063_:
+fire_LABEL_3063_:
 	ld a, (wave)
 	cp $28
 	jr nc, ++

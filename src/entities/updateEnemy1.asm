@@ -106,7 +106,7 @@ _DATA_1258_:
 
 realUpdateEnemy1:
 	dec (iy + Entity.data1d)
-	call z, _LABEL_3063_
+	call z, fire_LABEL_3063_
 
 	ld a, (iy + Entity.data1a)
 	or a
@@ -127,9 +127,9 @@ realUpdateEnemy1:
 	ld (iy + Entity.xVel.high), h
 	ld a, (iy + Entity.data1b)
 	or a
-	jp z, _LABEL_3063_
+	jp z, fire_LABEL_3063_
 	ld (iy + Entity.xVel.low), $FF
-	jp _LABEL_3063_
+	jp fire_LABEL_3063_
 
 ; Turn
 ; Second state, change in horizontal velocity
