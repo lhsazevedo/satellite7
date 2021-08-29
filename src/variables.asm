@@ -125,8 +125,8 @@ curvedBullet_RAM_C31F_ db
 _RAM_C320_ db
 _RAM_C321_ db
 _RAM_C322_ db
-_RAM_C323_ db
-_RAM_C324_ db
+enemySpawnTimer db
+enemySpawnTimerReset db
 .ende
 
 .enum $C329 export
@@ -167,7 +167,9 @@ _RAM_C540_ db
 .enum $C600 export
 _RAM_C600_ db
 _RAM_C601_ db
-entity type db
+.ende
+
+.enum $C603 export
 _RAM_C603_ db
 _RAM_C604_ db
 _RAM_C605_ db

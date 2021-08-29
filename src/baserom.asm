@@ -547,7 +547,7 @@ _LABEL_39E_:
 	ld hl, _RAM_C133_
 	set 1, (hl)
 	ld a, $06
-	ld (entity type), a
+	ld (entities.1.type), a
 	ld a, $01
 	ld (_RAM_C605_), a
 	ld a, (_RAM_C103_)
@@ -3087,7 +3087,7 @@ _LABEL_1C11_:
 	rrca
 	jr c, ++
 --:
-	ld a, (entity type)
+	ld a, (entities.1.type)
 	cp $01
 	jr z, +
 -:
@@ -4515,7 +4515,7 @@ _LABEL_2760_:
 	ld a, (_RAM_C103_)
 	bit 0, a
 	ret z
-	ld a, (entity type)
+	ld a, (entities.1.type)
 	cp $01
 	ret nz
 	ld a, (_RAM_C622_)
@@ -5280,7 +5280,7 @@ _LABEL_2D63_:
 	ld de, _DATA_2E67_
 	add hl, de
 	ex de, hl
-	ld hl, _RAM_C323_
+	ld hl, enemySpawnTimer
 	ld a, (de)
 	ld (hl), a
 	inc hl
@@ -5311,7 +5311,7 @@ _LABEL_2D63_:
 	ret
 
 +:
-	ld a, (_RAM_C324_)
+	ld a, (enemySpawnTimerReset)
 	ld (hl), a
 	inc hl
 	inc hl
@@ -5336,12 +5336,15 @@ _LABEL_2D63_:
 	jp z, _LABEL_2E2B_
 	cp $11
 	jp z, _LABEL_2E36_
+
 _LABEL_2DCC_:
 	ld c, a
 	push de
-	call _LABEL_2DDE_
+	call findFreeEntitySlot
 	pop de
 	ret nc
+
+	; Enemy type loaded here
 	ld (hl), c
 	ex de, hl
 	ld a, c
@@ -5352,30 +5355,31 @@ _LABEL_2DCC_:
 	dec (hl)
 	ret
 
-_LABEL_2DDE_:
-	ld hl, _RAM_C742_
+findFreeEntitySlot:
+	ld hl, entities.11.type
 	ld b, $08
 -:
 	ld a, (hl)
 	or a
-	jr z, _LABEL_2DEF_
+	jr z, setCarryFlag
 	ld de, $0020
 	add hl, de
 	djnz -
 	xor a
 	ret
 
-_LABEL_2DEF_:
+setCarryFlag:
 	scf
 	ret
 
-_LABEL_2DF1_:
-	ld hl, _RAM_C742_
+; Duplicated
+findFreeEntitySlot_dup:
+	ld hl, entities.11.type
 	ld b, $08
 -:
 	ld a, (hl)
 	or a
-	jr nz, _LABEL_2DEF_
+	jr nz, setCarryFlag
 	ld de, $0020
 	add hl, de
 	djnz -
@@ -5399,7 +5403,7 @@ _LABEL_2E04_:
 
 +:
 	push hl
-	call _LABEL_2DF1_
+	call findFreeEntitySlot_dup
 	pop hl
 	ret c
 	inc (hl)
@@ -5407,7 +5411,7 @@ _LABEL_2E04_:
 	cpl
 	ld (_RAM_C308_), a
 ++:
-	call _LABEL_2DDE_
+	call findFreeEntitySlot
 	ret nc
 	ld (hl), $0D
 	ret
@@ -5415,7 +5419,7 @@ _LABEL_2E04_:
 _LABEL_2E2B_:
 	ld c, a
 	push de
-	call _LABEL_2DF1_
+	call findFreeEntitySlot_dup
 	pop de
 	ret c
 	ld a, c
@@ -5423,7 +5427,7 @@ _LABEL_2E2B_:
 
 _LABEL_2E36_:
 	push de
-	call _LABEL_2DF1_
+	call findFreeEntitySlot_dup
 	pop de
 	ret c
 	ld a, $14
@@ -5448,7 +5452,20 @@ _LABEL_2E36_:
 
 ; Data from 2E67 to 2F91 (299 bytes)
 _DATA_2E67_:
-.db $00 $00 $00 $30 $EA $00 $08 $EA $00 $14 $F7 $00 $14 $56 $EA $14
+.db $00 $00 $00
+
+; unknown
+.db $30
+
+; (unknown + entity type) x2
+; xxxttttt
+; x = ?
+; t = Entity type
+.db $E0 | $0A ; 
+.db $00
+
+.db $08 $EA
+.db $00 $14 $F7 $00 $14 $56 $EA $14
 .db $36 $F7 $20 $56 $EB $22 $5D $EA $20 $3D $EB $14 $56 $F0 $14 $56
 .db $F7 $05 $ED $00 $05 $ED $00 $10 $56 $FA $08 $56 $FA $20 $3D $F7
 .db $10 $D0 $EA $0C $56 $FA $16 $36 $EA $20 $3C $FB $14 $F2 $F2 $30
@@ -5633,7 +5650,7 @@ fire_LABEL_3063_:
 	jr nc, ++
 +:
 	ld c, $01
-	ld a, (entity type)
+	ld a, (entities.1.type)
 	cp c
 	jp z, _LABEL_2F92_
 	ld c, $02
@@ -5648,7 +5665,7 @@ fire_LABEL_3063_:
 	cp c
 	jp z, _LABEL_2F92_
 	ld c, $01
-	ld a, (entity type)
+	ld a, (entities.1.type)
 	cp c
 	ret nz
 	jp _LABEL_2F92_
