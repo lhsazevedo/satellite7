@@ -5015,7 +5015,7 @@ _LABEL_2B98_:
 	ld (_RAM_C134_), hl
 	xor a
 	ld (wave), a
-	ld (_RAM_C315_), a
+	ld (waveTimer), a
 	ld hl, _RAM_C103_
 	res 7, (hl)
 	ret
@@ -5025,7 +5025,7 @@ _LABEL_2B98_:
 	ld (timer_RAM_C312_), a
 	ld (frame_parity_RAM_C311_), a
 	ld (_RAM_C310_), a
-	ld (_RAM_C315_), a
+	ld (waveTimer), a
 	ld a, (_RAM_C151_)
 	bit 3, a
 	jr nz, _LABEL_2C40_
@@ -5194,7 +5194,7 @@ extractMapBlock:
 .db $EB $18 $F0
 
 _LABEL_2D01_:
-	ld a, (_RAM_C315_)
+	ld a, (waveTimer)
 	inc a
 	cp $0C
 	jr c, +
@@ -5202,7 +5202,7 @@ _LABEL_2D01_:
 	inc (hl)
 	xor a
 +:
-	ld (_RAM_C315_), a
+	ld (waveTimer), a
 
 _LABEL_2D11_:
 	ld de, (half_timer_15_RAM_C313_)

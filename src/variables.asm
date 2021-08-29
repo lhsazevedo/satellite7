@@ -111,7 +111,7 @@ _RAM_C310_ db
 frame_parity_RAM_C311_ db
 timer_RAM_C312_ db
 half_timer_15_RAM_C313_ dw
-_RAM_C315_ db
+waveTimer db
 wave db
 .ende
 
