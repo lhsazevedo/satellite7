@@ -4986,19 +4986,22 @@ _LABEL_2B98_:
 	ret nc
 	rrca
 	jp c, ++
-	ld a, (_RAM_C311_)
+
+	ld a, (frame_parity_RAM_C311_)
 	inc a
-	ld (_RAM_C311_), a
+	ld (frame_parity_RAM_C311_), a
+
 	cp $01
 	jr z, +
+
 	cp $03
 	ret c
 	xor a
-	ld (_RAM_C311_), a
+	ld (frame_parity_RAM_C311_), a
 	jp _LABEL_2C66_
 
 +:
-	ld a, (_RAM_C312_)
+	ld a, (timer_RAM_C312_)
 	or a
 	ret nz
 	ld de, $048C
@@ -5019,8 +5022,8 @@ _LABEL_2B98_:
 
 ++:
 	xor a
-	ld (_RAM_C312_), a
-	ld (_RAM_C311_), a
+	ld (timer_RAM_C312_), a
+	ld (frame_parity_RAM_C311_), a
 	ld (_RAM_C310_), a
 	ld (_RAM_C315_), a
 	ld a, (_RAM_C151_)
@@ -5046,7 +5049,7 @@ _LABEL_2B98_:
 	xor a
 	ld (_RAM_C316_), a
 	ld hl, $3D82
-	ld (_RAM_C313_), hl
+	ld (half_timer_15_RAM_C313_), hl
 	ld b, $1C
 	ld de, $3802
 -:
@@ -5073,7 +5076,7 @@ _LABEL_2C40_:
 	cp $3E
 	ret nz
 	ld hl, $3E02
-	ld (_RAM_C313_), hl
+	ld (half_timer_15_RAM_C313_), hl
 	ld hl, _RAM_C151_
 	res 1, (hl)
 	set 0, (hl)
@@ -5085,14 +5088,14 @@ _LABEL_2C40_:
 	jr ++
 
 _LABEL_2C66_:
-	ld a, (_RAM_C312_)
+	ld a, (timer_RAM_C312_)
 	inc a
 	cp $10
 	jr c, +
 	call _LABEL_2D01_
 	xor a
 +:
-	ld (_RAM_C312_), a
+	ld (timer_RAM_C312_), a
 	ld a, (_RAM_C310_)
 	dec a
 	cp $FF
@@ -5202,7 +5205,7 @@ _LABEL_2D01_:
 	ld (_RAM_C315_), a
 
 _LABEL_2D11_:
-	ld de, (_RAM_C313_)
+	ld de, (half_timer_15_RAM_C313_)
 	push de
 	call _LABEL_2C88_
 	pop hl
@@ -5213,7 +5216,7 @@ _LABEL_2D11_:
 	jr nz, +
 	ld hl, $3E82
 +:
-	ld (_RAM_C313_), hl
+	ld (half_timer_15_RAM_C313_), hl
 	ret
 
 rng_LABEL_2D2A_:

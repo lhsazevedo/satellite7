@@ -77,6 +77,9 @@ _RAM_C14C_ dw
 _RAM_C14E_ db
 _RAM_C14F_ db
 _RAM_C150_ db
+
+; xxxxxxxs
+; s = Enable vertical scroll
 _RAM_C151_ db
 _RAM_C152_ db
 .ende
@@ -105,9 +108,9 @@ enemy1Counter db
 
 .enum $C310 export
 _RAM_C310_ db
-_RAM_C311_ db
-_RAM_C312_ db
-_RAM_C313_ dw
+frame_parity_RAM_C311_ db
+timer_RAM_C312_ db
+half_timer_15_RAM_C313_ dw
 _RAM_C315_ db
 _RAM_C316_ db
 .ende
