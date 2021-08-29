@@ -1,4 +1,4 @@
-; 4th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 4th entry of Jump Table from C64 (indexed by entity type)
 updateBomb:
 	ld d, $00
 	ld e, (iy+24)

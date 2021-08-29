@@ -167,7 +167,7 @@ _RAM_C540_ db
 .enum $C600 export
 _RAM_C600_ db
 _RAM_C601_ db
-_RAM_C602_ db
+entity type db
 _RAM_C603_ db
 _RAM_C604_ db
 _RAM_C605_ db

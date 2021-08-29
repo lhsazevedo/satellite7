@@ -547,7 +547,7 @@ _LABEL_39E_:
 	ld hl, _RAM_C133_
 	set 1, (hl)
 	ld a, $06
-	ld (_RAM_C602_), a
+	ld (entity type), a
 	ld a, $01
 	ld (_RAM_C605_), a
 	ld a, (_RAM_C103_)
@@ -1618,7 +1618,7 @@ updateEntities:
 	ex de, hl
 	jp (hl)
 
-; Jump Table from C64 to CA7 (34 entries, indexed by _RAM_C602_)
+; Jump Table from C64 to CA7 (34 entries, indexed by entity type)
 entityUpdatersPointers:
 .dw updatePlayer1
 .dw updatePlayer2
@@ -1659,7 +1659,7 @@ entityUpdatersPointers:
 .INCLUDE "entities/updateBullet.asm"
 .INCLUDE "entities/updateBomb.asm"
 
-; 5th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 5th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_E2C_:
 	ld a, (iy+22)
 	or a
@@ -1720,7 +1720,7 @@ _LABEL_E9B_:
 	res 6, (hl)
 	ret
 
-; 6th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 6th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_EBF_:
 	ld a, (iy+3)
 	or a
@@ -1770,7 +1770,7 @@ _LABEL_F48_:
 
 .INCLUDE "entities/updateExplosion.asm"
 
-; 9th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 9th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_FC0_:
 	ld a, (iy+22)
 	or a
@@ -1965,7 +1965,7 @@ _LABEL_1149_:
 	pop iy
 	ret
 
-; 7th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 7th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1155_:
 	ld a, (iy+3)
 	or a
@@ -2008,7 +2008,7 @@ _LABEL_1183_:
 _DATA_11A2_:
 .db $A4 $11 $01 $00 $00 $05
 
-; 32nd entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 32nd entry of Jump Table from C64 (indexed by entity type)
 _LABEL_11A8_:
 	ld a, (iy+3)
 	or a
@@ -2031,7 +2031,7 @@ _DATA_11C8_:
 
 .INCLUDE "entities/updateEnemy1.asm"
 
-; 11th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 11th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_12BA_:
 	ld a, (iy+3)
 	or a
@@ -2154,7 +2154,7 @@ loadPlayer2XYPosToHL:
 	ld l, a
 	ret
 
-; 12th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 12th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_13CD_:
 	ld a, (iy+3)
 	or a
@@ -2246,7 +2246,7 @@ _LABEL_144B_:
 	ret z
 	jp _LABEL_3063_
 
-; 13th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 13th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_149D_:
 	ld a, (iy+3)
 	or a
@@ -2318,7 +2318,7 @@ _LABEL_1511_:
 	ld (iy + Entity.frame), $02
 	ret
 
-; 14th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 14th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_156A_:
 	ld a, (iy+3)
 	or a
@@ -2348,7 +2348,7 @@ _LABEL_15B5_:
 	ld (_RAM_C320_), a
 	jp _LABEL_1027_
 
-; 15th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 15th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_15C4_:
 	ld a, (iy+3)
 	or a
@@ -2582,7 +2582,7 @@ _LABEL_1760_:
 	ld (_RAM_C11B_), a
 	ret
 
-; 16th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 16th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1770_:
 	ld a, (iy+3)
 	or a
@@ -2716,7 +2716,7 @@ _LABEL_1889_:
 	ld e, a
 	jp _LABEL_26AC_
 
-; 18th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 18th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_189A_:
 	ld a, (iy+3)
 	or a
@@ -2806,7 +2806,7 @@ _LABEL_191F_:
 	ld (iy + Entity.yVel.high), $80
 	ret
 
-; 19th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 19th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_198A_:
 	ld a, (iy+3)
 	or a
@@ -2816,7 +2816,7 @@ _LABEL_198A_:
 	jp z, _LABEL_144B_
 	jp _LABEL_15FE_
 
-; 21st entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 21st entry of Jump Table from C64 (indexed by entity type)
 _LABEL_199B_:
 	ld a, (iy+3)
 	or a
@@ -2909,7 +2909,7 @@ subData18FromYVel:
 	ld (iy+26), $01
 	ret
 
-; 22nd entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 22nd entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1A6B_:
 	ld a, (iy+3)
 	or a
@@ -2965,7 +2965,7 @@ _LABEL_1AD4_:
 	ld (_RAM_C146_), a
 	jp putIYEntityOffscreen
 
-; 23rd entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 23rd entry of Jump Table from C64 (indexed by entity type)
 updateEnemy2:
 	ld a, (iy+3)
 	or a
@@ -3034,7 +3034,7 @@ _LABEL_1B5A_:
 	ld (iy+29), $80
 	jp _LABEL_3063_
 
-; 26th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 26th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1BA5_:
 	ld a, (iy+3)
 	or a
@@ -3073,7 +3073,7 @@ _LABEL_1C00_:
 	ld (iy+26), $50
 	jp _LABEL_3063_
 
-; 27th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 27th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1C11_:
 	ld a, (iy+3)
 	or a
@@ -3087,7 +3087,7 @@ _LABEL_1C11_:
 	rrca
 	jr c, ++
 --:
-	ld a, (_RAM_C602_)
+	ld a, (entity type)
 	cp $01
 	jr z, +
 -:
@@ -3271,7 +3271,7 @@ _LABEL_1D56_:
 _DATA_1D64_:
 .db $3F $14 $1B $01 $01 $00 $F0 $00 $58 $00 $19 $01 $01 $01
 
-; 28th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 28th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1D72_:
 	ld a, (iy+3)
 	or a
@@ -3306,7 +3306,7 @@ _DATA_1DA4_:
 	ld (iy+24), $40
 	jp _LABEL_3063_
 
-; 29th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 29th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1DBE_:
 	ld a, (iy+3)
 	or a
@@ -3386,7 +3386,7 @@ _LABEL_1E38_:
 _DATA_1E82_:
 .db $03 $01 $02 $01
 
-; 34th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 34th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1E86_:
 	ld a, (iy+3)
 	or a
@@ -3398,7 +3398,7 @@ _LABEL_1E86_:
 _DATA_1E93_:
 .db $95 $1E $01 $04 $04 $21
 
-; 33rd entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 33rd entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1E99_:
 	ld a, (iy+3)
 	or a
@@ -3427,7 +3427,7 @@ _DATA_1EC8_:
 .db $00 $CF $00 $08 $D0 $00 $10 $D1 $08 $00 $D2 $08 $08 $D3 $08 $10
 .db $D4
 
-; 17th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 17th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1EE9_:
 	ld a, (iy+3)
 	or a
@@ -3517,7 +3517,7 @@ _LABEL_1FA9_:
 	ld (iy+27), $01
 	ret
 
-; 20th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 20th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_2011_:
 	ld a, (iy+3)
 	or a
@@ -3597,7 +3597,7 @@ _LABEL_2039_:
 	ld (hl), b
 	ret
 
-; 24th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 24th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_20AA_:
 	ld a, (iy+3)
 	or a
@@ -3624,7 +3624,7 @@ _LABEL_2101_:
 	ld hl, $0808
 	jp _LABEL_2039_
 
-; 25th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 25th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_2114_:
 	ld a, (iy+3)
 	or a
@@ -3646,7 +3646,7 @@ _DATA_2123_:
 	ld hl, $0810
 	jp _LABEL_2039_
 
-; 30th entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 30th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_213F_:
 	ld a, (iy+3)
 	or a
@@ -3700,7 +3700,7 @@ _DATA_214E_:
 	ld l, a
 	jp _LABEL_2039_
 
-; 31st entry of Jump Table from C64 (indexed by _RAM_C602_)
+; 31st entry of Jump Table from C64 (indexed by entity type)
 _LABEL_21AE_:
 	ld a, (iy+3)
 	or a
@@ -4515,7 +4515,7 @@ _LABEL_2760_:
 	ld a, (_RAM_C103_)
 	bit 0, a
 	ret z
-	ld a, (_RAM_C602_)
+	ld a, (entity type)
 	cp $01
 	ret nz
 	ld a, (_RAM_C622_)
@@ -5633,7 +5633,7 @@ _LABEL_3063_:
 	jr nc, ++
 +:
 	ld c, $01
-	ld a, (_RAM_C602_)
+	ld a, (entity type)
 	cp c
 	jp z, _LABEL_2F92_
 	ld c, $02
@@ -5648,7 +5648,7 @@ _LABEL_3063_:
 	cp c
 	jp z, _LABEL_2F92_
 	ld c, $01
-	ld a, (_RAM_C602_)
+	ld a, (entity type)
 	cp c
 	ret nz
 	jp _LABEL_2F92_
