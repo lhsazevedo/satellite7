@@ -4,7 +4,8 @@ ENTITY_SIZE = $20
 INITIAL_LIVES = $02
 
 ; Entities
-ENTITY_ENEMY_1 = $0A
+ENTITY_ENEMY_1  = $0A
+ENTITY_POWER_UP = $16 
 
 
 ; Entity config

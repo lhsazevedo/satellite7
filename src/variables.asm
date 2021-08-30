@@ -2,7 +2,7 @@
 _RAM_C000_ dsb $100
 _RAM_C100_ db
 _RAM_C101_ db
-_RAM_C102_ db
+state_RAM_C102_ db
 _RAM_C103_ db
 _RAM_C104_ db
 p1Lives db
@@ -124,7 +124,7 @@ _RAM_C319_ db
 curvedBullet_RAM_C31F_ db
 _RAM_C320_ db
 _RAM_C321_ db
-_RAM_C322_ db
+wave_RAM_C322_ db
 enemySpawnTimer db
 enemySpawnTimerReset db
 .ende

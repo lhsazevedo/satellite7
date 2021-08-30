@@ -141,7 +141,7 @@ _LABEL_69_:
 	ld (_RAM_C101_), a
 	call writeVDPCommandWord
 	ld a, $01
-	ld (_RAM_C102_), a
+	ld (state_RAM_C102_), a
 _LABEL_EB_:
 	di
 	call _LABEL_13C_
@@ -163,7 +163,7 @@ _LABEL_10B_:
 	jp z, _LABEL_10B_
 	xor a
 	ld (_RAM_C107_), a
-	ld a, (_RAM_C102_)
+	ld a, (state_RAM_C102_)
 	rrca
 	jp c, _LABEL_6DC_
 	rrca
@@ -280,7 +280,7 @@ handleInterrupt:
 	push iy
 	ld a, $FF
 	ld (_RAM_C107_), a
-	ld a, (_RAM_C102_)
+	ld a, (state_RAM_C102_)
 	cp $10
 	jr z, _LABEL_211_
 	call _LABEL_B93_
@@ -329,21 +329,21 @@ _LABEL_211_:
 
 _LABEL_21B_:
 	push af
-	ld a, (_RAM_C102_)
+	ld a, (state_RAM_C102_)
 	cp $10
 	jr z, +
 	cp $08
 	jr nz, _LABEL_22F_
 	ld (_RAM_C11E_), a
 	ld a, $10
-	ld (_RAM_C102_), a
+	ld (state_RAM_C102_), a
 _LABEL_22F_:
 	pop af
 	retn
 
 +:
 	ld a, (_RAM_C11E_)
-	ld (_RAM_C102_), a
+	ld (state_RAM_C102_), a
 	ld a, (_RAM_C14A_)
 	cp $03
 	jr nz, +
@@ -442,7 +442,7 @@ _LABEL_283_:
 	ld (_RAM_C133_), a
 +++:
 	ld a, $01
-	ld (_RAM_C102_), a
+	ld (state_RAM_C102_), a
 	jp _LABEL_EB_
 
 ++++:
@@ -473,7 +473,7 @@ _LABEL_324_:
 	ret
 
 _LABEL_345_:
-	ld a, (_RAM_C102_)
+	ld a, (state_RAM_C102_)
 	cp $04
 	jr z, +
 	ld hl, _RAM_C123_
@@ -734,7 +734,7 @@ _LABEL_55B_:
 	jp nz, _LABEL_283_
 +:
 	ld a, $01
-	ld (_RAM_C102_), a
+	ld (state_RAM_C102_), a
 	jp _LABEL_EB_
 
 ++:
@@ -829,7 +829,7 @@ _LABEL_681_:
 	cp $03
 	jp c, _LABEL_10B_
 	ld a, $04
-	ld (_RAM_C102_), a
+	ld (state_RAM_C102_), a
 	xor a
 	ld (_RAM_C10E_), a
 	jp _LABEL_EB_
@@ -863,7 +863,7 @@ _LABEL_681_:
 	ret z
 	set 0, (hl)
 ++:
-	ld hl, _RAM_C102_
+	ld hl, state_RAM_C102_
 	ld (hl), $08
 	ret
 
@@ -907,7 +907,7 @@ _LABEL_70E_:
 	ret z
 ++++:
 	ld a, $02
-	ld (_RAM_C102_), a
+	ld (state_RAM_C102_), a
 	or a
 	ret
 
@@ -1587,7 +1587,7 @@ _LABEL_BFC_:
 ++:
 	ld (_RAM_C104_), a
 	ld a, $FF
-	ld (_RAM_C322_), a
+	ld (wave_RAM_C322_), a
 	ret
 
 updateEntities:
@@ -4209,7 +4209,7 @@ _LABEL_24E4_:
 	ret
 
 _LABEL_255E_:
-	ld a, (_RAM_C102_)
+	ld a, (state_RAM_C102_)
 	bit 2, a
 	ret nz
 	ld de, _RAM_C123_
@@ -5036,8 +5036,8 @@ _LABEL_2B98_:
 	ld (hl), $00
 	ld bc, $0040
 	ldir
-	ld de, _RAM_C322_ + 1
-	ld hl, _RAM_C322_
+	ld de, wave_RAM_C322_ + 1
+	ld hl, wave_RAM_C322_
 	ld (hl), $00
 	ld bc, $0007
 	ldir
@@ -5260,31 +5260,39 @@ _LABEL_2D4F_:
 	ret
 
 _LABEL_2D63_:
-	ld a, (_RAM_C102_)
+	ld a, (state_RAM_C102_)
+
+    ; Return if not demo or gameplay
 	bit 2, a
 	jr nz, +
+
 	bit 3, a
 	ret z
 +:
+
 	ld a, (wave)
-	ld hl, _RAM_C322_
+	ld hl, wave_RAM_C322_
 	cp (hl)
 	jr z, +
+
+    ; Update C322
 	ld (hl), a
-	ld l, a
+
+	ld l, a    
 	ld h, $00
 	add hl, hl
 	ld e, a
 	ld d, $00
 	add hl, de
-	ld de, _DATA_2E67_
+	ld de, waves
 	add hl, de
 	ex de, hl
 	ld hl, enemySpawnTimer
 	ld a, (de)
 	ld (hl), a
 	inc hl
-	ld (hl), a
+	ld (hl), a ; enemySpawnTimerReset
+
 	ld b, $02
 -:
 	inc de
@@ -5294,11 +5302,11 @@ _LABEL_2D63_:
 	rlca
 	rlca
 	rlca
-	ld (hl), a
+	ld (hl), a ; Enemy flags?
 	inc hl
 	ld a, (de)
 	and $1F
-	ld (hl), a
+	ld (hl), a ; Enemy Type
 	djnz -
 	ret
 
@@ -5450,40 +5458,10 @@ _LABEL_2E36_:
 	res 0, (hl)
 	ret
 
-; Data from 2E67 to 2F91 (299 bytes)
-_DATA_2E67_:
-.db $00 $00 $00
 
-; unknown
-.db $30
+.INCLUDE "data/waves.asm"
 
-; (unknown + entity type) x2
-; xxxttttt
-; x = ?
-; t = Entity type
-.db $E0 | $0A ; 
-.db $00
-
-.db $08 $EA
-.db $00 $14 $F7 $00 $14 $56 $EA $14
-.db $36 $F7 $20 $56 $EB $22 $5D $EA $20 $3D $EB $14 $56 $F0 $14 $56
-.db $F7 $05 $ED $00 $05 $ED $00 $10 $56 $FA $08 $56 $FA $20 $3D $F7
-.db $10 $D0 $EA $0C $56 $FA $16 $36 $EA $20 $3C $FB $14 $F2 $F2 $30
-.db $31 $00 $14 $56 $F2 $00 $EC $00 $00 $EC $00 $10 $76 $F5 $10 $56
-.db $FA $05 $ED $00 $14 $F7 $F7 $10 $3C $FA $05 $ED $00 $20 $7D $F7
-.db $18 $2E $EA $18 $56 $EB $20 $5D $F2 $20 $5D $F5 $00 $F3 $00 $0C
-.db $EA $00 $08 $FB $FA $12 $96 $F0 $05 $ED $00 $00 $EC $00 $10 $F5
-.db $F5 $0C $56 $EA $14 $F2 $F2 $30 $31 $00 $00 $F3 $00 $12 $2E $FA
-.db $0C $FA $00 $08 $56 $FA $14 $F2 $F7 $12 $F2 $EB $18 $9C $F5 $00
-.db $F3 $00 $10 $76 $FA $40 $3D $FA $40 $3D $F2 $08 $FA $00 $07 $76
-.db $FA $10 $F5 $F5 $05 $ED $00 $10 $56 $EA $05 $ED $00 $1C $9D $F2
-.db $40 $31 $00 $12 $56 $F0 $1C $9D $F0 $40 $31 $00 $12 $76 $F0 $18
-.db $3C $F5 $22 $F6 $36 $08 $FA $00 $0C $FA $00 $0C $F5 $00 $28 $3D
-.db $FA $24 $3D $F7 $10 $F5 $F5 $10 $F0 $EA $0C $F0 $EA $10 $2E $FA
-.db $14 $9C $EB $10 $FB $F2 $12 $F0 $F2 $10 $F7 $F2 $0C $F7 $F2 $00
-.db $EC $00 $10 $FB $F0 $05 $ED $00 $0C $F7 $F7 $0C $EB $EA $18 $9C
-.db $76 $0C $F2 $FA $08 $FA $00 $00 $EC $00 $10 $F2 $00 $00 $31 $00
-.db $20 $5C $F6 $00 $00 $00 $3A $0D $C3 $B7 $C0
+.db $B7 $C0
 
 _LABEL_2F92_:
 	ld b, $08
