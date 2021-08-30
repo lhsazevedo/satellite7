@@ -47,8 +47,10 @@ _LABEL_8_:
 	ld c, a
 	ret
 
-; Data from 14 to 17 (4 bytes)
-.db $06 $05 $13 $05
+    ; Unused code
+	ld b, $05
+	inc de
+	dec b
 
 writeToVdpAddress:
 	push af
@@ -74,8 +76,10 @@ _LABEL_20_:
 	jp nz, -
 	ret
 
-; Data from 36 to 37 (2 bytes)
-.db $57 $21
+    ; Unused code
+    ld d, a
+
+.db $21
 
 handleInterruptEntrypoint:
 	jp handleInterrupt
@@ -176,13 +180,17 @@ _LABEL_10B_:
 	jp c, _LABEL_261_
 	jp _LABEL_EB_
 
-; Data from 131 to 13B (11 bytes)
-.db $11 $01 $C3 $21 $00 $C3 $01 $FF $01 $18 $09
+    ; Unused code 
+    ld de, _RAM_C301_
+    ld hl, _RAM_C300_
+    ld bc, $01FF
+    jr +
 
 _LABEL_13C_:
 	ld de, _RAM_C133_ + 1
 	ld hl, _RAM_C133_
 	ld bc, $0FCD
++:
 	ld (hl), $00
 	ldir
 	ret
@@ -1924,10 +1932,45 @@ updateEntityXY:
 	call updateEntityX
 	jp updateEntityY
 
-; Data from 10DE to 110B (46 bytes)
-.db $CD $2A $2D $E6 $0F $FE $05 $D8 $FD $36 $08 $30 $FE $0A $D8 $FD
-.db $36 $08 $80 $C9 $04 $00 $00 $1E $00 $08 $07 $08 $00 $A5 $08 $08
-.db $A6 $04 $00 $00 $68 $00 $08 $69 $08 $00 $6A $08 $08 $6B
+    ; Unused code
+    call rng_LABEL_2D2A_
+    and $0F
+    cp $05
+    ret c
+
+    ld (iy + Entity.xPos.low), $30
+    cp $0A
+    ret c
+
+    ld (iy + Entity.xPos.low), $80
+    ret
+
+    ; Unused code
+    inc b
+    nop
+    nop
+    ld e, $00
+    ex af,af'
+    rlca
+    ex af,af'
+    nop
+    and l
+    ex af,af'
+    ex af,af'
+    and (hl)
+    inc b
+    nop
+    nop
+    ld l,b
+    nop
+    ex af,af'
+    ld l,c
+    ex af,af'
+    nop
+    ld l,d
+    ex af,af'
+    ex af,af'
+    ld l,e
 
 _LABEL_110C_:
 	ld iy, _RAM_C600_
@@ -4278,10 +4321,48 @@ _LABEL_255E_:
 	ld (_RAM_C113_), a
 	ret
 
-; Data from 25C4 to 25F0 (45 bytes)
-.db $01 $00 $00 $00 $10 $00 $00 $30 $00 $00 $50 $00 $00 $70 $00 $00
-.db $00 $01 $20 $00 $00 $30 $00 $00 $50 $00 $00 $10 $00 $00 $00 $01
-.db $00 $50 $01 $00 $00 $03 $00 $00 $05 $00 $00 $15 $00
+
+    ; Unused code
+    ld bc, $0000
+    nop
+    djnz +
++:
+    nop
+    jr nc, +
+
++:
+    nop
+    ld d,b
+    nop
+    nop
+    ld (hl),b
+    nop
+    nop
+    nop
+    ld bc, $0020
+    nop
+    jr nc, +
+
++:
+    nop
+    ld d,b
+    nop
+    nop
+    djnz +
+
++:
+    nop
+    nop
+    ld bc, $5000
+    ld bc, $0000
+    inc bc
+    nop
+    nop
+    dec b
+    nop
+    nop
+    dec d
+    nop
 
 _LABEL_25F1_:
 	ld de, _RAM_C123_
@@ -4740,11 +4821,35 @@ _LABEL_28B9_:
 	cp $03
 	jp (hl)
 
-; Data from 2918 to 2949 (50 bytes)
-.db $D9 $29 $D9 $29 $FC $29 $DA $29 $F1 $29 $01 $2A $ED $29 $D9 $29
-.db $01 $2A $7D $2A $01 $2A $14 $2A $86 $2A $01 $2A $D9 $29 $FC $29
-.db $7D $2A $7D $2A $FC $29 $FC $29 $55 $2A $5B $2A $74 $2A $74 $2A
-.db $D9 $29
+; Unused code
+    exx
+    add hl, hl
+    exx
+    add hl, hl
+    call m, $DA29	; Possibly invalid
+    add hl, hl
+    pop af
+    add hl, hl
+    ld bc, $ED2A
+    add hl, hl
+    exx
+    add hl, hl
+    ld bc, _DATA_7D29_ + 1	; _DATA_7D29_ + 1 = $7D2A
+    ld hl, ($2A01)
+    inc d
+    ld hl, ($2A86)
+    ld bc, $D92A
+    add hl, hl
+    call m, $7D29	; Possibly invalid
+    ld hl, ($2A7D)
+    call m, $FC29	; Possibly invalid
+    add hl, hl
+    ld d, l
+    ld hl, ($2A5B)
+    ld (hl), h
+    ld hl, ($2A74)
+    exx
+    add hl, hl
 
 _LABEL_294A_:
 	ld a, (_RAM_C103_)
@@ -4826,20 +4931,116 @@ _LABEL_29C3_:
 	ld (_RAM_C113_), a
 	ret
 
-; Data from 29D9 to 2A99 (193 bytes)
-.db $C9 $C0 $FD $7E $05 $DD $77 $05 $FD $34 $18 $DD $36 $1F $FF $0E
-.db $08 $C3 $5E $25 $C0 $C3 $56 $10 $C0 $DD $7E $19 $B7 $C8 $0E $0A
-.db $C3 $04 $2A $0E $07 $C3 $03 $2A $0E $08 $C0 $FD $7E $05 $DD $77
-.db $05 $FD $34 $18 $DD $36 $02 $08 $C3 $5E $25 $C0 $0E $0A $CD $5E
-.db $25 $21 $3F $14 $DD $75 $00 $DD $74 $01 $DD $36 $1C $01 $3E $82
-.db $32 $00 $CD $DD $36 $18 $01 $FD $7E $08 $C6 $04 $4F $CD $56 $10
-.db $DD $36 $0D $FD $DD $36 $0E $00 $DD $36 $0F $00 $DD $36 $10 $80
-.db $DD $7E $08 $C6 $08 $B9 $D0 $DD $36 $0F $FF $C9 $C8 $0E $0E $C3
-.db $5E $2A $C8 $0E $0B $FD $7E $11 $FE $03 $C0 $CD $5E $25 $FD $7E
-.db $05 $DD $77 $05 $DD $36 $02 $09 $C3 $56 $10 $C0 $3A $7E $C7 $B7
-.db $C0 $C3 $7E $2A $C0 $3E $82 $32 $00 $CD $C3 $56 $10 $C0 $3A $5E
-.db $C7 $B7 $28 $F1 $21 $2F $C3 $7E $B7 $28 $19 $35 $28 $16 $CD $56
-.db $10
+; Unused code
+    ret
+
+    ret nz
+    ld a, (iy+5)
+    ld (ix+5), a
+    inc (iy+24)
+    ld (ix+31), $FF
+    ld c, $08
+    jp _LABEL_255E_
+
+; Unused code
+_LABEL_29ED_:
+    ret nz
+    jp putIYEntityOffscreen
+
+; Unused code
+_LABEL_29F1_:
+    ret nz
+    ld a, (ix+25)
+    or a
+    ret z
+    ld c, $0A
+    jp ++
+    ld c, $07
+    jp +
+
+; Unused code
+_LABEL_2A01_:	
+		ld c, $08
++:	
+		ret nz
+++:	
+		ld a, (iy+5)
+		ld (ix+5), a
+		inc (iy+24)
+		ld (ix+2), $08
+		jp _LABEL_255E_
+
+; Unused code
+_LABEL_2A14_:	
+		ret nz
+		ld c, $0A
+		call _LABEL_255E_
+		ld hl, _DATA_143F_
+		ld (ix+0), l
+		ld (ix+1), h
+		ld (ix+28), $01
+		ld a, $82
+		ld (_RAM_CD00_), a
+		ld (ix+24), $01
+		ld a, (iy+8)
+		add a, $04
+		ld c, a
+		call putIYEntityOffscreen
+		ld (ix+13), $FD
+		ld (ix+14), $00
+		ld (ix+15), $00
+		ld (ix+16), $80
+		ld a, (ix+8)
+		add a, $08
+		cp c
+		ret nc
+		ld (ix+15), $FF
+		ret
+		ret z
+		ld c, $0E
+		jp +
+
+; Unused code
+_LABEL_2A5B_:	
+    ret z
+    ld c, $0B
+
++:
+		ld a, (iy+17)
+		cp $03
+		ret nz
+		call _LABEL_255E_
+		ld a, (iy+5)
+		ld (ix+5), a
+		ld (ix+2), $09
+		jp putIYEntityOffscreen
+		ret nz
+		ld a, (entities.12.data1e)
+		or a
+		ret nz
+		jp _LABEL_2A7E_
+
+        ret nz
+
+; Unused code
+_LABEL_2A7E_:
+		ld a, $82
+		ld (_RAM_CD00_), a
+		jp putIYEntityOffscreen
+
+; Unused code
+_LABEL_2A86_:	
+		ret nz
+		ld a, (entities.11.data1e)
+		or a
+		jr z, _LABEL_2A7E_
+		ld hl, _RAM_C32F_
+		ld a, (hl)
+		or a
+		jr z, +
+		dec (hl)
+		jr z, +
+		call putIYEntityOffscreen
 
 _LABEL_2A9A_:
 	ld a, (_RAM_C32F_)
@@ -4852,11 +5053,28 @@ _LABEL_2A9A_:
 	ld (_RAM_C331_), a
 	ret
 
-; Data from 2AAD to 2AE5 (57 bytes)
-.db $21 $33 $C1 $CB $AE $21 $51 $C1 $CB $C6 $3E $0E $32 $18 $C1 $3E
-.db $01 $32 $71 $C7 $32 $7C $C7 $32 $9C $C7 $32 $BC $C7 $32 $DC $C7
-.db $32 $FC $C7 $FD $7E $05 $32 $45 $C7 $3E $08 $32 $42 $C7 $CD $9A
-.db $2A $CD $56 $10 $0E $0E $C3 $5E $25
++:	
+    ld hl, _RAM_C133_
+    res 5, (hl)
+    ld hl, _RAM_C151_
+    set 0, (hl)
+    ld a, $0E
+    ld (_RAM_C117_ + 1), a
+    ld a, $01
+    ld (entities.12.frame), a
+    ld (entities.12.data1c), a
+    ld (entities.13.data1c), a
+    ld (entities.14.data1c), a
+    ld (entities.15.data1c), a
+    ld (entities.16.data1c), a
+    ld a, (iy+5)
+    ld (entities.11.data05), a
+    ld a, $08
+    ld (entities.11.type), a
+    call _LABEL_2A9A_
+    call putIYEntityOffscreen
+    ld c, $0E
+    jp _LABEL_255E_
 
 _LABEL_2AE6_:
 	ld a, (_RAM_C6BD_)

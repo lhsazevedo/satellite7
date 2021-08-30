@@ -5,7 +5,7 @@
 ; - Entity A count and type
 ; - Entity B count and type
 ;
-; Entity count and type byte is divided as following::
+; Entity count and type byte is divided as follows:
 ; cccttttt
 ; c = Entity cuont
 ; t = Entity type
