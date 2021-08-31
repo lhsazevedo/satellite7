@@ -84,7 +84,6 @@ _LABEL_20_:
 handleInterruptEntrypoint:
 	jp handleInterrupt
 
-; Data from 3B to 5A (32 bytes)
 palette:
 .db $0A $06 $05 $00 $29 $25 $3A $3F $34 $3B $03 $0F $0C $08 $0B $02
 .db $00 $00 $03 $00 $3F $3F $3A $02 $0B $0C $08 $0F $34 $22 $21 $02
@@ -144,40 +143,56 @@ _LABEL_69_:
 	ld a, e
 	ld (_RAM_C101_), a
 	call writeVDPCommandWord
-	ld a, $01
-	ld (state_RAM_C102_), a
+
+	ld a, STATE_MARK_3_LOGO
+	ld (state), a
+
 _LABEL_EB_:
 	di
 	call _LABEL_13C_
 	call _LABEL_3C65_
 	ld a, $01
-	ld (_RAM_C10B_), a
+	ld (_RAM_C10B_), a ; Related to _DATA_745_ jumptable
 	ld a, $06
-	ld (_RAM_C110_), a
+	ld (_RAM_C110_), a ; Related to _DATA_745_ jumptable
 	xor a
 	ld (_RAM_C133_), a
 	ld hl, _RAM_C103_
 	res 7, (hl)
 	ld de, $8900
 	call writeVDPCommandWord
-_LABEL_10B_:
+
+update:
 	ei
-	ld a, (_RAM_C107_)
+	ld a, (interruptFlag)
 	or a
-	jp z, _LABEL_10B_
+	jp z, update
 	xor a
-	ld (_RAM_C107_), a
-	ld a, (state_RAM_C102_)
+	ld (interruptFlag), a
+
+	ld a, (state)
+
+	; Mark 3 Logo
 	rrca
-	jp c, _LABEL_6DC_
+	jp c, updateMark3LogoState
+
+	; Push Start screen
 	rrca
-	jp c, _LABEL_681_
+	jp c, updateStartScreenState
+
+	; Demo
 	rrca
-	jp c, _LABEL_55B_
+	jp c, updateDemoState
+
+	; Gameplay
 	rrca
-	jp c, _LABEL_283_
+	jp c, updateGameplayState
+
+	; Paused
 	rrca
-	jp c, _LABEL_261_
+	jp c, updatePauseState
+
+	; @TODO
 	jp _LABEL_EB_
 
     ; Unused code 
@@ -287,11 +302,14 @@ handleInterrupt:
 	push ix
 	push iy
 	ld a, $FF
-	ld (_RAM_C107_), a
-	ld a, (state_RAM_C102_)
-	cp $10
+	ld (interruptFlag), a
+
+	ld a, (state)
+	cp STATE_PAUSED
 	jr z, _LABEL_211_
+
 	call _LABEL_B93_
+
 	ld a, $1F
 	out (Port_VDPAddress), a
 	ld a, $C0
@@ -299,6 +317,7 @@ handleInterrupt:
 	ld a, r
 	and $0F
 	out (Port_VDPData), a
+
 	call _LABEL_724_
 	call _LABEL_2B98_
 	call _LABEL_2222_
@@ -337,21 +356,21 @@ _LABEL_211_:
 
 _LABEL_21B_:
 	push af
-	ld a, (state_RAM_C102_)
-	cp $10
+	ld a, (state)
+	cp STATE_PAUSED
 	jr z, +
-	cp $08
+	cp STATE_GAMEPLAY
 	jr nz, _LABEL_22F_
-	ld (_RAM_C11E_), a
-	ld a, $10
-	ld (state_RAM_C102_), a
+	ld (statebak_RAM_C11E_), a
+	ld a, STATE_PAUSED
+	ld (state), a
 _LABEL_22F_:
 	pop af
 	retn
 
 +:
-	ld a, (_RAM_C11E_)
-	ld (state_RAM_C102_), a
+	ld a, (statebak_RAM_C11E_)
+	ld (state), a
 	ld a, (_RAM_C14A_)
 	cp $03
 	jr nz, +
@@ -373,7 +392,7 @@ _LABEL_22F_:
 	ld (_RAM_C14B_), a
 	jr _LABEL_22F_
 
-_LABEL_261_:
+updatePauseState:
 	call _LABEL_3C65_
 	ld a, (_RAM_C103_)
 	rrca
@@ -390,9 +409,9 @@ _LABEL_261_:
 	ld hl, _RAM_C14B_
 	inc (hl)
 ++:
-	jp _LABEL_10B_
+	jp update
 
-_LABEL_283_:
+updateGameplayState:
 	ld a, (_RAM_C133_)
 	bit 0, a
 	jp z, _LABEL_345_
@@ -412,14 +431,14 @@ _LABEL_283_:
 	jr c, ++
 	ld a, (_RAM_C133_)
 	bit 6, a
-	jp z, _LABEL_10B_
+	jp z, update
 	call _LABEL_70E_
 	jr nz, +
 	ld a, (_RAM_C300_)
 	inc a
 	ld (_RAM_C300_), a
 	cp $E0
-	jp c, _LABEL_10B_
+	jp c, update
 +:
 	ld iy, _RAM_C600_
 	call putIYEntityOffscreen
@@ -428,7 +447,7 @@ _LABEL_283_:
 ++:
 	ld a, (_RAM_C133_)
 	and $C0
-	jp z, _LABEL_10B_
+	jp z, update
 	cp $40
 	jr z, ++++
 	cp $80
@@ -439,7 +458,7 @@ _LABEL_283_:
 	inc a
 	ld (_RAM_C300_), a
 	cp $E0
-	jp c, _LABEL_10B_
+	jp c, update
 +:
 	ld iy, _RAM_C600_
 	call putIYEntityOffscreen
@@ -449,27 +468,28 @@ _LABEL_283_:
 	and $F9
 	ld (_RAM_C133_), a
 +++:
-	ld a, $01
-	ld (state_RAM_C102_), a
+	ld a, STATE_MARK_3_LOGO
+	ld (state), a
+
 	jp _LABEL_EB_
 
 ++++:
 	call +
-	jp c, _LABEL_10B_
+	jp c, update
 	ld hl, _RAM_C133_
 	res 1, (hl)
 	ld iy, _RAM_C600_
 	call putIYEntityOffscreen
-	jp _LABEL_10B_
+	jp update
 
 _LABEL_324_:
 	call +
-	jp c, _LABEL_10B_
+	jp c, update
 	ld hl, _RAM_C133_
 	res 2, (hl)
 	ld iy, _RAM_C620_
 	call putIYEntityOffscreen
-	jp _LABEL_10B_
+	jp update
 
 +:
 	ld a, (_RAM_C301_)
@@ -481,8 +501,8 @@ _LABEL_324_:
 	ret
 
 _LABEL_345_:
-	ld a, (state_RAM_C102_)
-	cp $04
+	ld a, (state)
+	cp STATE_DEMO
 	jr z, +
 	ld hl, _RAM_C123_
 	ld (hl), $00
@@ -495,7 +515,7 @@ _LABEL_345_:
 	ld (_RAM_C133_), a
 	ld a, $83
 	ld (_RAM_CD00_), a
-	jp _LABEL_10B_
+	jp update
 
 _LABEL_369_:
 	ld hl, _RAM_C133_
@@ -721,7 +741,7 @@ _DATA_524_:
 .db $08 $00 $08 $09 $08 $00 $0A $08 $08 $0B $04 $00 $00 $0C $00 $08
 .db $0D $08 $00 $0E $08 $08 $0F
 
-_LABEL_55B_:
+updateDemoState:
 	call _LABEL_70E_
 	cp $02
 	jr z, +
@@ -739,10 +759,10 @@ _LABEL_55B_:
 	call +++
 	ld a, (_RAM_C150_)
 	cp $E0
-	jp nz, _LABEL_283_
+	jp nz, updateGameplayState
 +:
-	ld a, $01
-	ld (state_RAM_C102_), a
+	ld a, STATE_MARK_3_LOGO
+	ld (state), a
 	jp _LABEL_EB_
 
 ++:
@@ -753,7 +773,7 @@ _LABEL_55B_:
 	ld (_RAM_C103_), a
 	ld a, $FF
 	ld (_RAM_C150_), a
-	jp _LABEL_10B_
+	jp update
 
 +++:
 	di
@@ -822,7 +842,7 @@ _DATA_61E_:
 .db $06 $82 $04 $04 $09 $05 $09 $04 $13 $00 $81 $01 $18 $05 $82 $04
 .db $06 $01 $FF
 
-_LABEL_681_:
+updateStartScreenState:
 	call +++
 	xor a
 	ld hl, (_RAM_C148_)
@@ -835,11 +855,11 @@ _LABEL_681_:
 	ld (_RAM_C148_), hl
 	ld a, h
 	cp $03
-	jp c, _LABEL_10B_
-	ld a, $04
-	ld (state_RAM_C102_), a
+	jp c, update
+	ld a, STATE_DEMO
+	ld (state), a
 	xor a
-	ld (_RAM_C10E_), a
+	ld (_RAM_C10E_), a ; Related to _DATA_745_ jumptable
 	jp _LABEL_EB_
 
 ++:
@@ -848,11 +868,11 @@ _LABEL_681_:
 	call _LABEL_36A1_
 	pop hl
 	ld a, $01
-	ld (_RAM_C10B_), a
+	ld (_RAM_C10B_), a ; Related to _DATA_745_ jumptable
 	ld a, $02
-	ld (_RAM_C10C_), a
+	ld (_RAM_C10C_), a ; Related to _DATA_745_ jumptable
 	ld a, $04
-	ld (_RAM_C10E_), a
+	ld (_RAM_C10E_), a ; Related to _DATA_745_ jumptable
 	ld a, $81
 	ld (_RAM_CD00_), a
 	ret
@@ -871,23 +891,24 @@ _LABEL_681_:
 	ret z
 	set 0, (hl)
 ++:
-	ld hl, state_RAM_C102_
-	ld (hl), $08
+	ld hl, state
+	ld (hl), STATE_GAMEPLAY
 	ret
 
-_LABEL_6DC_:
+updateMark3LogoState:
 	ld a, (_RAM_C152_)
 	or a
 	call z, +++
+
 	call _LABEL_70E_
 	cp $02
 	jr z, ++
 	ld hl, _RAM_C148_
 	inc (hl)
 	ld a, (hl)
-	cp $A0
+	cp MARK_3_LOGO_TIMER
 	jr z, +
-	jp _LABEL_10B_
+	jp update
 
 +:
 	call ++++
@@ -898,9 +919,11 @@ _LABEL_6DC_:
 
 +++:
 	ld a, $02
-	ld (_RAM_C10C_), a
+	ld (_RAM_C10C_), a ; Related to _DATA_745_ jumptable
+
+	
 	ld a, $05
-	ld (_RAM_C10F_), a
+	ld (_RAM_C10F_), a ; Related to _DATA_745_ jumptable
 	ld (_RAM_C152_), a
 	ret
 
@@ -914,12 +937,15 @@ _LABEL_70E_:
 	or a
 	ret z
 ++++:
-	ld a, $02
-	ld (state_RAM_C102_), a
+	ld a, STATE_START_SCREEN
+	ld (state), a
 	or a
 	ret
 
 _LABEL_724_:
+	; Here HL is $C10A but later
+	; it is incrementend to $C10B.
+	; Thus, $C10B is the real index.
 	ld hl, _RAM_C10A_
 	ld b, $12
 -:
@@ -1565,15 +1591,15 @@ _LABEL_BEE_:
 
 _LABEL_BFC_:
 	ld a, $03
-	ld (_RAM_C10D_), a
+	ld (_RAM_C10D_), a ; Related to _DATA_745_ jumptable
 	ld a, $01
-	ld (_RAM_C10B_), a
+	ld (_RAM_C10B_), a ; Related to _DATA_745_ jumptable
 	ld a, $06
-	ld (_RAM_C110_), a
+	ld (_RAM_C110_), a ; Related to _DATA_745_ jumptable
 	ld a, $07
-	ld (_RAM_C111_), a
+	ld (_RAM_C111_), a ; Related to _DATA_745_ jumptable
 	ld a, $0C
-	ld (_RAM_C116_), a
+	ld (_RAM_C116_), a ; Related to _DATA_745_ jumptable
 	ld a, $03
 	ld (_RAM_C151_), a
 
@@ -1626,42 +1652,7 @@ updateEntities:
 	ex de, hl
 	jp (hl)
 
-; Jump Table from C64 to CA7 (34 entries, indexed by entity type)
-entityUpdatersPointers:
-.dw updatePlayer1
-.dw updatePlayer2
-.dw updateBullet
-.dw updateBomb
-.dw _LABEL_E2C_
-.dw _LABEL_EBF_
-.dw _LABEL_1155_
-.dw updateExplosion
-.dw _LABEL_FC0_
-.dw updateEnemy1
-.dw _LABEL_12BA_
-.dw _LABEL_13CD_
-.dw _LABEL_149D_
-.dw _LABEL_156A_
-.dw _LABEL_15C4_
-.dw _LABEL_1770_
-.dw _LABEL_1EE9_
-.dw _LABEL_189A_
-.dw _LABEL_198A_
-.dw _LABEL_2011_
-.dw _LABEL_199B_
-.dw _LABEL_1A6B_
-.dw updateEnemy2
-.dw _LABEL_20AA_
-.dw _LABEL_2114_
-.dw _LABEL_1BA5_
-.dw _LABEL_1C11_
-.dw _LABEL_1D72_
-.dw _LABEL_1DBE_
-.dw _LABEL_213F_
-.dw _LABEL_21AE_
-.dw _LABEL_11A8_
-.dw _LABEL_1E99_
-.dw _LABEL_1E86_
+.INCLUDE "entityUpdatersPointers.asm"
 
 .INCLUDE "entities/updatePlayers.asm"
 .INCLUDE "entities/updateBullet.asm"
@@ -2622,7 +2613,7 @@ _LABEL_1760_:
 	ld (_RAM_C338_), a
 	ret nz
 	ld a, $11
-	ld (_RAM_C11B_), a
+	ld (_RAM_C11B_), a ; Related to _DATA_745_ jumptable
 	ret
 
 ; 16th entry of Jump Table from C64 (indexed by entity type)
@@ -3008,74 +2999,7 @@ _LABEL_1AD4_:
 	ld (_RAM_C146_), a
 	jp putIYEntityOffscreen
 
-; 23rd entry of Jump Table from C64 (indexed by entity type)
-updateEnemy2:
-	ld a, (iy+3)
-	or a
-	jr nz, _LABEL_1B5A_
-	ld hl, _DATA_1B2D_
-	ld bc, $0015
-	call memcpyIYToHL
-	ld (iy+24), $FF
-	ld (iy+25), $E8
-	ld (iy+26), $50
-	ld (iy+29), $20
-	call rng_LABEL_2D2A_
-	rrca
-	jr c, +
-	ld (iy+26), $30
-+:
-	call rng_LABEL_2D2A_
-	rrca
-	ret c
-	ld (iy+24), $00
-	ld (iy+25), $14
-	ld (iy + Entity.xVel.low), $FB
-	ld (iy + Entity.xPos.low), $B4
-	ret
-
-; Data from 1B2D to 1B59 (45 bytes)
-_DATA_1B2D_:
-.db $42 $1B $17 $01 $04 $00 $F0 $00 $00 $00 $00 $02 $02 $00 $A0 $05
-.db $00 $00 $02 $00 $10 $46 $1B $53 $1B $04 $00 $00 $96 $00 $08 $97
-.db $08 $00 $98 $08 $08 $99 $02 $00 $04 $9A $08 $04 $9B
-
-_LABEL_1B5A_:
-	call _LABEL_1027_
-	call ++
-	call +
-	ld d, (iy+24)
-	ld e, (iy+25)
-	jp _LABEL_185F_
-
-+:
-	ld a, (iy+26)
-	or a
-	jr z, +
-	dec (iy+26)
-	ret
-
-+:
-	ld de, $FFE8
-	ld hl, $0300
-	ld a, (iy+24)
-	cp $80
-	jr c, +
-	ld de, $0018
-	ld hl, $FD00
-+:
-	ld (iy + Entity.xVel.low), h
-	ld (iy + Entity.xVel.high), l
-	ld (iy+24), d
-	ld (iy+25), e
-	ld (iy+26), $38
-	ret
-
-++:
-	dec (iy+29)
-	ret nz
-	ld (iy+29), $80
-	jp fire_LABEL_3063_
+.INCLUDE "entities/updateEnemy2.asm"
 
 ; 26th entry of Jump Table from C64 (indexed by entity type)
 _LABEL_1BA5_:
@@ -4252,7 +4176,7 @@ _LABEL_24E4_:
 	ret
 
 _LABEL_255E_:
-	ld a, (state_RAM_C102_)
+	ld a, (state)
 	bit 2, a
 	ret nz
 	ld de, _RAM_C123_
@@ -5478,7 +5402,7 @@ _LABEL_2D4F_:
 	ret
 
 _LABEL_2D63_:
-	ld a, (state_RAM_C102_)
+	ld a, (state)
 
     ; Return if not demo or gameplay
 	bit 2, a

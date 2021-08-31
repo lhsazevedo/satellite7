@@ -2,12 +2,12 @@
 _RAM_C000_ dsb $100
 _RAM_C100_ db
 _RAM_C101_ db
-state_RAM_C102_ db
+state db
 _RAM_C103_ db
 _RAM_C104_ db
 p1Lives db
 _RAM_C106_ db
-_RAM_C107_ db
+interruptFlag db
 _RAM_C108_ db
 .ende
 
@@ -35,7 +35,7 @@ _RAM_C11B_ db
 .ende
 
 .enum $C11E export
-_RAM_C11E_ db
+statebak_RAM_C11E_ db
 _RAM_C11F_ .dw
 highScoreByte1 db
 highScoreByte2 db

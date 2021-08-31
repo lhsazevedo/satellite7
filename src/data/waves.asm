@@ -27,13 +27,13 @@ enemy_wave 48  07 ENTITY_ENEMY_1
 
 enemy_wave 08  07 ENTITY_ENEMY_1
 
-enemy_wave 20  07 $17
+enemy_wave 20  07 ENTITY_ENEMY_2
 
 enemy_wave 20  02 ENTITY_POWER_UP \
                07 ENTITY_ENEMY_1
 
 enemy_wave 20  01 ENTITY_POWER_UP \
-               07 $17
+               07 ENTITY_ENEMY_2
 
 enemy_wave 32  02 ENTITY_POWER_UP \
                07 $0B
@@ -48,7 +48,7 @@ enemy_wave 20  02 ENTITY_POWER_UP \
                07 $10
 
 enemy_wave 20  02 ENTITY_POWER_UP \
-               07 $17
+               07 ENTITY_ENEMY_2
 
 enemy_wave 05  07 $0D
 
@@ -61,7 +61,7 @@ enemy_wave 08  02 ENTITY_POWER_UP \
                07 $1A
 
 enemy_wave 32  01 $1D \
-               07 $17
+               07 ENTITY_ENEMY_2
 
 enemy_wave 16  06 $10 \
                07 ENTITY_ENEMY_1
@@ -95,8 +95,8 @@ enemy_wave 16  02 ENTITY_POWER_UP \
 
 enemy_wave 05  07 $0D
 
-enemy_wave 20  07 $17 \
-               07 $17
+enemy_wave 20  07 ENTITY_ENEMY_2 \
+               07 ENTITY_ENEMY_2
 
 enemy_wave 16  01 $1C \
                07 $1A
@@ -104,7 +104,7 @@ enemy_wave 16  01 $1C \
 enemy_wave 05  07 $0D
 
 enemy_wave 32  03 $1D \
-               07 $17
+               07 ENTITY_ENEMY_2
 
 enemy_wave 24  01 $0E \
                07 ENTITY_ENEMY_1
@@ -154,7 +154,7 @@ enemy_wave 08  02 ENTITY_POWER_UP \
                07 $1A
 
 enemy_wave 20  07 $12 \
-               07 $17
+               07 ENTITY_ENEMY_2
 
 enemy_wave 18  07 $12 \
                07 $0B
@@ -220,7 +220,7 @@ enemy_wave 40  01 $1D \
                07 $1A
 
 enemy_wave 36  01 $1D \
-               07 $17
+               07 ENTITY_ENEMY_2
 
 enemy_wave 16  07 $15 \
                07 $15
@@ -243,10 +243,10 @@ enemy_wave 16  07 $1B \
 enemy_wave 18  07 $10 \
                07 $12
 
-enemy_wave 16  07 $17 \
+enemy_wave 16  07 ENTITY_ENEMY_2 \
                07 $12
 
-enemy_wave 12  07 $17 \
+enemy_wave 12  07 ENTITY_ENEMY_2 \
                07 $12
 
 enemy_wave 00  07 $0C
@@ -256,8 +256,8 @@ enemy_wave 16  07 $1B \
 
 enemy_wave 05  07 $0D
 
-enemy_wave 12  07 $17 \
-               07 $17
+enemy_wave 12  07 ENTITY_ENEMY_2 \
+               07 ENTITY_ENEMY_2
 
 enemy_wave 12  07 $0B \
                07 ENTITY_ENEMY_1
