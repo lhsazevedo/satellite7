@@ -12,20 +12,20 @@ _RAM_C108_ db
 .ende
 
 .enum $C10A export
-_RAM_C10A_ db
-_RAM_C10B_ db
-_RAM_C10C_ db
-_RAM_C10D_ db
-_RAM_C10E_ db
-_RAM_C10F_ db
-_RAM_C110_ db
-_RAM_C111_ db
-_RAM_C112_ db
-_RAM_C113_ db
-_RAM_C114_ db
-_RAM_C115_ db
-_RAM_C116_ db
-_RAM_C117_ db
+action1_RAM_C10A_ db
+action2_RAM_C10B_ db
+action3_RAM_C10C_ db
+action4_RAM_C10D_ db
+action5_RAM_C10E_ db
+action6_RAM_C10F_ db
+action7_RAM_C110_ db
+action8_RAM_C111_ db
+action9_RAM_C112_ db
+action10_RAM_C113_ db
+action11_RAM_C114_ db
+action12_RAM_C115_ db
+action13_RAM_C116_ db
+action14_RAM_C117_ db
 .ende
 
 .enum $C119 export

@@ -125,7 +125,7 @@ _LABEL_69_:
 	ld de, $0820
 	ld b, $F8
 	call _LABEL_16C_
-	call _LABEL_A90_
+	call load_some_tiles_LABEL_A90_
 	ld hl, _DATA_5825_
 	ld de, $1C80
 	ld b, $B0
@@ -151,10 +151,10 @@ _LABEL_EB_:
 	di
 	call _LABEL_13C_
 	call _LABEL_3C65_
-	ld a, $01
-	ld (_RAM_C10B_), a ; Related to _DATA_745_ jumptable
-	ld a, $06
-	ld (_RAM_C110_), a ; Related to _DATA_745_ jumptable
+	ld a, $01 ; jumpToClearTilemap
+	ld (action2_RAM_C10B_), a ; Related to _DATA_745_ jumptable
+	ld a, $06 ; clearSprites
+	ld (action7_RAM_C110_), a ; Related to _DATA_745_ jumptable
 	xor a
 	ld (_RAM_C133_), a
 	ld hl, _RAM_C103_
@@ -859,7 +859,7 @@ updateStartScreenState:
 	ld a, STATE_DEMO
 	ld (state), a
 	xor a
-	ld (_RAM_C10E_), a ; Related to _DATA_745_ jumptable
+	ld (action5_RAM_C10E_), a ; Related to _DATA_745_ jumptable
 	jp _LABEL_EB_
 
 ++:
@@ -867,12 +867,13 @@ updateStartScreenState:
 	push hl
 	call _LABEL_36A1_
 	pop hl
-	ld a, $01
-	ld (_RAM_C10B_), a ; Related to _DATA_745_ jumptable
-	ld a, $02
-	ld (_RAM_C10C_), a ; Related to _DATA_745_ jumptable
-	ld a, $04
-	ld (_RAM_C10E_), a ; Related to _DATA_745_ jumptable
+	ld a, $01 ; jumpToClearTilemap
+	ld (action2_RAM_C10B_), a ; Related to _DATA_745_ jumptable
+	ld a, $02 ; drawBlueBG
+	ld (action3_RAM_C10C_), a ; Related to _DATA_745_ jumptable
+	ld a, $04 ; drawMenu
+	ld (action5_RAM_C10E_), a ; Related to _DATA_745_ jumptable
+
 	ld a, $81
 	ld (_RAM_CD00_), a
 	ret
@@ -914,16 +915,16 @@ updateMark3LogoState:
 	call ++++
 ++:
 	xor a
-	ld (_RAM_C10C_), a
+	ld (action3_RAM_C10C_), a
 	jp _LABEL_EB_
 
 +++:
-	ld a, $02
-	ld (_RAM_C10C_), a ; Related to _DATA_745_ jumptable
+	ld a, $02 ; drawBlueBG
+	ld (action3_RAM_C10C_), a ; Related to _DATA_745_ jumptable
 
 	
-	ld a, $05
-	ld (_RAM_C10F_), a ; Related to _DATA_745_ jumptable
+	ld a, $05 ; drawMark3Logo
+	ld (action6_RAM_C10F_), a ; Related to _DATA_745_ jumptable
 	ld (_RAM_C152_), a
 	ret
 
@@ -946,7 +947,7 @@ _LABEL_724_:
 	; Here HL is $C10A but later
 	; it is incrementend to $C10B.
 	; Thus, $C10B is the real index.
-	ld hl, _RAM_C10A_
+	ld hl, action1_RAM_C10A_
 	ld b, $12
 -:
 	push hl
@@ -973,7 +974,7 @@ _LABEL_724_:
 	ex de, hl
 	jp (hl)
 
-; Jump Table from 745 to 76C (20 entries, indexed by _RAM_C10A_)
+; Jump Table from 745 to 76C (20 entries, indexed by action1_RAM_C10A_)
 _DATA_745_:
 .dw jumpToClearTilemap
 .dw drawBlueBG
@@ -981,12 +982,12 @@ _DATA_745_:
 .dw drawMenu
 .dw drawMark3Logo
 .dw clearSprites
-.dw _LABEL_906_
+.dw drawInfoBar
 .dw _LABEL_9BD_
 .dw _LABEL_9C9_
 .dw _LABEL_9D5_
 .dw _LABEL_A3E_
-.dw _LABEL_A90_
+.dw load_some_tiles_LABEL_A90_
 .dw _LABEL_A9C_
 .dw _LABEL_ABB_
 .dw _LABEL_AC1_
@@ -996,11 +997,11 @@ _DATA_745_:
 .dw _LABEL_B2C_
 .dw _LABEL_B2C_
 
-; 1st entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 1st entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 jumpToClearTilemap:
 	jp clearTilemap
 
-; 5th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 5th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 drawMark3Logo:
 	ld a, $08
 	ld (_RAM_C12B_), a
@@ -1015,7 +1016,7 @@ segaMark3Logo:
 .db $EA $EB $EC $ED $EE $EF $F0 $F1 $F2 $F3 $F4 $00 $F5 $F6 $F3 $F4
 .db $F7 $F8 $F9 $57 $58 $44
 
-; 3rd entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 3rd entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 setBGColorsToBlack:
 	; Set PAL1 1st color to black
 	ld a, $00
@@ -1027,7 +1028,7 @@ setBGColorsToBlack:
 	ld de, $C003
 	jp writeToVdpAddress
 
-; 4th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 4th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 drawMenu:
 	ld hl, logo
 	ld de, $390A
@@ -1099,7 +1100,7 @@ logo:
 .db $C3 $08 $C2 $0C $C3 $08 $C4 $0C $D3 $08 $D3 $0A $C2 $0C $C3 $08
 .db $00 $08 $D4 $08 $D5 $08 $00 $08
 
-; 2nd entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 2nd entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 drawBlueBG:
 	; Set PAL1 1st color to blue
 	ld a, $34
@@ -1115,15 +1116,15 @@ drawBlueBG:
 	ld l, $20
 	jp fillTilemap
 
-; 6th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 6th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 clearSprites:
 	ld de, $3F00
 	ld bc, $0020
 	ld hl, $D0D0
 	jp fillVram
 
-; 7th entry of Jump Table from 745 (indexed by _RAM_C10A_)
-_LABEL_906_:
+; 7th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
+drawInfoBar:
 	; @TODO
 	ld de, $382E
 	ld b, $1C
@@ -1244,7 +1245,7 @@ _DATA_9B3_:
 _DATA_9B9_:
 .db $10 $11 $14 $15
 
-; 8th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 8th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_9BD_:
 	ld a, $8B
 	ld (_RAM_CD00_), a
@@ -1252,7 +1253,7 @@ _LABEL_9BD_:
 	inc (hl)
 	jp _LABEL_45C_
 
-; 9th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 9th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_9C9_:
 	ld a, $8B
 	ld (_RAM_CD00_), a
@@ -1260,7 +1261,7 @@ _LABEL_9C9_:
 	inc (hl)
 	jp _LABEL_46C_
 
-; 10th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 10th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_9D5_:
 	ld a, (_RAM_C145_)
 	sub $3A
@@ -1330,7 +1331,7 @@ _DATA_A14_:
 	jp z, _LABEL_16A9_
 	jp _LABEL_16F8_
 
-; 11th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 11th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_A3E_:
 	call _LABEL_A63_
 	ld d, (iy+30)
@@ -1370,14 +1371,14 @@ _LABEL_A63_:
 	ld (_RAM_C946_), a
 	ret
 
-; 12th entry of Jump Table from 745 (indexed by _RAM_C10A_)
-_LABEL_A90_:
+; 12th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
+load_some_tiles_LABEL_A90_:
 	ld hl, (_DATA_4B08_)
 	ld de, $0C00
 	ld bc, $4B08
 	jp _LABEL_313C_
 
-; 13th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 13th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_A9C_:
 	call _LABEL_A63_
 	ld a, (iy+5)
@@ -1395,13 +1396,13 @@ _LABEL_A9C_:
 	ld (_RAM_C942_), a
 	ret
 
-; 14th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 14th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_ABB_:
 	ld a, $8F
 	ld (_RAM_CD00_), a
 	ret
 
-; 15th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 15th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_AC1_:
 	ld a, $80
 	ld (_RAM_C338_), a
@@ -1412,7 +1413,7 @@ _LABEL_AC1_:
 _DATA_ACC_:
 .db $45 $51 $54 $52 $41 $20 $20 $20 $20 $20 $20 $20
 
-; 16th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 16th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_AD8_:
 	ld a, $80
 	ld (_RAM_C338_), a
@@ -1438,7 +1439,7 @@ _DATA_AF9_:
 _DATA_B05_:
 .db $20 $31 $20 $33 $20 $35 $20 $37 $31 $30
 
-; 17th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 17th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_B0F_:
 	ld hl, _DATA_B20_
 _LABEL_B12_:
@@ -1452,7 +1453,7 @@ _LABEL_B12_:
 _DATA_B20_:
 .dsb 12, $20
 
-; 18th entry of Jump Table from 745 (indexed by _RAM_C10A_)
+; 18th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 _LABEL_B2C_:
 	ret
 
@@ -1590,16 +1591,17 @@ _LABEL_BEE_:
 	jp writeVDPCommandWord
 
 _LABEL_BFC_:
-	ld a, $03
-	ld (_RAM_C10D_), a ; Related to _DATA_745_ jumptable
-	ld a, $01
-	ld (_RAM_C10B_), a ; Related to _DATA_745_ jumptable
-	ld a, $06
-	ld (_RAM_C110_), a ; Related to _DATA_745_ jumptable
-	ld a, $07
-	ld (_RAM_C111_), a ; Related to _DATA_745_ jumptable
-	ld a, $0C
-	ld (_RAM_C116_), a ; Related to _DATA_745_ jumptable
+	ld a, $03 ; setBGColorsToBlack
+	ld (action4_RAM_C10D_), a ; Related to _DATA_745_ jumptable
+	ld a, $01 ; jumpToClearTilemap
+	ld (action2_RAM_C10B_), a ; Related to _DATA_745_ jumptable
+	ld a, $06 ; clearSprites
+	ld (action7_RAM_C110_), a ; Related to _DATA_745_ jumptable
+	ld a, $07 ; drawInfoBar
+	ld (action8_RAM_C111_), a ; Related to _DATA_745_ jumptable
+	ld a, $0C ; load_some_tiles_LABEL_A90_
+	ld (action13_RAM_C116_), a ; Related to _DATA_745_ jumptable
+
 	ld a, $03
 	ld (_RAM_C151_), a
 
@@ -2535,12 +2537,12 @@ _LABEL_16F8_:
 	dec a
 	jr nz, +
 	ld a, $08
-	ld (_RAM_C112_), a
+	ld (action9_RAM_C112_), a
 	ret
 
 +:
 	ld a, $09
-	ld (_RAM_C113_), a
+	ld (action10_RAM_C113_), a
 	ret
 
 _LABEL_170F_:
@@ -2994,7 +2996,7 @@ _LABEL_1AD4_:
 	add a, $3A
 	ld (_RAM_C145_), a
 	ld a, $0A
-	ld (_RAM_C114_), a
+	ld (action11_RAM_C114_), a
 	ld a, (iy+5)
 	ld (_RAM_C146_), a
 	jp putIYEntityOffscreen
@@ -4237,12 +4239,12 @@ _LABEL_255E_:
 	dec a
 	jr nz, +
 	ld a, $08
-	ld (_RAM_C112_), a
+	ld (action9_RAM_C112_), a
 	ret
 
 +:
 	ld a, $09
-	ld (_RAM_C113_), a
+	ld (action10_RAM_C113_), a
 	ret
 
 
@@ -4847,12 +4849,12 @@ _LABEL_29C3_:
 	cp $01
 	jr nz, +
 	ld a, $08
-	ld (_RAM_C112_), a
+	ld (action9_RAM_C112_), a
 	ret
 
 +:
 	ld a, $09
-	ld (_RAM_C113_), a
+	ld (action10_RAM_C113_), a
 	ret
 
 ; Unused code
@@ -4983,7 +4985,7 @@ _LABEL_2A9A_:
     ld hl, _RAM_C151_
     set 0, (hl)
     ld a, $0E
-    ld (_RAM_C117_ + 1), a
+    ld (action14_RAM_C117_ + 1), a
     ld a, $01
     ld (entities.12.frame), a
     ld (entities.12.data1c), a
@@ -5072,13 +5074,13 @@ _LABEL_2AE6_:
 	cp $82
 	jr nz, +
 	ld a, $0B
-	ld (_RAM_C115_), a
+	ld (action12_RAM_C115_), a
 	ret
 
 +:
 	ld (_RAM_C334_), a
 	ld a, $0D
-	ld (_RAM_C117_), a
+	ld (action14_RAM_C117_), a
 	ret
 
 ; Data from 2B63 to 2B6A (8 bytes)
