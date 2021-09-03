@@ -1,7 +1,7 @@
 ; 4th entry of Jump Table from C64 (indexed by entity type)
 updateBomb:
 	ld d, $00
-	ld e, (iy+24)
+	ld e, (iy + Entity.data18)
 	ld h, (iy + Entity.yVel.low)
 	ld l, (iy + Entity.yVel.high)
 	add hl, de
@@ -10,8 +10,8 @@ updateBomb:
 	ex de, hl
 	ld e, $00
 	call updateEntityYWith
-	inc (iy+19)
-	ld a, (iy+19)
+	inc (iy + Entity.data13)
+	ld a, (iy + Entity.data13)
 	cp $08
 	ret c
 	ld (iy + Entity.frame), $01

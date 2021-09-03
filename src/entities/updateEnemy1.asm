@@ -1,7 +1,7 @@
 
 
 updateEnemy1:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, realUpdateEnemy1
 

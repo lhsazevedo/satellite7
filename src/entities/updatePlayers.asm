@@ -1,12 +1,12 @@
 updatePlayer1:
-	ld a, (iy+27)
+	ld a, (iy + Entity.data1b)
 	cp $01
 	jr nz, +
 	ld de, $FF00
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $80
 	jp nc, updateEntityYWith
-	ld (iy+27), $02
+	ld (iy + Entity.data1b), $02
 	ld hl, _RAM_C104_
 	res 0, (hl)
 	set 1, (hl)
@@ -17,14 +17,14 @@ updatePlayer1:
 	jr ++
 
 updatePlayer2:
-	ld a, (iy+27)
+	ld a, (iy + Entity.data1b)
 	cp $01
 	jr nz, +
 	ld de, $FF00
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $80
 	jp nc, updateEntityYWith
-	ld (iy+27), $02
+	ld (iy + Entity.data1b), $02
 	ld hl, _RAM_C104_
 	res 4, (hl)
 	set 5, (hl)
@@ -34,7 +34,7 @@ updatePlayer2:
 	ld a, (_RAM_C131_)
 ++:
 	ld (_RAM_C12E_), a
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	ld c, a
 	or a
 	jr nz, +
@@ -53,61 +53,61 @@ updatePlayer2:
 	bit 3, c
 	call nz, _LABEL_D77_
 ++:
-	ld a, (iy+25)
+	ld a, (iy + Entity.data19)
 	or a
 	ret z
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	call _LABEL_1027_
-	inc (iy+25)
-	ld a, (iy+25)
+	inc (iy + Entity.data19)
+	ld a, (iy + Entity.data19)
 	cp $20
 	ret c
 	xor a
-	ld (iy+24), a
-	ld (iy+25), a
+	ld (iy + Entity.data18), a
+	ld (iy + Entity.data19), a
 	ld (iy + Entity.frame), a
-	ld (iy+19), a
+	ld (iy + Entity.data13), a
 	ret
 
 +++:
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $40
 	ret c
 	ld de, $FF00
-	ld a, (iy+4)
+	ld a, (iy + Entity.data04)
 	or a
 	jp z, updateEntityYWith
 	ld de, $FE40
 	jp updateEntityYWith
 
 _LABEL_D4B_:
-	ld a, (iy+6)
+	ld a, (iy + Entity.yPos.low)
 	cp $B0
 	ret nc
 	ld de, $0100
-	ld a, (iy+4)
+	ld a, (iy + Entity.data04)
 	or a
 	jp z, updateEntityYWith
 	ld de, $01A0
 	jp updateEntityYWith
 
 _LABEL_D61_:
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	cp $08
 	ret c
 	ld de, $FF00
-	ld a, (iy+4)
+	ld a, (iy + Entity.data04)
 	or a
 	jp z, updateEntityXWith
 	ld de, $FE40
 	jp updateEntityXWith
 
 _LABEL_D77_:
-	ld a, (iy+8)
+	ld a, (iy + Entity.xPos.low)
 	cp $A8
 	ret nc
 	ld de, $0100
-	ld a, (iy+4)
+	ld a, (iy + Entity.data04)
 	or a
 	jp z, updateEntityXWith
 	ld de, $01A0

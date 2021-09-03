@@ -1,24 +1,24 @@
 updateEnemy2:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, _LABEL_1B5A_
 	ld hl, _DATA_1B2D_
 	ld bc, $0015
 	call memcpyIYToHL
-	ld (iy+24), $FF
-	ld (iy+25), $E8
-	ld (iy+26), $50
-	ld (iy+29), $20
+	ld (iy + Entity.data18), $FF
+	ld (iy + Entity.data19), $E8
+	ld (iy + Entity.data1a), $50
+	ld (iy + Entity.data1d), $20
 	call rng_LABEL_2D2A_
 	rrca
 	jr c, +
-	ld (iy+26), $30
+	ld (iy + Entity.data1a), $30
 +:
 	call rng_LABEL_2D2A_
 	rrca
 	ret c
-	ld (iy+24), $00
-	ld (iy+25), $14
+	ld (iy + Entity.data18), $00
+	ld (iy + Entity.data19), $14
 	ld (iy + Entity.xVel.low), $FB
 	ld (iy + Entity.xPos.low), $B4
 	ret
@@ -33,21 +33,21 @@ _LABEL_1B5A_:
 	call _LABEL_1027_
 	call ++
 	call +
-	ld d, (iy+24)
-	ld e, (iy+25)
+	ld d, (iy + Entity.data18)
+	ld e, (iy + Entity.data19)
 	jp _LABEL_185F_
 
 +:
-	ld a, (iy+26)
+	ld a, (iy + Entity.data1a)
 	or a
 	jr z, +
-	dec (iy+26)
+	dec (iy + Entity.data1a)
 	ret
 
 +:
 	ld de, $FFE8
 	ld hl, $0300
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	cp $80
 	jr c, +
 	ld de, $0018
@@ -55,13 +55,13 @@ _LABEL_1B5A_:
 +:
 	ld (iy + Entity.xVel.low), h
 	ld (iy + Entity.xVel.high), l
-	ld (iy+24), d
-	ld (iy+25), e
-	ld (iy+26), $38
+	ld (iy + Entity.data18), d
+	ld (iy + Entity.data19), e
+	ld (iy + Entity.data1a), $38
 	ret
 
 ++:
-	dec (iy+29)
+	dec (iy + Entity.data1d)
 	ret nz
-	ld (iy+29), $80
+	ld (iy + Entity.data1d), $80
 	jp fire_LABEL_3063_

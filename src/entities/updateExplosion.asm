@@ -1,15 +1,15 @@
 updateExplosion:
-	ld a, (iy+22)
+	ld a, (iy + Entity.data16)
 	or a
 	jr nz, _LABEL_FB0_
-	ld (iy+22), $01
+	ld (iy + Entity.data16), $01
 	ld hl, _DATA_F8C_
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld (iy + Entity.frame), $00
-	ld (iy+18), $04
-	ld (iy+19), $00
-	ld (iy+20), $08
+	ld (iy + Entity.data12), $04
+	ld (iy + Entity.data13), $00
+	ld (iy + Entity.data14), $08
 	ld a, $87
 	ld (_RAM_CD00_), a
 	ret

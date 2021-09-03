@@ -6,24 +6,24 @@
 
 ; 5th entry of Jump Table from C64 (indexed by entity type)
 updateEntity05:
-	ld a, (iy+22)
+	ld a, (iy + Entity.data16)
 	or a
 	jr nz, _LABEL_E9B_
-	ld (iy+22), $01
+	ld (iy + Entity.data16), $01
 	ld hl, _DATA_E75_
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld hl, $0008
 	ld (iy + Entity.yVel.low), h
 	ld (iy + Entity.yVel.high), l
-	ld (iy+20), l
+	ld (iy + Entity.data14), l
 	ld (iy + Entity.frame), h
-	ld (iy+18), $04
-	ld (iy+30), $60
+	ld (iy + Entity.data12), $04
+	ld (iy + Entity.data1e), $60
 	ld a, $8A
 	ld (_RAM_CD00_), a
 	ld hl, _RAM_C104_
-	ld a, (iy+5)
+	ld a, (iy + Entity.data05)
 	cp $01
 	jr nz, +
 	set 2, (hl)
@@ -66,10 +66,10 @@ _LABEL_E9B_:
 	ld a, (iy + Entity.frame)
 	cp $03
 	call c, _LABEL_1027_
-	dec (iy+30)
+	dec (iy + Entity.data1e)
 	ret nz
 	ld hl, _RAM_C104_
-	ld a, (iy+5)
+	ld a, (iy + Entity.data05)
 	push af
 	call putIYEntityOffscreen
 	pop af
@@ -86,10 +86,10 @@ _LABEL_E9B_:
 
 ; 6th entry of Jump Table from C64 (indexed by entity type)
 updateEntity06:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_F48_
-	ld a, (iy+5)
+	ld a, (iy + Entity.data05)
 	ld hl, entity06Data
 	ld bc, $000E
 	call memcpyIYToHL
@@ -103,7 +103,7 @@ updateEntity06:
 	ret z
 	ld (iy + Entity.xPos.low), $40
 	ld (iy + Entity.frame), $01
-	ld (iy+5), c
+	ld (iy + Entity.data05), c
 	ret
 
 ; Data from EEC to F47 (92 bytes)
@@ -161,7 +161,7 @@ _LABEL_F48_:
 	cp $80
 	jp nc, updateEntityY
 	ld hl, _RAM_C133_
-	ld a, (iy+5)
+	ld a, (iy + Entity.data05)
 	dec a
 	jr nz, +
 	res 1, (hl)
@@ -177,7 +177,7 @@ _LABEL_F48_:
 
 ; 9th entry of Jump Table from C64 (indexed by entity type)
 updateEntity09:
-	ld a, (iy+22)
+	ld a, (iy + Entity.data16)
 	or a
 	jr nz, +
 	ld (iy + Entity.yVel.low), $00
@@ -185,7 +185,7 @@ updateEntity09:
 	ld hl, entity09AnimationDescriptor
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
-	ld (iy+22), $01
+	ld (iy + Entity.data16), $01
 	ld (iy + Entity.frame), $00
 	ld a, $88
 	ld (_RAM_CD00_), a
@@ -231,14 +231,14 @@ updateEntityXWith:
 	ret
 
 _LABEL_1027_:
-	inc (iy+19)
-	ld a, (iy+19)
-	cp (iy+20)
+	inc (iy + Entity.data13)
+	ld a, (iy + Entity.data13)
+	cp (iy + Entity.data14)
 	jr nz, ++
-	ld (iy+19), $00
+	ld (iy + Entity.data13), $00
 	inc (iy + Entity.frame)
 	ld a, (iy + Entity.frame)
-	cp (iy+18)
+	cp (iy + Entity.data12)
 	jr nz, +
 	ld (iy + Entity.frame), $00
 +:
@@ -250,8 +250,8 @@ _LABEL_1027_:
 	ret
 
 _LABEL_1049_:
-	ld (iy+18), h
-	ld (iy+20), l
+	ld (iy + Entity.data12), h
+	ld (iy + Entity.data14), l
 	ret
 
 memcpyIYToHL:
@@ -277,7 +277,7 @@ _LABEL_1070_:
 	ld b, $11
 	ld de, $0020
 -:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr z, _LABEL_1091_
 	ld a, (iy + Entity.yPos.low)
@@ -310,7 +310,7 @@ _LABEL_1091_:
 	jr _LABEL_1091_
 
 +:
-	ld a, (iy+28)
+	ld a, (iy + Entity.data1c)
 	or a
 	ret z
 	ld a, $1E
@@ -389,19 +389,19 @@ _LABEL_110C_:
 +:
 	or a
 	ret nz
-	ld a, (iy+27)
+	ld a, (iy + Entity.data1b)
 	or a
 	ret z
-	dec (iy+26)
+	dec (iy + Entity.data1a)
 	jp nz, _LABEL_1027_
 -:
 	xor a
-	ld (iy+27), a
+	ld (iy + Entity.data1b), a
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld (iy + Entity.frame), a
-	ld (iy+18), $08
-	ld (iy+19), a
+	ld (iy + Entity.data12), $08
+	ld (iy + Entity.data13), a
 	ret
 
 _LABEL_1149_:
@@ -414,7 +414,7 @@ _LABEL_1149_:
 
 ; 7th entry of Jump Table from C64 (indexed by entity type)
 updateEntity07:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, updateEntityXY
 	ld hl, _DATA_11A2_
@@ -423,8 +423,8 @@ _LABEL_115F_:
 	call _LABEL_1183_
 	pop hl
 	ld a, $01
-	ld (iy+3), a
-	ld (iy+4), a
+	ld (iy + Entity.data03), a
+	ld (iy + Entity.data04), a
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld a, $04
@@ -437,7 +437,7 @@ _LABEL_115F_:
 
 _LABEL_1183_:
 	call loadPlayer1XYPosToHL
-	ld a, (iy+5)
+	ld a, (iy + Entity.data05)
 	cp $01
 	jr z, +
 	call loadPlayer2XYPosToHL
@@ -457,15 +457,15 @@ _DATA_11A2_:
 
 ; 32nd entry of Jump Table from C64 (indexed by entity type)
 updateEntity20:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, +
 	ld hl, _DATA_11C8_
 	jp _LABEL_115F_
 
 +:
-	inc (iy+29)
-	ld a, (iy+29)
+	inc (iy + Entity.data1d)
+	ld a, (iy + Entity.data1d)
 	cp $40
 	call c, _LABEL_1183_
 	ld de, $0100
@@ -480,7 +480,7 @@ _DATA_11C8_:
 
 ; 11th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0B:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_1362_
 	ld hl, _DATA_1316_
@@ -489,8 +489,8 @@ updateEntity0B:
 	call _LABEL_12F7_
 	ld hl, $0210
 	call _LABEL_1049_
-	ld (iy+5), $01
-	ld (iy+25), $38
+	ld (iy + Entity.data05), $01
+	ld (iy + Entity.data19), $38
 	ld a, (_RAM_C603_)
 	cp $01
 	jr nz, +
@@ -504,7 +504,7 @@ updateEntity0B:
 	ld a, (_RAM_C622_)
 	cp $02
 	ret nz
-	ld (iy+5), $02
+	ld (iy + Entity.data05), $02
 	ret
 
 _LABEL_12F7_:
@@ -543,15 +543,15 @@ _DATA_1344_:
 
 _LABEL_1362_:
 	call _LABEL_13B0_
-	ld a, (iy+31)
+	ld a, (iy + Entity.data1f)
 	or a
 	jr nz, +++
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	or a
 	jr nz, ++
 	call updateEntityY
 	call loadPlayer1XYPosToHL
-	ld a, (iy+5)
+	ld a, (iy + Entity.data05)
 	dec a
 	jr z, +
 	call loadPlayer2XYPosToHL
@@ -560,7 +560,7 @@ _LABEL_1362_:
 	sub $30
 	cp (iy + Entity.yPos.low)
 	ret nc
-	ld (iy+24), $01
+	ld (iy + Entity.data18), $01
 	ld a, (iy + Entity.xPos.low)
 	cp h
 	ret nc
@@ -575,16 +575,16 @@ _LABEL_1362_:
 	jp updateEntityX
 
 +++:
-	ld a, (iy+5)
+	ld a, (iy + Entity.data05)
 	ld c, a
 	call _LABEL_2F92_
 	ld (iy + Entity.type), $08
 	ret
 
 _LABEL_13B0_:
-	dec (iy+25)
+	dec (iy + Entity.data19)
 	ret nz
-	ld (iy+25), $38
+	ld (iy + Entity.data19), $38
 	jp fire_LABEL_3063_
 
 loadPlayer1XYPosToHL:
@@ -603,7 +603,7 @@ loadPlayer2XYPosToHL:
 
 ; 12th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0C:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, _LABEL_144B_
 _LABEL_13D3_:
@@ -658,16 +658,16 @@ _DATA_143F_:
 .db $43 $14 $47 $14 $01 $04 $04 $8C $01 $04 $04 $8D
 
 _LABEL_144B_:
-	ld a, (iy+25)
+	ld a, (iy + Entity.data19)
 	or a
 	jr nz, +
 	ld de, $0400
 	ld a, (iy + Entity.yPos.low)
 	cp $40
 	jp c, updateEntityYWith
-	ld (iy+24), $30
-	ld (iy+25), $01
-	ld (iy+26), $01
+	ld (iy + Entity.data18), $30
+	ld (iy + Entity.data19), $01
+	ld (iy + Entity.data1a), $01
 	ld de, _DATA_143F_
 	ld (iy + Entity.animationDescriptorPointer.low), e
 	ld (iy + Entity.animationDescriptorPointer.high), d
@@ -676,18 +676,18 @@ _LABEL_144B_:
 
 +:
 	call _LABEL_1027_
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	or a
 	jr z, +
-	dec (iy+24)
+	dec (iy + Entity.data18)
 	jp updateEntityXY
 
 +:
 	ld de, $0100
 	call updateEntityYWith
-	dec (iy+26)
+	dec (iy + Entity.data1a)
 	ret nz
-	ld (iy+26), $20
+	ld (iy + Entity.data1a), $20
 	ld a, (iy + Entity.type)
 	cp $13
 	ret z
@@ -695,11 +695,11 @@ _LABEL_144B_:
 
 ; 13th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0D:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_1511_
-	ld (iy+24), $10
-	ld (iy+28), $08
+	ld (iy + Entity.data18), $10
+	ld (iy + Entity.data1c), $08
 	ld hl, _DATA_14C7_
 	ld bc, $0011
 	call memcpyIYToHL
@@ -720,13 +720,13 @@ _DATA_14C7_:
 .db $60 $00 $08 $61 $08 $00 $62 $08 $08 $63
 
 _LABEL_1511_:
-	dec (iy+28)
+	dec (iy + Entity.data1c)
 	call z, +++
 	call ++++
 	call updateEntityY
 	ld h, (iy + Entity.xVel.low)
 	ld l, (iy + Entity.xVel.high)
-	ld e, (iy+24)
+	ld e, (iy + Entity.data18)
 	ld d, $00
 	ld a, (_RAM_C308_)
 	or a
@@ -745,7 +745,7 @@ _LABEL_1511_:
 	jp updateEntityXWith
 
 +++:
-	ld (iy+28), $38
+	ld (iy + Entity.data1c), $38
 	jp fire_LABEL_3063_
 
 ++++:
@@ -767,7 +767,7 @@ _LABEL_1511_:
 
 ; 14th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0E:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, _LABEL_15B5_
 	ld a, $01
@@ -797,7 +797,7 @@ _LABEL_15B5_:
 
 ; 15th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0F:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, +
 	ld hl, _DATA_1AAE_
@@ -809,7 +809,7 @@ updateEntity0F:
 	jp _LABEL_1A80_
 
 _LABEL_15E0_:
-	ld (iy+3), $01
+	ld (iy + Entity.data03), $01
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld (iy + Entity.yVel.low), $FE
@@ -818,7 +818,7 @@ _LABEL_15E0_:
 	ret
 
 +:
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	or a
 	jp nz, _LABEL_1AD4_
 _LABEL_15FE_:
@@ -1031,7 +1031,7 @@ _LABEL_1760_:
 
 ; 16th entry of Jump Table from C64 (indexed by entity type)
 updateEntity10:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_1805_
 	ld hl, _DATA_17B7_
@@ -1040,7 +1040,7 @@ updateEntity10:
 	ld a, r
 	and $03
 	inc a
-	ld (iy+24), a
+	ld (iy + Entity.data18), a
 	dec a
 	add a, a
 	ld c, a
@@ -1063,10 +1063,10 @@ updateEntity10:
 	ld (iy + Entity.xVel.low), a
 	inc hl
 	ld a, (hl)
-	ld (iy+25), a
+	ld (iy + Entity.data19), a
 	inc hl
 	ld a, (hl)
-	ld (iy+26), a
+	ld (iy + Entity.data1a), a
 	ld hl, $0308
 	jp _LABEL_1049_
 
@@ -1084,10 +1084,10 @@ _DATA_17ED_:
 
 _LABEL_1805_:
 	call _LABEL_1027_
-	ld a, (iy+27)
+	ld a, (iy + Entity.data1b)
 	or a
 	jr nz, _LABEL_1859_
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	rrca
 	jr nc, +
 	ld a, (iy + Entity.xPos.low)
@@ -1119,15 +1119,15 @@ _LABEL_1805_:
 	jp ++++
 
 +++:
-	ld (iy+27), $01
+	ld (iy + Entity.data1b), $01
 	ld a, (_RAM_C30A_)
 	rrca
 	ret c
 	jp fire_LABEL_3063_
 
 _LABEL_1859_:
-	ld d, (iy+25)
-	ld e, (iy+26)
+	ld d, (iy + Entity.data19)
+	ld e, (iy + Entity.data1a)
 _LABEL_185F_:
 	ld h, (iy + Entity.xVel.low)
 	ld l, (iy + Entity.xVel.high)
@@ -1138,9 +1138,9 @@ _LABEL_185F_:
 
 ++++:
 	ld c, a
-	ld (iy+27), $01
-	ld (iy+19), $00
-	ld (iy+20), $04
+	ld (iy + Entity.data1b), $01
+	ld (iy + Entity.data13), $00
+	ld (iy + Entity.data14), $04
 	ld a, (_RAM_C30A_)
 	rrca
 	ret c
@@ -1165,21 +1165,21 @@ _LABEL_1889_:
 
 ; 18th entry of Jump Table from C64 (indexed by entity type)
 updateEntity12:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_191F_
 	ld hl, _DATA_18FA_
 	ld bc, $0007
 	call memcpyIYToHL
-	ld (iy+24), $01
+	ld (iy + Entity.data18), $01
 	ld (iy + Entity.xPos.low), $00
 	call rng_LABEL_2D2A_
 	rrca
 	jr c, +
-	ld (iy+24), $02
+	ld (iy + Entity.data18), $02
 	ld (iy + Entity.xPos.low), $B4
 +:
-	ld (iy+5), $01
+	ld (iy + Entity.data05), $01
 	ld a, (_RAM_C603_)
 	or a
 	jr z, +
@@ -1190,7 +1190,7 @@ updateEntity12:
 	ld a, (_RAM_C623_)
 	or a
 	jp z, ++
-	ld (iy+5), $02
+	ld (iy + Entity.data05), $02
 ++:
 	call _LABEL_1183_
 	ld h, (iy + Entity.yVel.low)
@@ -1213,38 +1213,38 @@ _DATA_18FA_:
 
 _LABEL_191F_:
 	ld (iy + Entity.frame), $00
-	ld a, (iy+19)
+	ld a, (iy + Entity.data13)
 	or a
 	jr z, +
-	dec (iy+19)
+	dec (iy + Entity.data13)
 	ld (iy + Entity.frame), $01
 +:
-	ld a, (iy+26)
+	ld a, (iy + Entity.data1a)
 	or a
 	jp nz, updateEntityXY
 	call loadPlayer1XYPosToHL
-	ld a, (iy+5)
+	ld a, (iy + Entity.data05)
 	cp $01
 	jr z, +
 	call loadPlayer2XYPosToHL
 +:
-	ld (iy+25), l
+	ld (iy + Entity.data19), l
 	ld a, h
 	call _LABEL_1884_
 	jp nc, updateEntityXY
-	ld a, (iy+25)
+	ld a, (iy + Entity.data19)
 	call _LABEL_1889_
 	jp nc, updateEntityXY
-	ld (iy+26), $01
-	ld c, (iy+5)
+	ld (iy + Entity.data1a), $01
+	ld c, (iy + Entity.data05)
 	call _LABEL_2F92_
-	ld (iy+19), $10
+	ld (iy + Entity.data13), $10
 	ld hl, $00FF
 	ld (iy + Entity.xVel.low), l
 	ld (iy + Entity.xVel.high), h
 	ld (iy + Entity.yVel.low), l
 	ld (iy + Entity.yVel.high), $80
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	cp $01
 	ret z
 	ld (iy + Entity.xVel.low), $01
@@ -1255,17 +1255,17 @@ _LABEL_191F_:
 
 ; 19th entry of Jump Table from C64 (indexed by entity type)
 updateEntity13:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp z, _LABEL_13D3_
-	ld a, (iy+28)
+	ld a, (iy + Entity.data1c)
 	or a
 	jp z, _LABEL_144B_
 	jp _LABEL_15FE_
 
 ; 21st entry of Jump Table from C64 (indexed by entity type)
 updateEntity15:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, _LABEL_1A0B_
 	ld hl, _DATA_19DF_
@@ -1273,12 +1273,12 @@ updateEntity15:
 	call memcpyIYToHL
 	ld hl, $020A
 	call _LABEL_1049_
-	ld (iy+24), $06
+	ld (iy + Entity.data18), $06
 	ld hl, _RAM_C30B_
 	inc (hl)
 	ld a, (_RAM_C30C_)
 	inc a
-	ld (iy+25), a
+	ld (iy + Entity.data19), a
 	ld (iy + Entity.xPos.low), $58
 	dec a
 	jr z, +
@@ -1289,11 +1289,11 @@ updateEntity15:
 	ret
 
 +:
-	ld (iy+25), $02
+	ld (iy + Entity.data19), $02
 	call rng_LABEL_2D2A_
 	rrca
 	ret c
-	ld (iy+25), $03
+	ld (iy + Entity.data19), $03
 	ret
 
 ; Data from 19DF to 1A0A (44 bytes)
@@ -1304,11 +1304,11 @@ _DATA_19DF_:
 
 _LABEL_1A0B_:
 	call _LABEL_1027_
-	ld a, (iy+26)
+	ld a, (iy + Entity.data1a)
 	or a
 	call z, +
 	call subData18FromYVel
-	ld a, (iy+25)
+	ld a, (iy + Entity.data19)
 	dec a
 	ret z
 	ld de, $FFC0
@@ -1353,12 +1353,12 @@ subData18FromYVel:
 	call _LABEL_2F92_
 	pop hl
 	ret nc
-	ld (iy+26), $01
+	ld (iy + Entity.data1a), $01
 	ret
 
 ; 22nd entry of Jump Table from C64 (indexed by entity type)
 updateEntity16:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, _LABEL_1ACC_
 	ld hl, _DATA_1A9F_
@@ -1398,17 +1398,17 @@ _DATA_1AAE_:
 
 _LABEL_1ACC_:
 	call updateEntityY
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	or a
 	ret z
 _LABEL_1AD4_:
-	ld (iy+24), $00
+	ld (iy + Entity.data18), $00
 	ld a, (iy + Entity.frame)
 	add a, $3A
 	ld (_RAM_C145_), a
 	ld a, $0A
 	ld (action11_RAM_C114_), a
-	ld a, (iy+5)
+	ld a, (iy + Entity.data05)
 	ld (_RAM_C146_), a
 	jp putIYEntityOffscreen
 
@@ -1416,10 +1416,10 @@ _LABEL_1AD4_:
 
 ; 26th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1A:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, _LABEL_1C00_
-	ld (iy+26), $18
+	ld (iy + Entity.data1a), $18
 	ld hl, _DATA_1BDB_
 	ld bc, $0007
 	call memcpyIYToHL
@@ -1448,14 +1448,14 @@ _DATA_1BDB_:
 _LABEL_1C00_:
 	call updateEntityY
 	call _LABEL_1027_
-	dec (iy+26)
+	dec (iy + Entity.data1a)
 	ret nz
-	ld (iy+26), $50
+	ld (iy + Entity.data1a), $50
 	jp fire_LABEL_3063_
 
 ; 27th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1B:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_1C69_
 	ld hl, _DATA_1D64_
@@ -1471,11 +1471,11 @@ updateEntity1B:
 	cp $01
 	jr z, +
 -:
-	ld (iy+3), $00
+	ld (iy + Entity.data03), $00
 	ret
 
 +:
-	ld (iy+24), $01
+	ld (iy + Entity.data18), $01
 	ret
 
 ++:
@@ -1495,7 +1495,7 @@ _LABEL_1C56_:
 	ld a, (_RAM_C622_)
 	cp $02
 	jr nz, -
-	ld (iy+24), $02
+	ld (iy + Entity.data18), $02
 	ret
 
 +:
@@ -1506,27 +1506,27 @@ _LABEL_1C56_:
 
 _LABEL_1C69_:
 	call _LABEL_1027_
-	ld a, (iy+24)
-	ld (iy+5), a
+	ld a, (iy + Entity.data18)
+	ld (iy + Entity.data05), a
 	cp $01
 	jr nz, +
 	ld a, (player1.yPos.low)
 	add a, $02
-	ld (iy+25), a
+	ld (iy + Entity.data19), a
 	ld a, (player1.xPos.low)
 	add a, $02
-	ld (iy+26), a
+	ld (iy + Entity.data1a), a
 	jr ++
 
 +:
 	ld a, (player2.yPos.low)
 	add a, $02
-	ld (iy+25), a
+	ld (iy + Entity.data19), a
 	ld a, (player2.xPos.low)
 	add a, $02
-	ld (iy+26), a
+	ld (iy + Entity.data1a), a
 ++:
-	ld a, (iy+27)
+	ld a, (iy + Entity.data1b)
 	add a, a
 	ld e, a
 	ld d, $00
@@ -1544,41 +1544,41 @@ _DATA_1CA8_:
 
 ; 1st entry of Jump Table from 1CA8 (indexed by _RAM_C61B_)
 _LABEL_1CAE_:
-	ld a, (iy+26)
+	ld a, (iy + Entity.data1a)
 	add a, $14
 	ld (iy + Entity.xPos.low), a
 	ld a, (iy + Entity.yPos.low)
 	add a, $08
 	ld (iy + Entity.yPos.low), a
-	sub (iy+25)
+	sub (iy + Entity.data19)
 	ret c
 	cp $08
 	ret nc
-	ld (iy+27), $01
+	ld (iy + Entity.data1b), $01
 	ret
 
 ; 2nd entry of Jump Table from 1CA8 (indexed by _RAM_C61B_)
 _LABEL_1CCA_:
-	ld a, (iy+28)
-	inc (iy+28)
+	ld a, (iy + Entity.data1c)
+	inc (iy + Entity.data1c)
 	cp $04
 	jr c, ++
-	ld (iy+28), $00
-	inc (iy+30)
-	ld a, (iy+30)
+	ld (iy + Entity.data1c), $00
+	inc (iy + Entity.data1e)
+	ld a, (iy + Entity.data1e)
 	cp $04
 	jr z, +
 	cp $02
 	ret nz
-	inc (iy+29)
-	ld a, (iy+29)
+	inc (iy + Entity.data1d)
+	ld a, (iy + Entity.data1d)
 	cp $06
 	ret c
-	ld (iy+27), $02
+	ld (iy + Entity.data1b), $02
 	ret
 
 +:
-	ld (iy+30), $00
+	ld (iy + Entity.data1e), $00
 	ret
 
 ++:
@@ -1587,7 +1587,7 @@ _LABEL_1CCA_:
 	ld b, $00
 	ld hl, _DATA_1D4E_
 	add hl, bc
-	ld a, (iy+30)
+	ld a, (iy + Entity.data1e)
 	or a
 	jr z, +
 	dec a
@@ -1598,41 +1598,41 @@ _LABEL_1CCA_:
 
 +:
 	ld a, (hl)
-	add a, (iy+26)
+	add a, (iy + Entity.data1a)
 	ld (iy + Entity.xPos.low), a
 	inc hl
 	ld a, (hl)
-	add a, (iy+25)
+	add a, (iy + Entity.data19)
 	ld (iy + Entity.yPos.low), a
 	ret
 
 ++:
 	ld a, (hl)
-	add a, (iy+25)
+	add a, (iy + Entity.data19)
 	ld (iy + Entity.yPos.low), a
 	inc hl
-	ld a, (iy+26)
+	ld a, (iy + Entity.data1a)
 	sub (hl)
 	ld (iy + Entity.xPos.low), a
 	ret
 
 +++:
-	ld a, (iy+26)
+	ld a, (iy + Entity.data1a)
 	sub (hl)
 	ld (iy + Entity.xPos.low), a
-	ld a, (iy+25)
+	ld a, (iy + Entity.data19)
 	inc hl
 	sub (hl)
 	ld (iy + Entity.yPos.low), a
 	ret
 
 ++++:
-	ld a, (iy+25)
+	ld a, (iy + Entity.data19)
 	sub (hl)
 	ld (iy + Entity.yPos.low), a
 	inc hl
 	ld a, (hl)
-	add a, (iy+26)
+	add a, (iy + Entity.data1a)
 	ld (iy + Entity.xPos.low), a
 	ret
 
@@ -1653,7 +1653,7 @@ _DATA_1D64_:
 
 ; 28th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1C:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, ++
 	ld hl, _DATA_1DA4_
@@ -1662,7 +1662,7 @@ updateEntity1C:
 	ld (iy + Entity.yVel.high), $55
 	ld hl, $0308
 	call _LABEL_1049_
-	ld (iy+24), $20
+	ld (iy + Entity.data18), $20
 	call rng_LABEL_2D2A_
 	ld bc, $FE80
 	rrca
@@ -1681,19 +1681,19 @@ _DATA_1DA4_:
 ++:
 	call _LABEL_1027_
 	call updateEntityXY
-	dec (iy+24)
+	dec (iy + Entity.data18)
 	ret nz
-	ld (iy+24), $40
+	ld (iy + Entity.data18), $40
 	jp fire_LABEL_3063_
 
 ; 29th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1D:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_1E38_
-	ld (iy+24), $01
-	ld (iy+25), $20
-	ld (iy+26), $10
+	ld (iy + Entity.data18), $01
+	ld (iy + Entity.data19), $20
+	ld (iy + Entity.data1a), $10
 	ld hl, $0306
 	call _LABEL_1049_
 	ld hl, _DATA_1E02_
@@ -1726,7 +1726,7 @@ _DATA_1E02_:
 
 _LABEL_1E38_:
 	call _LABEL_1027_
-	ld b, (iy+24)
+	ld b, (iy + Entity.data18)
 	dec b
 	call z, ++
 	dec b
@@ -1739,27 +1739,27 @@ _LABEL_1E38_:
 	call updateEntityXWith
 ++:
 	call updateEntityY
-	dec (iy+26)
+	dec (iy + Entity.data1a)
 	jr nz, +
-	ld (iy+26), $48
+	ld (iy + Entity.data1a), $48
 	call fire_LABEL_3063_
 +:
-	dec (iy+25)
+	dec (iy + Entity.data19)
 	ret nz
-	ld (iy+25), $38
-	inc (iy+29)
-	ld a, (iy+29)
+	ld (iy + Entity.data19), $38
+	inc (iy + Entity.data1d)
+	ld a, (iy + Entity.data1d)
 	cp $04
 	jr c, +
 	xor a
-	ld (iy+29), a
+	ld (iy + Entity.data1d), a
 +:
 	ld e, a
 	ld d, $00
 	ld hl, _DATA_1E82_
 	add hl, de
 	ld a, (hl)
-	ld (iy+24), a
+	ld (iy + Entity.data18), a
 	ret
 
 ; Data from 1E82 to 1E85 (4 bytes)
@@ -1768,7 +1768,7 @@ _DATA_1E82_:
 
 ; 34th entry of Jump Table from C64 (indexed by entity type)
 updateEntity22:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_15FE_
 	ld hl, _DATA_1E93_
@@ -1780,11 +1780,11 @@ _DATA_1E93_:
 
 ; 33rd entry of Jump Table from C64 (indexed by entity type)
 updateEntity21:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_15FE_
-	ld a, (iy+4)
-	ld (iy+4), $00
+	ld a, (iy + Entity.data04)
+	ld (iy + Entity.data04), $00
 	ld c, $0D
 	cp $8C
 	jp nz, +
@@ -1809,20 +1809,20 @@ _DATA_1EC8_:
 
 ; 17th entry of Jump Table from C64 (indexed by entity type)
 updateEntity11:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jp nz, _LABEL_1F85_
 	ld hl, _DATA_1F16_
 	ld bc, $0009
 	call memcpyIYToHL
-	ld (iy+24), $02
+	ld (iy + Entity.data18), $02
 _LABEL_1EFD_:
 	ld (iy + Entity.yVel.low), $FF
 	ld (iy + Entity.yVel.high), $00
-	ld (iy+30), $00
-	ld (iy+31), $08
+	ld (iy + Entity.data1e), $00
+	ld (iy + Entity.data1f), $08
 	ld (iy + Entity.xVel.high), $80
-	ld (iy+27), $00
+	ld (iy + Entity.data1b), $00
 	ret
 
 ; Data from 1F16 to 1F84 (111 bytes)
@@ -1836,10 +1836,10 @@ _DATA_1F16_:
 .db $10 $18 $BD $18 $00 $BE $18 $08 $D5 $18 $10 $D6 $18 $18 $C1
 
 _LABEL_1F85_:
-	ld a, (iy+28)
+	ld a, (iy + Entity.data1c)
 	or a
 	jr nz, _LABEL_1FA9_
-	ld a, (iy+25)
+	ld a, (iy + Entity.data19)
 	or a
 	jr nz, ++
 	ld a, (iy + Entity.yPos.low)
@@ -1847,7 +1847,7 @@ _LABEL_1F85_:
 	jp c, +
 	cp $D0
 	jp nc, +
-	ld (iy+25), $01
+	ld (iy + Entity.data19), $01
 	ret
 
 +:
@@ -1863,46 +1863,46 @@ _LABEL_1FA9_:
 
 ++:
 	call updateEntityX
-	ld d, (iy+30)
-	ld e, (iy+31)
+	ld d, (iy + Entity.data1e)
+	ld e, (iy + Entity.data1f)
 	ld h, (iy + Entity.yVel.low)
 	ld l, (iy + Entity.yVel.high)
 	add hl, de
 	ld (iy + Entity.yVel.low), h
 	ld (iy + Entity.yVel.high), l
 	call updateEntityY
-	inc (iy+26)
-	ld a, (iy+26)
+	inc (iy + Entity.data1a)
+	ld a, (iy + Entity.data1a)
 	cp $3F
 	ret nz
-	ld (iy+26), $00
-	dec (iy+24)
+	ld (iy + Entity.data1a), $00
+	dec (iy + Entity.data18)
 	jr nz, +
-	ld (iy+24), $04
+	ld (iy + Entity.data18), $04
 	ld (iy + Entity.xVel.low), $00
-	ld a, (iy+29)
+	ld a, (iy + Entity.data1d)
 	cpl
-	ld (iy+29), a
+	ld (iy + Entity.data1d), a
 	or a
 	jr z, +
 	ld (iy + Entity.xVel.low), $FF
 +:
-	ld a, (iy+27)
+	ld a, (iy + Entity.data1b)
 	or a
 	jp nz, _LABEL_1EFD_
 	ld (iy + Entity.yVel.low), $01
 	ld (iy + Entity.yVel.high), $00
-	ld (iy+30), $FF
-	ld (iy+31), $F8
-	ld (iy+27), $01
+	ld (iy + Entity.data1e), $FF
+	ld (iy + Entity.data1f), $F8
+	ld (iy + Entity.data1b), $01
 	ret
 
 ; 20th entry of Jump Table from C64 (indexed by entity type)
 updateEntity14:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, +
-	ld (iy+31), $80
+	ld (iy + Entity.data1f), $80
 	ld hl, _DATA_2024_
 	ld bc, $0009
 	jp memcpyIYToHL
@@ -1931,9 +1931,9 @@ _LABEL_2039_:
 	ret
 
 ++:
-	dec (iy+31)
+	dec (iy + Entity.data1f)
 	jr nz, +
-	ld (iy+31), $20
+	ld (iy + Entity.data1f), $20
 	call fire_LABEL_3063_
 +:
 	ld hl, _RAM_C75E_
@@ -1964,22 +1964,22 @@ _LABEL_2039_:
 	ld ix, _RAM_C900_
 	ld c, $02
 +++:
-	ld a, (ix+3)
+	ld a, (ix + Entity.data03)
 	or a
 	ret nz
 	ld (ix + Entity.type), $20
-	ld (ix+5), c
+	ld (ix + Entity.data05), c
 	ld a, (iy + Entity.yPos.low)
-	ld (ix+6), a
+	ld (ix + Entity.yPos.low), a
 	ld a, (iy + Entity.xPos.low)
-	ld (ix+8), a
+	ld (ix + Entity.xPos.low), a
 ++++:
 	ld (hl), b
 	ret
 
 ; 24th entry of Jump Table from C64 (indexed by entity type)
 updateEntity18:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, _LABEL_2101_
 	ld hl, _DATA_20BC_
@@ -1998,7 +1998,7 @@ _DATA_20BC_:
 _LABEL_2101_:
 	ld a, (_RAM_C331_)
 	ld (iy + Entity.frame), a
-	ld a, (iy+28)
+	ld a, (iy + Entity.data1c)
 	or a
 	jp nz, _LABEL_1FA9_
 	ld hl, $0808
@@ -2006,7 +2006,7 @@ _LABEL_2101_:
 
 ; 25th entry of Jump Table from C64 (indexed by entity type)
 updateEntity19:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, +
 	ld hl, _DATA_2123_
@@ -2020,7 +2020,7 @@ _DATA_2123_:
 +:
 	ld a, (_RAM_C330_)
 	ld (iy + Entity.frame), a
-	ld a, (iy+28)
+	ld a, (iy + Entity.data1c)
 	or a
 	jp nz, _LABEL_1FA9_
 	ld hl, $0810
@@ -2028,7 +2028,7 @@ _DATA_2123_:
 
 ; 30th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1E:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, +
 	ld hl, _DATA_214E_
@@ -2040,52 +2040,52 @@ _DATA_214E_:
 .db $36 $00 $1E $01 $00 $00 $F8 $00 $58 $01 $00 $00 $C2
 
 +:
-	ld a, (iy+28)
+	ld a, (iy + Entity.data1c)
 	or a
 	jp nz, _LABEL_2217_
 	ld hl, $2008
 	ld a, (_RAM_C779_)
 	or a
 	jp z, _LABEL_2039_
-	ld a, (iy+26)
+	ld a, (iy + Entity.data1a)
 	or a
 	jr z, +
-	dec (iy+26)
+	dec (iy + Entity.data1a)
 	jp +++
 
 +:
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	or a
 	jr nz, +
-	inc (iy+25)
-	ld a, (iy+25)
+	inc (iy + Entity.data19)
+	ld a, (iy + Entity.data19)
 	cp $08
 	jp c, +++
 	ld a, $01
-	ld (iy+24), a
+	ld (iy + Entity.data18), a
 	ld (_RAM_C75E_), a
 	jp ++
 
 +:
 	xor a
 	ld (_RAM_C75E_), a
-	dec (iy+25)
+	dec (iy + Entity.data19)
 	jp nz, +++
-	ld (iy+24), $00
+	ld (iy + Entity.data18), $00
 ++:
-	ld (iy+26), $18
+	ld (iy + Entity.data1a), $18
 +++:
 	ld a, l
-	sub (iy+25)
+	sub (iy + Entity.data19)
 	ld l, a
 	jp _LABEL_2039_
 
 ; 31st entry of Jump Table from C64 (indexed by entity type)
 updateEntity1F:
-	ld a, (iy+3)
+	ld a, (iy + Entity.data03)
 	or a
 	jr nz, +
-	ld (iy+24), $01
+	ld (iy + Entity.data18), $01
 	ld hl, _DATA_21C1_
 	ld bc, $0009
 	jp memcpyIYToHL
@@ -2095,38 +2095,38 @@ _DATA_21C1_:
 .db $64 $00 $1F $01 $00 $00 $F8 $00 $60 $01 $00 $00 $C3
 
 +:
-	ld a, (iy+28)
+	ld a, (iy + Entity.data1c)
 	or a
 	jp nz, _LABEL_2217_
 	ld hl, $2010
 	ld a, (_RAM_C779_)
 	or a
 	jp z, _LABEL_2039_
-	ld a, (iy+26)
+	ld a, (iy + Entity.data1a)
 	or a
 	jr z, +
-	dec (iy+26)
+	dec (iy + Entity.data1a)
 	jp +++
 
 +:
-	ld a, (iy+24)
+	ld a, (iy + Entity.data18)
 	or a
 	jr nz, +
-	dec (iy+25)
+	dec (iy + Entity.data19)
 	jr nz, +++
-	ld (iy+24), $01
+	ld (iy + Entity.data18), $01
 	jp ++
 
 +:
-	inc (iy+25)
-	ld a, (iy+25)
+	inc (iy + Entity.data19)
+	ld a, (iy + Entity.data19)
 	cp $08
 	jr c, +++
-	ld (iy+24), $00
+	ld (iy + Entity.data18), $00
 ++:
-	ld (iy+26), $18
+	ld (iy + Entity.data1a), $18
 +++:
-	ld a, (iy+25)
+	ld a, (iy + Entity.data19)
 	add a, l
 	ld l, a
 	jp _LABEL_2039_
