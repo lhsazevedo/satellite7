@@ -5339,8 +5339,20 @@ extractMapBlock:
 	jp extractMapBlock
 
 ; Data from 2CEE to 2D00 (19 bytes)
-.db $11 $82 $3D $7A $FE $37 $C8 $D5 $CD $88 $2C $E1 $11 $80 $FF $19
-.db $EB $18 $F0
+; Unused
+_LABEL_2CEE_:
+		ld de, $3D82
+-:	
+		ld a, d
+		cp $37
+		ret z
+		push de
+		call _LABEL_2C88_
+		pop hl
+		ld de, $FF80
+		add hl, de
+		ex de, hl
+		jr -
 
 _LABEL_2D01_:
 	ld a, (waveTimer)
@@ -5386,7 +5398,19 @@ rng_LABEL_2D2A_:
 	ret
 
 ; Data from 2D40 to 2D4E (15 bytes)
-.db $21 $00 $00 $06 $08 $29 $8F $30 $03 $19 $CE $00 $10 $F7 $C9
+; Unused
+_LABEL_2D40_:
+	ld hl, $0000
+	ld b, $08
+-:
+	add hl, hl
+	adc a, a
+	jr nc, +
+	add hl, de
+	adc a, $00
++:
+	djnz -
+	ret
 
 _LABEL_2D4F_:
 	ld b, $11
@@ -5544,7 +5568,10 @@ findFreeEntitySlot_dup:
 	ret
 
 ; Data from 2E02 to 2E03 (2 bytes)
-.db $37 $C9
+; Unused
+_LABEL_2E02_:
+	scf
+	ret
 
 _LABEL_2E04_:
 	ld hl, _RAM_C307_
@@ -5644,8 +5671,23 @@ _LABEL_2F92_:
 	ret
 
 ; Data from 2FBB to 2FD1 (23 bytes)
-.db $DD $21 $40 $C8 $06 $08 $11 $20 $00 $DD $7E $02 $B7 $28 $06 $DD
-.db $19 $10 $F6 $AF $C9 $37 $C9
+; Unused
+_LABEL_2FBB_:
+	ld ix, entities.19
+	ld b, $08
+	ld de, $0020
+-:
+	ld a, (ix+2)
+	or a
+	jr z, +
+	add ix, de
+	djnz -
+	xor a
+	ret
+	
++:
+	scf
+	ret
 
 _LABEL_2FD2_:
 	ld a, (_RAM_C30B_)
