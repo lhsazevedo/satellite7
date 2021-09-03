@@ -113,24 +113,33 @@ _LABEL_69_:
 	call _LABEL_BE7_
 	call _LABEL_159_
 	call clearTilemap
-	ld hl, (_DATA_58D5_)
+	ld hl, (terrainTiles)
 	ld bc, $58D5
 	ld de, $2000
 	call _LABEL_313C_
-	ld hl, (_DATA_440E_)
+
+	; Bomb, explosions, player, numbers, stars
+	ld hl, (baseTiles)
 	ld de, $0000
 	ld bc, $440E
 	call _LABEL_313C_
-	ld hl, _DATA_4A10_
+
+	ld hl, characterTiles
 	ld de, $0820
 	ld b, $F8
 	call _LABEL_16C_
+
 	call load_some_tiles_LABEL_A90_
-	ld hl, _DATA_5825_
+
+	ld hl, mark3Tiles
 	ld de, $1C80
 	ld b, $B0
 	call _LABEL_16C_
+
+	; Load title tiles
 	call _LABEL_36A1_
+
+	; Strange tiles
 	call _LABEL_31B2_
 
 	ld hl, palette
@@ -1373,7 +1382,7 @@ _LABEL_A63_:
 
 ; 12th entry of Jump Table from 745 (indexed by action1_RAM_C10A_)
 load_some_tiles_LABEL_A90_:
-	ld hl, (_DATA_4B08_)
+	ld hl, (enemyTiles)
 	ld de, $0C00
 	ld bc, $4B08
 	jp _LABEL_313C_
@@ -5986,12 +5995,12 @@ _LABEL_31B1_:
 _LABEL_31B2_:
 	ld de, $3200
 	ld bc, $31BE
-	ld hl, (_DATA_31BE_)
+	ld hl, (tiles_DATA_31BE_)
 	jp _LABEL_313C_
 
 ; Data from 31BE to 36A0 (1251 bytes)
-_DATA_31BE_:
-.incbin "baserom_DATA_31BE_.inc"
+tiles_DATA_31BE_:
+.INCBIN "graphics/baserom_DATA_31BE_.inc"
 
 _LABEL_36A1_:
 	ld de, $17A0

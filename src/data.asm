@@ -462,11 +462,11 @@ _DATA_40C9_:
 .db $DD $00 $00 $00 $FF
 
 ; Data from 440E to 4A0F (1538 bytes)
-_DATA_440E_:
-.incbin "baserom_DATA_440E_.inc"
+baseTiles:
+.INCBIN "graphics/baseTiles.inc"
 
 ; Data from 4A10 to 4B07 (248 bytes)
-_DATA_4A10_:
+characterTiles:
 .db $38 $28 $28 $7C $64 $64 $64 $00 $78 $48 $48 $7C $64 $64 $7C $00
 .db $7C $44 $40 $60 $60 $64 $7C $00 $98 $98 $98 $B8 $30 $30 $30 $FC
 .db $7C $40 $40 $7C $60 $60 $7C $00 $00 $00 $00 $00 $00 $00 $1F $3F
@@ -485,11 +485,11 @@ _DATA_4A10_:
 .db $10 $38 $38 $6C $6C $C6 $DE $00
 
 ; Data from 4B08 to 5824 (3357 bytes)
-_DATA_4B08_:
-.incbin "baserom_DATA_4B08_.inc"
+enemyTiles:
+.INCBIN "graphics/enemyTiles.inc"
 
 ; Data from 5825 to 58D4 (176 bytes)
-_DATA_5825_:
+mark3Tiles:
 .db $00 $00 $00 $00 $00 $00 $E0 $E0 $00 $00 $00 $00 $00 $00 $38 $38
 .db $00 $00 $00 $00 $00 $00 $07 $0F $00 $00 $00 $00 $00 $00 $3F $3F
 .db $00 $00 $00 $00 $00 $00 $FE $FF $00 $00 $00 $00 $00 $00 $38 $38
@@ -503,8 +503,8 @@ _DATA_5825_:
 .db $07 $0E $FE $FC $C0 $E0 $70 $38 $78 $71 $77 $73 $F1 $E0 $E0 $E0
 
 ; Data from 58D5 to 6468 (2964 bytes)
-_DATA_58D5_:
-.incbin "baserom_DATA_58D5_.inc"
+terrainTiles:
+.INCBIN "graphics/terrainTiles.inc"
 
 ; Pointer Table from 6469 to 6600 (204 entries, indexed by _RAM_D300_)
 level1BlocksPointers:
