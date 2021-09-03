@@ -5280,15 +5280,15 @@ _LABEL_2C88_:
 	push de
 
 	; Extract tile indexes
-	ld hl, level1BlocksPointers
-	call +
+	ld hl, mapTileIndexesBlocksPointers
+	call @loadPointer
 	ld de, _RAM_D000_
 	call extractMapBlock
 
 	; Extract tile attributes
 	pop de
-	ld hl, _DATA_6655_
-	call +
+	ld hl, mapTileAttributesBlocksPointers
+	call @loadPointer
 	ld de, _RAM_D001_
 	call extractMapBlock
 
@@ -5298,7 +5298,7 @@ _LABEL_2C88_:
 	ld bc, $022C
 	jp drawTileArea
 
-+:
+@loadPointer:
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -5306,7 +5306,6 @@ _LABEL_2C88_:
 	ex de, hl
 	ret
 
-; Related to map reading
 extractMapBlock:
 	ld a, e
 	cp $58
@@ -5315,7 +5314,6 @@ extractMapBlock:
 	bit 7, a
 	jr nz, +
 
-	; Repetição
 	ld b, a
 	inc hl
 	ld a, (hl)
@@ -5328,8 +5326,6 @@ extractMapBlock:
 	jp extractMapBlock
 
 +:
-	; Se for 1, segue aqui.
-	; Sequencial
 	and $7F
 	ld b, a
 -:

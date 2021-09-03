@@ -507,7 +507,7 @@ terrainTiles:
 .INCBIN "graphics/terrainTiles.inc"
 
 ; Pointer Table from 6469 to 6600 (204 entries, indexed by _RAM_D300_)
-level1BlocksPointers:
+mapTileIndexesBlocksPointers:
 .dw _DATA_6841_ _DATA_6843_ _DATA_6858_ _DATA_6875_ _DATA_6877_ _DATA_6890_ _DATA_68BD_ _DATA_68DF_
 .dw _DATA_6904_ _DATA_692B_ _DATA_6958_ _DATA_6985_ _DATA_69B2_ _DATA_69D7_ _DATA_6A03_ _DATA_6A28_
 .dw _DATA_6A4C_ _DATA_6A79_ _DATA_6AA2_ _DATA_6ACB_ _DATA_6AF0_ _DATA_6AFE_ _DATA_6B1D_ _DATA_6B4A_
@@ -535,6 +535,7 @@ level1BlocksPointers:
 .dw _DATA_75CF_ _DATA_75E9_ _DATA_75FD_ _DATA_760B_ _DATA_7623_ _DATA_763C_ _DATA_764B_ _DATA_766C_
 .dw _DATA_7686_ _DATA_7692_ _DATA_76B1_ _DATA_76D0_
 
+; @TODO: Code?
 ; Data from 6601 to 6654 (84 bytes)
 .db $E6 $76 $FD $76 $1E $77 $37 $77 $48 $77 $75 $77 $94 $77 $BD $77
 .db $DA $77 $E4 $77 $F0 $77 $05 $78 $21 $78 $41 $78 $61 $78 $7A $78
@@ -544,7 +545,7 @@ level1BlocksPointers:
 .db $2B $7A $47 $7A
 
 ; Pointer Table from 6655 to 6800 (214 entries, indexed by _RAM_D300_)
-_DATA_6655_:
+mapTileAttributesBlocksPointers:
 .dw _DATA_7A5D_ _DATA_7A5F_ _DATA_7A71_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_
 .dw _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_
 .dw _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_ _DATA_7A5D_
