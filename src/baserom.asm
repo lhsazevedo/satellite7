@@ -735,20 +735,71 @@ _LABEL_48D_:
 
 ; Data from 4F6 to 516 (33 bytes)
 _DATA_4F6_:
-.db $06 $05 $41 $05 $41 $05 $41 $05 $06 $05 $4E $05 $4E $05 $4E $05
-.db $04 $00 $00 $10 $00 $08 $11 $08 $00 $12 $08 $08 $13 $01 $04 $04
+.dw _DATA_506_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_506_
+.dw _DATA_54E_
+.dw _DATA_54E_
+.dw _DATA_54E_
+
+_DATA_506_:
+.db $04
+.db $00 $00 $10
+.db $00 $08 $11
+.db $08 $00 $12
+.db $08 $08 $13
+.db $01 $04 $04
+
 .db $00
 
 ; Data from 517 to 523 (13 bytes)
 _DATA_517_:
-.db $20 $05 $02 $01 $00 $02 $C0 $00 $40 $34 $05 $13 $05
+.dw _DATA_520_
+.db $02 ; type
+.db $01 ; data03
+.db $00 ; data04
+.db $02 ; data05
+.db $C0 ; yPos.low
+.db $00 ; yPos.high
+.db $40 ; xPos.low
+
+_DATA_520_:
+.dw _DATA_534_
+.db $13 $05
 
 ; Data from 524 to 55A (55 bytes)
 _DATA_524_:
-.db $34 $05 $41 $05 $41 $05 $41 $05 $34 $05 $4E $05 $4E $05 $4E $05
-.db $04 $00 $00 $10 $00 $08 $11 $08 $00 $14 $08 $08 $15 $04 $00 $00
-.db $08 $00 $08 $09 $08 $00 $0A $08 $08 $0B $04 $00 $00 $0C $00 $08
-.db $0D $08 $00 $0E $08 $08 $0F
+.dw _DATA_534_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_534_
+.dw _DATA_54E_
+.dw _DATA_54E_
+.dw _DATA_54E_
+
+_DATA_534_:
+.db $04
+.db $00 $00 $10
+.db $00 $08 $11
+.db $08 $00 $14
+.db $08 $08 $15
+
+_DATA_541_:
+.db $04
+.db $00 $00 $08
+.db $00 $08 $09
+.db $08 $00 $0A
+.db $08 $08 $0B
+
+_DATA_54E_:
+.db $04
+.db $00 $00 $0C
+.db $00 $08 $0D
+.db $08 $00 $0E
+.db $08 $08 $0F
 
 updateDemoState:
 	call _LABEL_70E_
@@ -1704,9 +1755,28 @@ _LABEL_E2C_:
 
 ; Data from E75 to E9A (38 bytes)
 _DATA_E75_:
-.db $7D $0E $8A $0E $7D $0E $97 $0E $04 $00 $00 $16 $00 $08 $17 $08
-.db $00 $18 $08 $08 $19 $04 $00 $00 $1A $00 $08 $1B $08 $00 $1C $08
-.db $08 $1D $01 $00 $00 $00
+.dw _DATA_E7D_
+.dw _DATA_E8A_
+.dw _DATA_E7D_
+.dw _DATA_E97_
+
+_DATA_E7D_:
+.db $04
+.db $00 $00 $16
+.db $00 $08 $17
+.db $08 $00 $18
+.db $08 $08 $19
+
+_DATA_E8A_:
+.db $04
+.db $00 $00 $1A
+.db $00 $08 $1B
+.db $08 $00 $1C
+.db $08 $08 $1D
+
+_DATA_E97_:
+.db $01
+.db $00 $00 $00
 
 _LABEL_E9B_:
 	ld a, (iy + Entity.frame)
@@ -1731,12 +1801,12 @@ _LABEL_E9B_:
 	ret
 
 ; 6th entry of Jump Table from C64 (indexed by entity type)
-_LABEL_EBF_:
+updateEntity06:
 	ld a, (iy+3)
 	or a
 	jp nz, _LABEL_F48_
 	ld a, (iy+5)
-	ld hl, _DATA_EEC_
+	ld hl, entity06Data
 	ld bc, $000E
 	call memcpyIYToHL
 	ld c, a
@@ -1753,13 +1823,54 @@ _LABEL_EBF_:
 	ret
 
 ; Data from EEC to F47 (92 bytes)
-_DATA_EEC_:
-.db $FA $0E $06 $01 $0C $01 $C0 $00 $58 $00 $00 $03 $04 $FF $FE $0E
-.db $23 $0F $0C $00 $00 $50 $00 $08 $4C $00 $10 $20 $00 $18 $31 $08
-.db $00 $47 $08 $08 $41 $08 $10 $4D $08 $18 $45 $10 $00 $4F $10 $08
-.db $56 $10 $10 $45 $10 $18 $52 $0C $00 $00 $50 $00 $08 $4C $00 $10
-.db $20 $00 $18 $32 $08 $00 $47 $08 $08 $41 $08 $10 $4D $08 $18 $45
-.db $10 $00 $4F $10 $08 $56 $10 $10 $45 $10 $18 $52
+entity06Data:
+.dw entity06AnimationDescriptor
+.db $06 ; type
+.db $01 ; data03
+.db $0C ; data04
+.db $01 ; data05
+.db $C0 ; yPos.low
+.db $00 ; yPos.high
+.db $58 ; xPos.low
+.db $00 ; xPos.high
+.db $00 ; data0a
+.db $03 ; data0b
+.db $04 ; data0c
+.db $FF ; yVel.low
+
+entity06AnimationDescriptor:
+.dw _DATA_0EFE_
+.dw _DATA_0F23_
+
+_DATA_0EFE_:
+.db $0C
+.db $00 $00 $50
+.db $00 $08 $4C
+.db $00 $10 $20
+.db $00 $18 $31
+.db $08 $00 $47
+.db $08 $08 $41
+.db $08 $10 $4D
+.db $08 $18 $45
+.db $10 $00 $4F
+.db $10 $08 $56
+.db $10 $10 $45
+.db $10 $18 $52 
+
+_DATA_0F23_:
+.db $0C
+.db $00 $00 $50
+.db $00 $08 $4C
+.db $00 $10 $20
+.db $00 $18 $32
+.db $08 $00 $47
+.db $08 $08 $41
+.db $08 $10 $4D
+.db $08 $18 $45
+.db $10 $00 $4F
+.db $10 $08 $56
+.db $10 $10 $45
+.db $10 $18 $52
 
 _LABEL_F48_:
 	ld a, (iy + Entity.yPos.low)
@@ -1781,13 +1892,13 @@ _LABEL_F48_:
 .INCLUDE "entities/updateExplosion.asm"
 
 ; 9th entry of Jump Table from C64 (indexed by entity type)
-_LABEL_FC0_:
+updateEntity09:
 	ld a, (iy+22)
 	or a
 	jr nz, +
 	ld (iy + Entity.yVel.low), $00
 	ld (iy + Entity.yVel.high), $55
-	ld hl, _DATA_FE5_
+	ld hl, entity09AnimationDescriptor
 	ld (iy + Entity.animationDescriptorPointer.low), l
 	ld (iy + Entity.animationDescriptorPointer.high), h
 	ld (iy+22), $01
@@ -1797,8 +1908,15 @@ _LABEL_FC0_:
 	ret
 
 ; Data from FE5 to FF3 (15 bytes)
-_DATA_FE5_:
-.db $E7 $0F $04 $00 $00 $1A $00 $08 $1B $08 $00 $1C $08 $08 $1D
+entity09AnimationDescriptor:
+.dw _DATA_FE7_
+
+_DATA_FE7_:
+.db $04
+.db $00 $00 $1A
+.db $00 $08 $1B
+.db $08 $00 $1C
+.db $08 $08 $1D
 
 +:
 	ld a, (iy + Entity.yPos.low)

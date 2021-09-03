@@ -4,10 +4,10 @@ entityUpdatersPointers:
 .dw updateBullet
 .dw updateBomb
 .dw _LABEL_E2C_
-.dw _LABEL_EBF_
+.dw updateEntity06
 .dw _LABEL_1155_
 .dw updateExplosion
-.dw _LABEL_FC0_
+.dw updateEntity09
 .dw updateEnemy1
 .dw _LABEL_12BA_
 .dw _LABEL_13CD_
