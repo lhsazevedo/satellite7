@@ -114,7 +114,7 @@ _LABEL_69_:
 	call _LABEL_189_
 	ld (de), a
 	ld de, _RAM_D300_
-	ld hl, _DATA_40C9_
+	ld hl, map
 	call _LABEL_189_
 	call _LABEL_14A_
 	call _LABEL_BA9_
