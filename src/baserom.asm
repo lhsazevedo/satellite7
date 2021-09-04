@@ -1,16 +1,17 @@
 ; This disassembly was created using Emulicious (https://www.emulicious.net)
 .MEMORYMAP
-SLOTSIZE $4000
+DEFAULTSLOT 0
+SLOTSIZE $8000
 SLOT 0 $0000
-SLOT 1 $4000
-SLOT 2 $8000
-DEFAULTSLOT 2
 .ENDME
+
 .ROMBANKMAP
-BANKSTOTAL 2
-BANKSIZE $4000
-BANKS 2
+BANKSTOTAL 1
+BANKSIZE $8000
+BANKS 1
 .ENDRO
+
+.EMPTYFILL $FF
 
 .INCLUDE "constants.asm"
 .INCLUDE "structs.asm"
