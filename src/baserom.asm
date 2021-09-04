@@ -48,10 +48,9 @@ _LABEL_8_:
 	ld c, a
 	ret
 
-    ; Unused code
-	ld b, $05
-	inc de
-	dec b
+_DATA_14_:
+.dw _DATA_506_
+.dw _DATA_513_
 
 writeToVdpAddress:
 	push af
@@ -77,10 +76,8 @@ _LABEL_20_:
 	jp nz, -
 	ret
 
-    ; Unused code
-    ld d, a
-
-.db $21
+_DATA_36_:
+.dw _DATA_2157_
 
 handleInterruptEntrypoint:
 	jp handleInterrupt
@@ -91,7 +88,17 @@ palette:
 
 ; Data from 5B to 65 (11 bytes)
 _DATA_5B_:
-.db $14 $00 $01 $01 $00 $01 $C0 $00 $70 $CA $21
+.dw _DATA_14_
+.db $01
+.db $01
+.db $00
+.db $01
+.db $C0
+.db $00
+.db $70
+
+_DATA_64_:
+.dw _DATA_21CA_
 
 _LABEL_66_:
 	jp _LABEL_21B_
@@ -751,9 +758,10 @@ _DATA_506_:
 .db $00 $08 $11
 .db $08 $00 $12
 .db $08 $08 $13
-.db $01 $04 $04
 
-.db $00
+_DATA_513_:
+.db $01
+.db $04 $04 $00
 
 ; Data from 517 to 523 (13 bytes)
 _DATA_517_:

@@ -451,11 +451,12 @@ _LABEL_1183_:
 	ld (iy + Entity.xVel.high), l
 	ret
 
-; Data from 11A2 to 11A7 (6 bytes)
 _DATA_11A2_:
-.db $A4 $11 $01 $00 $00 $05
+.dw _DATA_11A4_
 
-; 32nd entry of Jump Table from C64 (indexed by entity type)
+_DATA_11A4_:
+.db $01 $00 $00 $05
+
 updateEntity20:
 	ld a, (iy + Entity.data03)
 	or a
@@ -472,9 +473,11 @@ updateEntity20:
 	call updateEntityYWith
 	jp updateEntityX
 
-; Data from 11C8 to 11CD (6 bytes)
 _DATA_11C8_:
-.db $CA $11 $01 $00 $00 $40
+.dw _DATA_11CA_
+
+_DATA_11CA_:
+.db $01 $00 $00 $40
 
 .INCLUDE "entities/updateEnemy1.asm"
 
@@ -530,16 +533,58 @@ _LABEL_12F7_:
 	ld (iy + Entity.xPos.low), a
 	ret
 
-; Data from 1316 to 1343 (46 bytes)
 _DATA_1316_:
-.db $26 $13 $0B $01 $04 $00 $00 $00 $00 $00 $00 $02 $02 $03 $00 $FF
-.db $2A $13 $37 $13 $04 $00 $00 $C4 $00 $08 $C5 $08 $00 $C6 $08 $08
-.db $C7 $04 $00 $00 $C8 $00 $08 $C9 $08 $00 $CA $08 $08 $CB
+.dw _DATA_1326_
+.db $0B ; type
+.db $01 ; data03
+.db $04 ; data04
+.db $00 ; data05
+.db $00 ; yPos.low
+.db $00 ; yPos.high
+.db $00 ; xPos.low
+.db $00 ; xPos.high
+.db $00 ; data0a
+.db $02 ; data0b
+.db $02 ; data0c
+.db $03 ; yVel.low
+.db $00 ; yVel.high
+.db $FF ; xVel.low
 
-; Data from 1344 to 1361 (30 bytes)
+_DATA_1326_:
+.dw _DATA_132A_
+.dw _DATA_1337_
+
+_DATA_132A_:
+.db $04
+.db $00 $00 $C4
+.db $00 $08 $C5
+.db $08 $00 $C6
+.db $08 $08 $C7
+
+_DATA_1337_:
+.db $04
+.db $00 $00 $C8
+.db $00 $08 $C9
+.db $08 $00 $CA
+.db $08 $08 $CB
+
 _DATA_1344_:
-.db $48 $13 $55 $13 $04 $00 $00 $A4 $00 $08 $A5 $08 $00 $A6 $08 $08
-.db $A7 $04 $00 $00 $A8 $00 $08 $A9 $08 $00 $AA $08 $08 $AB
+.dw _DATA_1348_
+.dw _DATA_1355_
+
+_DATA_1348_:
+.db $04
+.db $00 $00 $A4
+.db $00 $08 $A5
+.db $08 $00 $A6
+.db $08 $08 $A7
+
+_DATA_1355_:
+.db $04
+.db $00 $00 $A8
+.db $00 $08 $A9
+.db $08 $00 $AA
+.db $08 $08 $AB
 
 _LABEL_1362_:
 	call _LABEL_13B0_
@@ -646,16 +691,56 @@ _LABEL_13D3_:
 
 ; Data from 1416 to 1422 (13 bytes)
 _DATA_1416_:
-.db $30 $14 $0C $01 $04 $00 $00 $00 $58 $00 $00 $00 $00
+.dw _DATA_1430_
+.db $0C
+.db $01
+.db $04
+.db $00
+.db $00
+.db $00
+.db $58
+.db $00
+.db $00
+.db $00
+.db $00
 
 ; Data from 1423 to 143E (28 bytes)
 _DATA_1423_:
-.db $30 $14 $13 $01 $04 $00 $00 $00 $58 $00 $00 $00 $00 $32 $14 $04
-.db $00 $00 $88 $00 $08 $89 $08 $00 $8A $08 $08 $8B
+.dw _DATA_1430_
+.db $13
+.db $01
+.db $04
+.db $00
+.db $00
+.db $00
+.db $58
+.db $00
+.db $00
+.db $00
+.db $00
+
+_DATA_1430_:
+.dw _DATA_1432_
+
+_DATA_1432_:
+.db $04
+.db $00 $00 $88
+.db $00 $08 $89
+.db $08 $00 $8A
+.db $08 $08 $8B
 
 ; Data from 143F to 144A (12 bytes)
 _DATA_143F_:
-.db $43 $14 $47 $14 $01 $04 $04 $8C $01 $04 $04 $8D
+.dw _DATA_1443_
+.dw _DATA_1447_
+
+_DATA_1443_:
+.db $01
+.db $04 $04 $8C
+
+_DATA_1447_:
+.db $01
+.db $04 $04 $8D
 
 _LABEL_144B_:
 	ld a, (iy + Entity.data19)
@@ -713,11 +798,58 @@ updateEntity0D:
 
 ; Data from 14C7 to 1510 (74 bytes)
 _DATA_14C7_:
-.db $D8 $14 $0D $01 $04 $00 $20 $00 $A8 $00 $00 $02 $02 $00 $80 $FC
-.db $00 $F0 $14 $E9 $14 $E2 $14 $F7 $14 $04 $15 $02 $00 $04 $07 $08
-.db $04 $27 $02 $04 $00 $2A $04 $08 $2B $02 $00 $04 $28 $08 $04 $29
-.db $04 $00 $00 $2C $00 $08 $2D $08 $00 $2E $08 $08 $2F $04 $00 $00
-.db $60 $00 $08 $61 $08 $00 $62 $08 $08 $63
+.dw _DATA_14D8_
+.db $0D
+.db $01
+.db $04
+.db $00
+.db $20
+.db $00
+.db $A8
+.db $00
+.db $00
+.db $02
+.db $02
+.db $00
+.db $80
+.db $FC
+.db $00
+
+_DATA_14D8_:
+.dw entity0DSpriteDescriptor3
+.dw entity0DSpriteDescriptor2
+.dw entity0DSpriteDescriptor1
+.dw entity0DSpriteDescriptor4
+.dw entity0DSpriteDescriptor5
+
+entity0DSpriteDescriptor1:
+.db $02
+.db $00 $04 $07
+.db $08 $04 $27
+
+entity0DSpriteDescriptor2:
+.db $02
+.db $04 $00 $2A
+.db $04 $08 $2B
+
+entity0DSpriteDescriptor3:
+.db $02
+.db $00 $04 $28
+.db $08 $04 $29
+
+entity0DSpriteDescriptor4:
+.db $04
+.db $00 $00 $2C
+.db $00 $08 $2D
+.db $08 $00 $2E
+.db $08 $08 $2F
+
+entity0DSpriteDescriptor5:
+.db $04
+.db $00 $00 $60
+.db $00 $08 $61
+.db $08 $00 $62
+.db $08 $08 $63
 
 _LABEL_1511_:
 	dec (iy + Entity.data1c)
@@ -776,17 +908,40 @@ updateEntity0E:
 	ld (_RAM_C320_), a
 	ld a, $50
 	ld (_RAM_C321_), a
-	ld hl, _DATA_158E_
+	ld hl, entity0EData
 	ld bc, $0009
 	call memcpyIYToHL
 	ld hl, $0210
 	jp _LABEL_1049_
 
 ; Data from 158E to 15B4 (39 bytes)
-_DATA_158E_:
-.db $97 $15 $0E $01 $04 $00 $FC $00 $50 $9B $15 $A8 $15 $04 $00 $00
-.db $80 $00 $08 $81 $08 $00 $82 $08 $08 $83 $04 $00 $00 $84 $00 $08
-.db $85 $08 $00 $86 $08 $08 $87
+entity0EData:
+.dw entity0EAnimationDescriptor
+.db $0E
+.db $01
+.db $04
+.db $00
+.db $FC
+.db $00
+.db $50
+
+entity0EAnimationDescriptor:
+.dw _DATA_159B_
+.dw _DATA_15A8_
+
+_DATA_159B_:
+.db $04
+.db $00 $00 $80
+.db $00 $08 $81
+.db $08 $00 $82
+.db $08 $08 $83
+
+_DATA_15A8_:
+.db $04
+.db $00 $00 $84
+.db $00 $08 $85
+.db $08 $00 $86
+.db $08 $08 $87
 
 _LABEL_15B5_:
 	ld de, $0040
@@ -845,9 +1000,9 @@ _LABEL_161A_:
 	push hl
 	ld hl, _DATA_164E_
 	ld a, l
-	ld (_RAM_C600_), a
+	ld (entities.1.animationDescriptorPointer.low), a
 	ld a, h
-	ld (_RAM_C601_), a
+	ld (entities.1.animationDescriptorPointer.high), a
 	pop hl
 	set 2, (hl)
 	ex de, hl
@@ -869,13 +1024,39 @@ _LABEL_161A_:
 
 ; Data from 164E to 165D (16 bytes)
 _DATA_164E_:
-.db $6E $16 $41 $05 $41 $05 $41 $05 $6E $16 $4E $05 $4E $05 $4E $05
+.dw _DATA_166E_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_166E_
+.dw _DATA_54E_
+.dw _DATA_54E_
+.dw _DATA_54E_
 
 ; Data from 165E to 1687 (42 bytes)
 _DATA_165E_:
-.db $7B $16 $41 $05 $41 $05 $41 $05 $7B $16 $4E $05 $4E $05 $4E $05
-.db $04 $00 $00 $1E $00 $08 $1F $08 $00 $12 $08 $08 $13 $04 $00 $00
-.db $1E $00 $08 $1F $08 $00 $14 $08 $08 $15
+.dw _DATA_167B_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_167B_
+.dw _DATA_54E_
+.dw _DATA_54E_
+.dw _DATA_54E_
+
+_DATA_166E_:
+.db $04
+.db $00 $00 $1E
+.db $00 $08 $1F
+.db $08 $00 $12
+.db $08 $08 $13
+
+_DATA_167B_:
+.db $04
+.db $00 $00 $1E
+.db $00 $08 $1F
+.db $08 $00 $14
+.db $08 $08 $15
 
 _LABEL_1688_:
 	ld c, $08
@@ -1072,10 +1253,40 @@ updateEntity10:
 
 ; Data from 17B7 to 17EC (54 bytes)
 _DATA_17B7_:
-.db $C0 $17 $10 $01 $04 $00 $90 $00 $B4 $C6 $17 $D3 $17 $E0 $17 $04
-.db $00 $00 $74 $00 $08 $75 $08 $00 $76 $08 $08 $77 $04 $00 $00 $78
-.db $00 $08 $79 $08 $00 $7A $08 $08 $7B $04 $00 $00 $7C $00 $08 $7D
-.db $08 $00 $7E $08 $08 $7F
+.dW _DATA_17C0_
+.db $10
+.db $01
+.db $04
+.db $00
+.db $90
+.db $00
+.db $B4
+
+_DATA_17C0_:
+.dW _DATA_17C6_
+.dW _DATA_17D3_
+.dW _DATA_17E0_
+
+_DATA_17C6_:
+.db $04
+.db $00 $00 $74
+.db $00 $08 $75
+.db $08 $00 $76
+.db $08 $08 $77
+
+_DATA_17D3_:
+.db $04
+.db $00 $00 $78
+.db $00 $08 $79
+.db $08 $00 $7A
+.db $08 $08 $7B
+
+_DATA_17E0_:
+.db $04
+.db $00 $00 $7C
+.db $00 $08 $7D
+.db $08 $00 $7E
+.db $08 $08 $7F
 
 ; Data from 17ED to 1804 (24 bytes)
 _DATA_17ED_:
@@ -1207,9 +1418,30 @@ updateEntity12:
 
 ; Data from 18FA to 191E (37 bytes)
 _DATA_18FA_:
-.db $01 $19 $12 $01 $04 $00 $00 $05 $19 $12 $19 $04 $00 $00 $AC $00
-.db $08 $AD $08 $00 $AE $08 $08 $AF $04 $00 $00 $B0 $00 $08 $B1 $08
-.db $00 $B2 $08 $08 $B3
+.dw _DATA_1901_
+.db $12
+.db $01
+.db $04
+.db $00
+.db $00
+
+_DATA_1901_:
+.dw _DATA_1905_
+.dw _DATA_1912_
+
+_DATA_1905_:
+.db $04
+.db $00 $00 $AC
+.db $00 $08 $AD
+.db $08 $00 $AE
+.db $08 $08 $AF
+
+_DATA_1912_:
+.db $04
+.db $00 $00 $B0
+.db $00 $08 $B1
+.db $08 $00 $B2
+.db $08 $08 $B3
 
 _LABEL_191F_:
 	ld (iy + Entity.frame), $00
@@ -1298,9 +1530,37 @@ updateEntity15:
 
 ; Data from 19DF to 1A0A (44 bytes)
 _DATA_19DF_:
-.db $ED $19 $15 $01 $04 $00 $F0 $00 $60 $00 $00 $02 $02 $03 $F1 $19
-.db $FE $19 $04 $00 $00 $8E $00 $08 $8F $08 $00 $90 $08 $08 $91 $04
-.db $00 $00 $92 $00 $08 $93 $08 $00 $94 $08 $08 $95
+.dw _DATA_19ED_
+.db $15
+.db $01
+.db $04
+.db $00
+.db $F0
+.db $00
+.db $60
+.db $00
+.db $00
+.db $02
+.db $02
+.db $03
+
+_DATA_19ED_:
+.dW _DATA_19F1_
+.dW _DATA_19FE_
+
+_DATA_19F1_:
+.db $04
+.db $00 $00 $8E
+.db $00 $08 $8F
+.db $08 $00 $90
+.db $08 $08 $91
+
+_DATA_19FE_:
+.db $04
+.db $00 $00 $92
+.db $00 $08 $93
+.db $08 $00 $94
+.db $08 $08 $95
 
 _LABEL_1A0B_:
 	call _LABEL_1027_
@@ -1389,12 +1649,48 @@ _LABEL_1A80_:
 
 ; Data from 1A9F to 1AAD (15 bytes)
 _DATA_1A9F_:
-.db $AE $1A $16 $01 $01 $00 $00 $00 $50 $00 $00 $01 $01 $00 $80
+.dw _DATA_1AAE_
+.db $16
+.db $01
+.db $01
+.db $00
+.db $00
+.db $00
+.db $50
+.db $00
+.db $00
+.db $01
+.db $01
+.db $00
+.db $80
 
 ; Data from 1AAE to 1ACB (30 bytes)
 _DATA_1AAE_:
-.db $B8 $1A $BC $1A $C0 $1A $C4 $1A $C8 $1A $01 $00 $00 $3A $01 $00
-.db $00 $3B $01 $00 $00 $3C $01 $00 $00 $3D $01 $00 $00 $3E
+.dw _DATA_1AB8_
+.dw _DATA_1ABC_
+.dw _DATA_1AC0_
+.dw _DATA_1AC4_
+.dw _DATA_1ACB_
+
+_DATA_1AB8_:
+.db $01
+.db $00 $00 $3A
+
+_DATA_1ABC_:
+.db $01
+.db $00 $00 $3B
+
+_DATA_1AC0_:
+.db $01
+.db $00 $00 $3C
+
+_DATA_1AC4_:
+.db $01
+.db $00 $00 $3D
+
+_DATA_1ACB_:
+.db $01
+.db $00 $00 $3E
 
 _LABEL_1ACC_:
 	call updateEntityY
@@ -1441,9 +1737,30 @@ updateEntity1A:
 
 ; Data from 1BDB to 1BFF (37 bytes)
 _DATA_1BDB_:
-.db $E2 $1B $1A $01 $00 $00 $FC $E6 $1B $F3 $1B $04 $00 $00 $9C $00
-.db $08 $9D $08 $00 $9E $08 $08 $9F $04 $00 $00 $A0 $00 $08 $A1 $08
-.db $00 $A2 $08 $08 $A3
+.dW _DATA_1BE2_
+.db $1A
+.db $01
+.db $00
+.db $00
+.db $FC
+
+_DATA_1BE2_:
+.dW _DATA_1BE6_
+.dW _DATA_1BF3_
+
+_DATA_1BE6_:
+.db $04
+.db $00 $00 $9C
+.db $00 $08 $9D
+.db $08 $00 $9E
+.db $08 $08 $9F
+
+_DATA_1BF3_:
+.db $04
+.db $00 $00 $A0
+.db $00 $08 $A1
+.db $08 $00 $A2
+.db $08 $08 $A3
 
 _LABEL_1C00_:
 	call updateEntityY
@@ -1649,7 +1966,19 @@ _LABEL_1D56_:
 
 ; Data from 1D64 to 1D71 (14 bytes)
 _DATA_1D64_:
-.db $3F $14 $1B $01 $01 $00 $F0 $00 $58 $00 $19 $01 $01 $01
+.dw _DATA_143F_
+.db $1B
+.db $01
+.db $01
+.db $00
+.db $F0
+.db $00
+.db $58
+.db $00
+.db $19
+.db $01
+.db $01
+.db $01
 
 ; 28th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1C:
@@ -1676,7 +2005,14 @@ updateEntity1C:
 
 ; Data from 1DA4 to 1DAC (9 bytes)
 _DATA_1DA4_:
-.db $0B $1E $1C $01 $04 $00 $08 $00 $B4
+.dw _DATA_1E0B_
+.db $1C
+.db $01
+.db $04
+.db $00
+.db $08
+.db $00
+.db $B4
 
 ++:
 	call _LABEL_1027_
@@ -1719,10 +2055,40 @@ updateEntity1D:
 
 ; Data from 1E02 to 1E37 (54 bytes)
 _DATA_1E02_:
-.db $0B $1E $1D $01 $04 $00 $F8 $00 $58 $11 $1E $1E $1E $2B $1E $04
-.db $00 $00 $D7 $00 $08 $D8 $08 $00 $D9 $08 $08 $DA $04 $00 $00 $DB
-.db $00 $08 $DC $08 $00 $DD $08 $08 $DE $04 $00 $00 $DF $00 $08 $E0
-.db $08 $00 $E1 $08 $08 $E2
+.dw _DATA_1E0B_
+.db $1D
+.db $01
+.db $04
+.db $00
+.db $F8
+.db $00
+.db $58
+
+_DATA_1E0B_:
+.dw _DATA_1E11_
+.dw _DATA_1E1E_
+.dw _DATA_1E2B_
+
+_DATA_1E11_:
+.db $04
+.db $00 $00 $D7
+.db $00 $08 $D8
+.db $08 $00 $D9
+.db $08 $08 $DA
+
+_DATA_1E1E_:
+.db $04
+.db $00 $00 $DB
+.db $00 $08 $DC
+.db $08 $00 $DD
+.db $08 $08 $DE
+
+_DATA_1E2B_:
+.db $04
+.db $00 $00 $DF
+.db $00 $08 $E0
+.db $08 $00 $E1
+.db $08 $08 $E2
 
 _LABEL_1E38_:
 	call _LABEL_1027_
@@ -1803,9 +2169,23 @@ updateEntity21:
 
 ; Data from 1EC8 to 1EE8 (33 bytes)
 _DATA_1EC8_:
-.db $CC $1E $D6 $1E $03 $00 $00 $CC $08 $00 $CD $08 $08 $CE $06 $00
-.db $00 $CF $00 $08 $D0 $00 $10 $D1 $08 $00 $D2 $08 $08 $D3 $08 $10
-.db $D4
+.dw _DATA_1ECC_
+.dw _DATA_1ED6_
+
+_DATA_1ECC_:
+.db $03
+.db $00 $00 $CC
+.db $08 $00 $CD
+.db $08 $08 $CE
+
+_DATA_1ED6_:
+.db $06
+.db $00 $00 $CF
+.db $00 $08 $D0
+.db $00 $10 $D1
+.db $08 $00 $D2
+.db $08 $08 $D3
+.db $08 $10 $D4
 
 ; 17th entry of Jump Table from C64 (indexed by entity type)
 updateEntity11:
@@ -1827,13 +2207,56 @@ _LABEL_1EFD_:
 
 ; Data from 1F16 to 1F84 (111 bytes)
 _DATA_1F16_:
-.db $1F $1F $11 $01 $00 $00 $D8 $00 $50 $23 $1F $54 $1F $10 $00 $00
-.db $B4 $00 $08 $B5 $00 $10 $B6 $00 $18 $B7 $08 $00 $B8 $08 $08 $E3
-.db $08 $10 $E3 $08 $18 $B9 $10 $00 $BA $10 $08 $BB $10 $10 $BC $10
-.db $18 $BD $18 $00 $BE $18 $08 $BF $18 $10 $C0 $18 $18 $C1 $10 $00
-.db $00 $B4 $00 $08 $B5 $00 $10 $B6 $00 $18 $B7 $08 $00 $B8 $08 $08
-.db $E3 $08 $10 $E3 $08 $18 $B9 $10 $00 $BA $10 $08 $BB $10 $10 $BC
-.db $10 $18 $BD $18 $00 $BE $18 $08 $D5 $18 $10 $D6 $18 $18 $C1
+.dw _DATA_1F1F_
+.db $11
+.db $01
+.db $00
+.db $00
+.db $D8
+.db $00
+.db $50
+
+_DATA_1F1F_:
+.dw _DATA_1F23_
+.dw _DATA_1F54_
+
+_DATA_1F23_:
+.db $10
+.db $00 $00 $B4
+.db $00 $08 $B5
+.db $00 $10 $B6
+.db $00 $18 $B7
+.db $08 $00 $B8
+.db $08 $08 $E3
+.db $08 $10 $E3
+.db $08 $18 $B9
+.db $10 $00 $BA
+.db $10 $08 $BB
+.db $10 $10 $BC
+.db $10 $18 $BD
+.db $18 $00 $BE
+.db $18 $08 $BF
+.db $18 $10 $C0
+.db $18 $18 $C1
+
+_DATA_1F54_:
+.db $10
+.db $00 $00 $B4
+.db $00 $08 $B5
+.db $00 $10 $B6
+.db $00 $18 $B7
+.db $08 $00 $B8
+.db $08 $08 $E3
+.db $08 $10 $E3
+.db $08 $18 $B9
+.db $10 $00 $BA
+.db $10 $08 $BB
+.db $10 $10 $BC
+.db $10 $18 $BD
+.db $18 $00 $BE
+.db $18 $08 $D5
+.db $18 $10 $D6
+.db $18 $18 $C1
 
 _LABEL_1F85_:
 	ld a, (iy + Entity.data1c)
@@ -1909,7 +2332,21 @@ updateEntity14:
 
 ; Data from 2024 to 2032 (15 bytes)
 _DATA_2024_:
-.db $2D $20 $14 $01 $00 $00 $F0 $00 $5C $2F $20 $01 $00 $00 $00
+.dw _DATA_202D_
+.db $14
+.db $01
+.db $00
+.db $00
+.db $F0
+.db $00
+.db $5C
+
+_DATA_202D_:
+.dw _DATA_202F_
+
+_DATA_202F_:
+.db $01
+.db $00 $00 $00
 
 +:
 	call ++
@@ -1989,11 +2426,60 @@ updateEntity18:
 
 ; Data from 20BC to 2100 (69 bytes)
 _DATA_20BC_:
-.db $C5 $20 $18 $01 $00 $00 $E0 $00 $58 $D9 $20 $DD $20 $E1 $20 $E5
-.db $20 $E9 $20 $ED $20 $F1 $20 $F5 $20 $F9 $20 $FD $20 $01 $00 $00
-.db $30 $01 $00 $00 $31 $01 $00 $00 $32 $01 $00 $00 $33 $01 $00 $00
-.db $34 $01 $00 $00 $35 $01 $00 $00 $36 $01 $00 $00 $37 $01 $00 $00
-.db $38 $01 $00 $00 $39
+.dw _DATA_20C5_
+.db $18 $01 $00 $00 $E0 $00 $58
+
+_DATA_20C5_:
+.dw _DATA_20D9_
+.dw _DATA_20DD_
+.dw _DATA_20E1_
+.dw _DATA_20E5_
+.dw _DATA_20E9_
+.dw _DATA_20ED_
+.dw _DATA_20F1_
+.dw _DATA_20F5_
+.dw _DATA_20F9_
+.dw _DATA_20FD_
+
+_DATA_20D9_:
+.db $01
+.db $00 $00 $30
+
+_DATA_20DD_:
+.db $01
+.db $00 $00 $31
+
+_DATA_20E1_:
+.db $01
+.db $00 $00 $32
+
+_DATA_20E5_:
+.db $01
+.db $00 $00 $33
+
+_DATA_20E9_:
+.db $01
+.db $00 $00 $34
+
+_DATA_20ED_:
+.db $01
+.db $00 $00 $35
+
+_DATA_20F1_:
+.db $01
+.db $00 $00 $36
+
+_DATA_20F5_:
+.db $01
+.db $00 $00 $37
+
+_DATA_20F9_:
+.db $01
+.db $00 $00 $38
+
+_DATA_20FD_:
+.db $01
+.db $00 $00 $39
 
 _LABEL_2101_:
 	ld a, (_RAM_C331_)
@@ -2015,7 +2501,8 @@ updateEntity19:
 
 ; Data from 2123 to 212B (9 bytes)
 _DATA_2123_:
-.db $C5 $20 $19 $01 $00 $00 $E0 $00 $60
+.dw _DATA_20C5_
+.db $19 $01 $00 $00 $E0 $00 $60
 
 +:
 	ld a, (_RAM_C330_)
@@ -2037,7 +2524,18 @@ updateEntity1E:
 
 ; Data from 214E to 215A (13 bytes)
 _DATA_214E_:
-.db $36 $00 $1E $01 $00 $00 $F8 $00 $58 $01 $00 $00 $C2
+.dw _DATA_36_
+.db $1E
+.db $01
+.db $00
+.db $00
+.db $F8
+.db $00
+.db $58
+
+_DATA_2157_:
+.db $01
+.db $00 $00 $C2
 
 +:
 	ld a, (iy + Entity.data1c)
@@ -2092,7 +2590,18 @@ updateEntity1F:
 
 ; Data from 21C1 to 21CD (13 bytes)
 _DATA_21C1_:
-.db $64 $00 $1F $01 $00 $00 $F8 $00 $60 $01 $00 $00 $C3
+.dw _DATA_64_
+.db $1F
+.db $01
+.db $00
+.db $00
+.db $F8
+.db $00
+.db $60
+
+_DATA_21CA_:
+.db $01
+.db $00 $00 $C3
 
 +:
 	ld a, (iy + Entity.data1c)
