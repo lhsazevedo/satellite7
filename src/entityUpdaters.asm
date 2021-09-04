@@ -4,7 +4,6 @@
 .INCLUDE "entities/updateBullet.asm"
 .INCLUDE "entities/updateBomb.asm"
 
-; 5th entry of Jump Table from C64 (indexed by entity type)
 updateEntity05:
 	ld a, (iy + Entity.data16)
 	or a
@@ -84,7 +83,6 @@ _LABEL_E9B_:
 	res 6, (hl)
 	ret
 
-; 6th entry of Jump Table from C64 (indexed by entity type)
 updateEntity06:
 	ld a, (iy + Entity.data03)
 	or a
@@ -175,7 +173,6 @@ _LABEL_F48_:
 
 .INCLUDE "entities/updateExplosion.asm"
 
-; 9th entry of Jump Table from C64 (indexed by entity type)
 updateEntity09:
 	ld a, (iy + Entity.data16)
 	or a
@@ -412,7 +409,6 @@ _LABEL_1149_:
 	pop iy
 	ret
 
-; 7th entry of Jump Table from C64 (indexed by entity type)
 updateEntity07:
 	ld a, (iy + Entity.data03)
 	or a
@@ -481,7 +477,6 @@ _DATA_11CA_:
 
 .INCLUDE "entities/updateEnemy1.asm"
 
-; 11th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0B:
 	ld a, (iy + Entity.data03)
 	or a
@@ -646,7 +641,6 @@ loadPlayer2XYPosToHL:
 	ld l, a
 	ret
 
-; 12th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0C:
 	ld a, (iy + Entity.data03)
 	or a
@@ -778,7 +772,6 @@ _LABEL_144B_:
 	ret z
 	jp fire_LABEL_3063_
 
-; 13th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0D:
 	ld a, (iy + Entity.data03)
 	or a
@@ -897,7 +890,6 @@ _LABEL_1511_:
 	ld (iy + Entity.frame), $02
 	ret
 
-; 14th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0E:
 	ld a, (iy + Entity.data03)
 	or a
@@ -950,7 +942,6 @@ _LABEL_15B5_:
 	ld (_RAM_C320_), a
 	jp _LABEL_1027_
 
-; 15th entry of Jump Table from C64 (indexed by entity type)
 updateEntity0F:
 	ld a, (iy + Entity.data03)
 	or a
@@ -1210,7 +1201,6 @@ _LABEL_1760_:
 	ld (_RAM_C11B_), a ; Related to _DATA_745_ jumptable
 	ret
 
-; 16th entry of Jump Table from C64 (indexed by entity type)
 updateEntity10:
 	ld a, (iy + Entity.data03)
 	or a
@@ -1374,7 +1364,6 @@ _LABEL_1889_:
 	ld e, a
 	jp _LABEL_26AC_
 
-; 18th entry of Jump Table from C64 (indexed by entity type)
 updateEntity12:
 	ld a, (iy + Entity.data03)
 	or a
@@ -1485,7 +1474,6 @@ _LABEL_191F_:
 	ld (iy + Entity.yVel.high), $80
 	ret
 
-; 19th entry of Jump Table from C64 (indexed by entity type)
 updateEntity13:
 	ld a, (iy + Entity.data03)
 	or a
@@ -1495,7 +1483,6 @@ updateEntity13:
 	jp z, _LABEL_144B_
 	jp _LABEL_15FE_
 
-; 21st entry of Jump Table from C64 (indexed by entity type)
 updateEntity15:
 	ld a, (iy + Entity.data03)
 	or a
@@ -1616,7 +1603,6 @@ subData18FromYVel:
 	ld (iy + Entity.data1a), $01
 	ret
 
-; 22nd entry of Jump Table from C64 (indexed by entity type)
 updateEntity16:
 	ld a, (iy + Entity.data03)
 	or a
@@ -1710,7 +1696,6 @@ _LABEL_1AD4_:
 
 .INCLUDE "entities/updateEnemy2.asm"
 
-; 26th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1A:
 	ld a, (iy + Entity.data03)
 	or a
@@ -1770,7 +1755,6 @@ _LABEL_1C00_:
 	ld (iy + Entity.data1a), $50
 	jp fire_LABEL_3063_
 
-; 27th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1B:
 	ld a, (iy + Entity.data03)
 	or a
@@ -1980,7 +1964,6 @@ _DATA_1D64_:
 .db $01
 .db $01
 
-; 28th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1C:
 	ld a, (iy + Entity.data03)
 	or a
@@ -2022,7 +2005,6 @@ _DATA_1DA4_:
 	ld (iy + Entity.data18), $40
 	jp fire_LABEL_3063_
 
-; 29th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1D:
 	ld a, (iy + Entity.data03)
 	or a
@@ -2132,7 +2114,6 @@ _LABEL_1E38_:
 _DATA_1E82_:
 .db $03 $01 $02 $01
 
-; 34th entry of Jump Table from C64 (indexed by entity type)
 updateEntity22:
 	ld a, (iy + Entity.data03)
 	or a
@@ -2144,7 +2125,6 @@ updateEntity22:
 _DATA_1E93_:
 .db $95 $1E $01 $04 $04 $21
 
-; 33rd entry of Jump Table from C64 (indexed by entity type)
 updateEntity21:
 	ld a, (iy + Entity.data03)
 	or a
@@ -2187,7 +2167,6 @@ _DATA_1ED6_:
 .db $08 $08 $D3
 .db $08 $10 $D4
 
-; 17th entry of Jump Table from C64 (indexed by entity type)
 updateEntity11:
 	ld a, (iy + Entity.data03)
 	or a
@@ -2320,7 +2299,6 @@ _LABEL_1FA9_:
 	ld (iy + Entity.data1b), $01
 	ret
 
-; 20th entry of Jump Table from C64 (indexed by entity type)
 updateEntity14:
 	ld a, (iy + Entity.data03)
 	or a
@@ -2414,7 +2392,6 @@ _LABEL_2039_:
 	ld (hl), b
 	ret
 
-; 24th entry of Jump Table from C64 (indexed by entity type)
 updateEntity18:
 	ld a, (iy + Entity.data03)
 	or a
@@ -2490,7 +2467,6 @@ _LABEL_2101_:
 	ld hl, $0808
 	jp _LABEL_2039_
 
-; 25th entry of Jump Table from C64 (indexed by entity type)
 updateEntity19:
 	ld a, (iy + Entity.data03)
 	or a
@@ -2513,7 +2489,6 @@ _DATA_2123_:
 	ld hl, $0810
 	jp _LABEL_2039_
 
-; 30th entry of Jump Table from C64 (indexed by entity type)
 updateEntity1E:
 	ld a, (iy + Entity.data03)
 	or a
@@ -2578,7 +2553,6 @@ _DATA_2157_:
 	ld l, a
 	jp _LABEL_2039_
 
-; 31st entry of Jump Table from C64 (indexed by entity type)
 updateEntity1F:
 	ld a, (iy + Entity.data03)
 	or a
