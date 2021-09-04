@@ -3301,14 +3301,14 @@ _LABEL_2C88_:
 	push de
 
 	; Extract tile indexes
-	ld hl, mapTileIndexesBlocksPointers
+	ld hl, mapBlockTilesPointers
 	call @loadPointer
 	ld de, _RAM_D000_
 	call extractMapBlock
 
 	; Extract tile attributes
 	pop de
-	ld hl, mapTileAttributesBlocksPointers
+	ld hl, mapBlockAttributesPointers
 	call @loadPointer
 	ld de, _RAM_D001_
 	call extractMapBlock
