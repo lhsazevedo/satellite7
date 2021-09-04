@@ -1,0 +1,14 @@
+{ "columns":1,
+ "image":"metatiles.tiled.json",
+ "imageheight":3936,
+ "imagewidth":176,
+ "margin":0,
+ "name":"Metatile Tileset",
+ "spacing":0,
+ "tilecount":246,
+ "tiledversion":"1.7.2",
+ "tileheight":16,
+ "tilewidth":176,
+ "type":"tileset",
+ "version":"1.6"
+}
