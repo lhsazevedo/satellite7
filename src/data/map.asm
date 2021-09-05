@@ -1,4 +1,5 @@
-; Data from 40C9 to 440D (837 bytes)
+; RLE compressed list of metatile indexes
+; These indexes point to the Metatile Descriptors at src/data/metatiles.asm
 map:
 .db $29 $00 $82 $01 $02 $06 $03 $95 $04 $05 $03 $03 $06 $07 $08 $09
 .db $0A $09 $0B $0C $0D $0E $0F $10 $11 $12 $11 $12 $13 $03 $14 $8A

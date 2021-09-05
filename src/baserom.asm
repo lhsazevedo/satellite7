@@ -16,6 +16,7 @@ BANKS 1
 .INCLUDE "constants.asm"
 .INCLUDE "structs.asm"
 .INCLUDE "variables.asm"
+.INCLUDE "macros.asm"
 
 ; Ports
 .define Port_PSG $7F
@@ -111,11 +112,11 @@ _LABEL_69_:
 	ldir
 	ld de, _RAM_D100_
 	ld hl, _DATA_5F6_
-	call _LABEL_189_
+	call extract
 	ld (de), a
 	ld de, _RAM_D300_
 	ld hl, map
-	call _LABEL_189_
+	call extract
 	call _LABEL_14A_
 	call _LABEL_BA9_
 	call _LABEL_BE7_
@@ -278,37 +279,38 @@ _LABEL_16C_:
 	djnz -
 	ret
 
-_LABEL_189_:
+; Extract RLE compressed data from HL to DE
+extract:
 	ld a, (hl)
 	cp $FF
 	ret z
 	bit 7, a
-	jr nz, +
+	jr nz, @raw
 	ld b, a
 	inc hl
 	ld a, (hl)
--:
+@runLoop:
 	ld (de), a
 	cp $FF
 	ret z
 	inc de
-	djnz -
+	djnz @runLoop
 	inc hl
-	jp _LABEL_189_
+	jp extract
 
-+:
+@raw:
 	and $7F
 	ld b, a
--:
+@rawLoop:
 	inc hl
 	ld a, (hl)
 	ld (de), a
 	cp $FF
 	ret z
 	inc de
-	djnz -
+	djnz @rawLoop
 	inc hl
-	jp _LABEL_189_
+	jp extract
 
 handleInterrupt:
 	push af
@@ -3304,14 +3306,14 @@ _LABEL_2C88_:
 	ld hl, metatilesPointers
 	call @loadPointer
 	ld de, _RAM_D000_
-	call extractMapBlock
+	call extractMetatile
 
 	; Extract tile attributes
 	pop de
 	ld hl, metatilesAttributesPointers
 	call @loadPointer
 	ld de, _RAM_D001_
-	call extractMapBlock
+	call extractMetatile
 
 	; Draw tiles
 	ld hl, _RAM_D000_
@@ -3327,7 +3329,7 @@ _LABEL_2C88_:
 	ex de, hl
 	ret
 
-extractMapBlock:
+extractMetatile:
 	ld a, e
 	cp $58
 	ret nc
@@ -3344,7 +3346,7 @@ extractMapBlock:
 	inc e
 	djnz -
 	inc hl
-	jp extractMapBlock
+	jp extractMetatile
 
 +:
 	and $7F
@@ -3357,7 +3359,7 @@ extractMapBlock:
 	inc e
 	djnz -
 	inc hl
-	jp extractMapBlock
+	jp extractMetatile
 
 ; Data from 2CEE to 2D00 (19 bytes)
 ; Unused
