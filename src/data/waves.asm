@@ -1,4 +1,7 @@
 ; List of entity wave descriptors
+; entity_wave arguments: interval, a_count, a_type, b_count, b_type
+; See src/macros.asm
+
 waves:
 entity_wave 00  00 $00
 
