@@ -114,7 +114,7 @@ _LABEL_69_:
 	ld hl, _DATA_5F6_
 	call extract
 	ld (de), a
-	ld de, _RAM_D300_
+	ld de, v_map
 	ld hl, map
 	call extract
 	call _LABEL_14A_
@@ -3286,7 +3286,7 @@ _LABEL_2C66_:
 _LABEL_2C88_:
 	push de
 	ld de, (_RAM_C134_)
-	ld hl, _RAM_D300_
+	ld hl, v_map
 	add hl, de
 	inc de
 	ld (_RAM_C134_), de

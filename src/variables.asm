@@ -373,7 +373,7 @@ _RAM_D100_ db
 .ende
 
 .enum $D300 export
-_RAM_D300_ db
+v_map db
 .ende
 
 .enum $E801 export
