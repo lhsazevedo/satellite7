@@ -2790,7 +2790,7 @@ _LABEL_28B9_:
     add hl, hl
     exx
     add hl, hl
-    ld bc, _DATA_7D29_ + 1	; _DATA_7D29_ + 1 = $7D2A
+    ld bc, metatileAttrs39 + 1	; metatileAttrs39 + 1 = $7D2A
     ld hl, ($2A01)
     inc d
     ld hl, ($2A86)
