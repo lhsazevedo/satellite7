@@ -1,5 +1,5 @@
 ; Simple macro for entity wave data
-; Argyments: interval, a_count, a_type, b_count, b_type
+; Arguments: interval, a_count, a_type, b_count, b_type
 ; 
 ; A entity wave consists in a group of 3 bytes:
 ; - Spawn timer
