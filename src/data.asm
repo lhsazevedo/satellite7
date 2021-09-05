@@ -13,7 +13,7 @@ enemyTiles:
 terrainTiles:
 .INCBIN "graphics/terrainTiles.inc"
 
-.INCLUDE "data/mapBlocks.asm"
+.INCLUDE "data/metatiles.asm"
 
 // Header
 .ORG $7FF8

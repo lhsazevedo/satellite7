@@ -1,5 +1,5 @@
 ; Pointer Table from 6469 to 6654 (246 entries, indexed by _RAM_D300_)
-mapBlockTilesPointers:
+metatilesPointers:
 .dw metatile00 metatile01 metatile02 metatile03 metatile04 metatile05 metatile06 metatile07
 .dw metatile08 metatile09 metatile0A metatile0B metatile0C metatile0D metatile0E metatile0F
 .dw metatile10 metatile11 metatile12 metatile13 metatile14 metatile15 metatile16 metatile17
@@ -33,7 +33,7 @@ mapBlockTilesPointers:
 .dw metatileC2 metatileC3 metatileC4 metatileC5 metatileC6 metatileC7
 
 ; Pointer Table from 6655 to 6840 (246 entries, indexed by _RAM_D300_)
-mapBlockAttributesPointers:
+metatilesAttributesPointers:
 .dw metatileAttrs00 metatileAttrs01 metatileAttrs02 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00
 .dw metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00
 .dw metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00 metatileAttrs00
