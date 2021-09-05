@@ -1,4 +1,5 @@
 # Satellite 7 Disassembly
+[![CI](https://github.com/lhsazevedo/satellite7/actions/workflows/ci.yml/badge.svg)](https://github.com/lhsazevedo/satellite7/actions/workflows/ci.yml)
 
 This project aims to understand and document the disasssembly of the game [Satellite 7](https://segaretro.org/Satellite_7) released in 1985 for the Sega Master System.
 
