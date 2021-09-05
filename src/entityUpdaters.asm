@@ -263,7 +263,7 @@ putIYEntityOffscreen:
 	ld (iy + Entity.data15), $01
 	ret
 
-_LABEL_1063_:
+putIXEntityOffscreen:
 	ld (ix + Entity.yPos.low), $D8
 	ld (ix + Entity.xPos.low), $00
 	ld (ix + Entity.data15), $01

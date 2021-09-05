@@ -1,5 +1,5 @@
-; 4th entry of Jump Table from C64 (indexed by entity type)
 updateBomb:
+	; Slow down
 	ld d, $00
 	ld e, (iy + Entity.data18)
 	ld h, (iy + Entity.yVel.low)
@@ -10,6 +10,8 @@ updateBomb:
 	ex de, hl
 	ld e, $00
 	call updateEntityYWith
+
+	; Update frames
 	inc (iy + Entity.data13)
 	ld a, (iy + Entity.data13)
 	cp $08
@@ -23,6 +25,8 @@ updateBomb:
 	ld (iy + Entity.frame), $03
 	cp $2A
 	jp nc, putIYEntityOffscreen
+
+	// @TODO
 	ld a, (_RAM_C133_)
 	and $20
 	ret nz

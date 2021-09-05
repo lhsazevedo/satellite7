@@ -1874,10 +1874,10 @@ _LABEL_2301_:
 	ld a, (_RAM_C6A3_)
 	or a
 	jr nz, +
-	ld ix, _RAM_C600_
-	ld iy, _RAM_C6A0_
+	ld ix, player1
+	ld iy, entities.6
 	ld a, (_RAM_C12F_)
-	call _LABEL_2401_
+	call spawnBomb
 +:
 	ld a, (_RAM_C104_)
 	and $F0
@@ -1897,10 +1897,10 @@ _LABEL_2301_:
 	ld a, (_RAM_C723_)
 	or a
 	ret nz
-	ld ix, _RAM_C620_
-	ld iy, _RAM_C720_
+	ld ix, player2
+	ld iy, entities.10
 	ld a, (_RAM_C131_)
-	jp _LABEL_2401_
+	jp spawnBomb
 
 _LABEL_2371_:
 	ld b, (hl)
@@ -1934,7 +1934,7 @@ _LABEL_2371_:
 	add a, $04
 	ld (iy + Entity.xPos.low), a
 
-	call _LABEL_2456_
+	call unknown_LABEL_2456_
 
 	ld a, (ix + Entity.frame)
 	add a, a
@@ -1985,73 +1985,84 @@ _DATA_23E1_:
 .db $FD $00 $03 $00
 .db $FC $00 $02 $00
 
-_LABEL_2401_:
+; IX = Player address
+; IY = Entity slot
+spawnBomb:
 	bit 4, a
 	ret z
-	ld hl, _DATA_2430_
+	ld hl, bombData
 	ld bc, $000E
 	push iy
 	pop de
 	ldir
-	ld a, (ix+5)
-	ld (iy+5), a
-	ld a, (ix+6)
+
+	; Copy player data05 and position.
+	ld a, (ix + Entity.data05)
+	ld (iy + Entity.data05), a
+
+	ld a, (ix + Entity.yPos.low)
 	ld (iy + Entity.yPos.low), a
-	ld a, (ix+8)
+
+	ld a, (ix + Entity.xPos.low)
 	add a, $04
 	ld (iy + Entity.xPos.low), a
-	ld (iy+24), $10
-	call _LABEL_2456_
+
+	ld (iy + Entity.data18), ENTITY_BOMB_DRAG
+	call unknown_LABEL_2456_
+
 	ld a, $86
 	ld (_RAM_CD00_), a
 	ret
 
 ; Data from 2430 to 2455 (38 bytes)
-_DATA_2430_:
-.dw _DATA_243E_
-.db $04
-.db $01
-.db $01
-.db $00
-.db $00
-.db $00
-.db $00
-.db $00
-.db $00
-.db $01
-.db $01
-.db $FE
+bombData:
+.dw bombAnimationDescriptor
+.db ENTITY_BOMB ; type
+.db $01         ; data03
+.db $01         ; data04
+.db $00         ; data05
+.db $00         ; yPos.low
+.db $00         ; yPos.high
+.db $00         ; xPos.low
+.db $00         ; xPos.high
+.db $00         ; data0a
+.db $01         ; data0b
+.db $01         ; data0c
+.db $FE         ; yVel.low
 
-_DATA_243E_:
-.dw _DATA_2446_
-.dw _DATA_244A_
-.dw _DATA_244E_
-.dw _DATA_2452_
+bombAnimationDescriptor:
+.dw bombSpriteDescriptor0
+.dw bombSpriteDescriptor1
+.dw bombSpriteDescriptor2
+.dw bombSpriteDescriptor3
 
-_DATA_2446_:
+bombSpriteDescriptor0:
 .db $01
 .db $00 $00 $01
 
-_DATA_244A_:
+bombSpriteDescriptor1:
 .db $01
 .db $00 $00 $02
 
-_DATA_244E_:
+bombSpriteDescriptor2:
 .db $01
 .db $00 $00 $03
 
-_DATA_2452_:
+bombSpriteDescriptor3:
 .db $01
 .db $00 $00 $06
 
-_LABEL_2456_:
-	ld a, (ix+27)
+unknown_LABEL_2456_:
+	ld a, (ix + Entity.data1b)
 	or a
 	ret z
-	ld (ix+27), $00
+
+	ld (ix + Entity.data1b), $00
+
 	ld hl, _DATA_4F6_
-	ld a, (ix+5)
+	ld a, (ix + Entity.data05)
 	dec a
+
 	jp z, _LABEL_1149_
 	ld hl, _DATA_524_
 	jp _LABEL_1149_
@@ -2848,7 +2859,7 @@ _LABEL_294A_:
 	bit 2, a
 	jr nz, +
 	ld (iy + Entity.type), $05
-	jp _LABEL_1063_
+	jp putIXEntityOffscreen
 
 +:
 	ld (ix + Entity.type), $08
@@ -2876,7 +2887,7 @@ _LABEL_29B9_:
 	ret
 
 _LABEL_29C3_:
-	call _LABEL_1063_
+	call putIXEntityOffscreen
 	ld a, (iy+5)
 	cp $01
 	jr nz, +
