@@ -1,52 +1,52 @@
 
 
 updateEnemy1:
-	ld a, (iy + Entity.data03)
-	or a
-	jp nz, realUpdateEnemy1
+    ld a, (iy + Entity.data03)
+    or a
+    jp nz, realUpdateEnemy1
 
-	ld (iy + Entity.data1b), $00
-	ld hl, enemy1Data
-	ld bc, $0011
-	call memcpyIYToHL
+    ld (iy + Entity.data1b), $00
+    ld hl, enemy1Data
+    ld bc, $0011
+    call memcpyIYToHL
 
-	ld (iy + Entity.data1d), $08
+    ld (iy + Entity.data1d), $08
 
-	; X velocity and position when spawing on left.
+    ; X velocity and position when spawing on left.
     ; ld de, $VVPP
-	ld de, (ENTITY_ENEMY_1_X_VELOCITY << 8) + ENTITY_ENEMY_1_X_POS
+    ld de, (ENTITY_ENEMY_1_X_VELOCITY << 8) + ENTITY_ENEMY_1_X_POS
 
     ; Velocity used when turning
-	ld (iy + Entity.data18), e
+    ld (iy + Entity.data18), e
 
     ; Flip the spaw side every 10 entities.
     ; This is done using a counter and a flag.
-	ld hl, enemy1Counter
-	inc (hl)
-	ld a, (hl)
-	cp $09
-	jr c, @doNotFlipSides
-	ld (hl), $01
-	inc hl
-	ld a, (hl)
-	cpl
-	ld (hl), a
-	dec hl
+    ld hl, enemy1Counter
+    inc (hl)
+    ld a, (hl)
+    cp $09
+    jr c, @doNotFlipSides
+    ld (hl), $01
+    inc hl
+    ld a, (hl)
+    cpl
+    ld (hl), a
+    dec hl
     @doNotFlipSides:
 
-	inc hl
-	ld a, (hl)
-	or a
-	ret z
+    inc hl
+    ld a, (hl)
+    or a
+    ret z
 
-	; Starting on left
-	ld (iy + Entity.data1b), $01
-	ld (iy + Entity.xPos.low), e
-	ld (iy + Entity.xVel.low), d
-	ld hl, enemy1AnimationDescriptor2
-	ld (iy + Entity.animationDescriptorPointer.low), l
-	ld (iy + Entity.animationDescriptorPointer.high), h
-	ret
+    ; Starting on left
+    ld (iy + Entity.data1b), $01
+    ld (iy + Entity.xPos.low), e
+    ld (iy + Entity.xVel.low), d
+    ld hl, enemy1AnimationDescriptor2
+    ld (iy + Entity.animationDescriptorPointer.low), l
+    ld (iy + Entity.animationDescriptorPointer.high), h
+    ret
 
 enemy1Data:
 .dw enemy1AnimationDescriptor1
@@ -105,46 +105,46 @@ _DATA_1258_:
 .db $08 $08 $73
 
 realUpdateEnemy1:
-	dec (iy + Entity.data1d)
-	call z, fire_LABEL_3063_
+    dec (iy + Entity.data1d)
+    call z, fire_LABEL_3063_
 
-	ld a, (iy + Entity.data1a)
-	or a
-	jr nz, @turned
+    ld a, (iy + Entity.data1a)
+    or a
+    jr nz, @turned
 
-	inc (iy + Entity.data19)
-	ld a, (iy + Entity.data19)
-	cp ENTITY_ENEMY_1_STATE1_TIMER
-	jr c, @turn
+    inc (iy + Entity.data19)
+    ld a, (iy + Entity.data19)
+    cp ENTITY_ENEMY_1_STATE1_TIMER
+    jr c, @turn
 
     ; First state, accelerate upwards and sideways?
-	ld (iy + Entity.data13), ENTITY_ENEMY_1_ANIMATION_TIMER
-	ld hl, $0001
-	ld (iy + Entity.data1a), l
-	ld (iy + Entity.yVel.low), l
-	ld (iy + Entity.yVel.high), h
-	ld (iy + Entity.xVel.low), l
-	ld (iy + Entity.xVel.high), h
-	ld a, (iy + Entity.data1b)
-	or a
-	jp z, fire_LABEL_3063_
-	ld (iy + Entity.xVel.low), $FF
-	jp fire_LABEL_3063_
+    ld (iy + Entity.data13), ENTITY_ENEMY_1_ANIMATION_TIMER
+    ld hl, $0001
+    ld (iy + Entity.data1a), l
+    ld (iy + Entity.yVel.low), l
+    ld (iy + Entity.yVel.high), h
+    ld (iy + Entity.xVel.low), l
+    ld (iy + Entity.xVel.high), h
+    ld a, (iy + Entity.data1b)
+    or a
+    jp z, fire_LABEL_3063_
+    ld (iy + Entity.xVel.low), $FF
+    jp fire_LABEL_3063_
 
 ; Turn
 ; Second state, change in horizontal velocity
 @turn:
-	call subData18FromYVel
-	jp updateEntityX
+    call subData18FromYVel
+    jp updateEntityX
 
 ; Turned
 ; Third state, already turned. Use data13 to update frame.
 @turned:
-	ld (iy + Entity.frame), $02
-	ld a, (iy + Entity.data13)
-	or a
-	jp z, updateEntityXY
+    ld (iy + Entity.frame), $02
+    ld a, (iy + Entity.data13)
+    or a
+    jp z, updateEntityXY
 
-	ld (iy + Entity.frame), $01
-	dec (iy + Entity.data13)
-	jp updateEntityXY
+    ld (iy + Entity.frame), $01
+    dec (iy + Entity.data13)
+    jp updateEntityXY

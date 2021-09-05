@@ -10,233 +10,233 @@ _DATA_3918_:
 
 ; 1st entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_3936_:
-	call _LABEL_3C56_
-	ld a, $80
-	ld (_RAM_CD01_), a
-	jp +
+    call _LABEL_3C56_
+    ld a, $80
+    ld (_RAM_CD01_), a
+    jp +
 
 ; 3rd entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_3941_:
-	call _LABEL_3C56_
+    call _LABEL_3C56_
 +:
-	ld de, _RAM_CD05_
-	jp _LABEL_399A_
+    ld de, _RAM_CD05_
+    jp _LABEL_399A_
 
 ; 10th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_394A_:
-	ld a, $40
-	jr ++
+    ld a, $40
+    jr ++
 
 ; 6th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_394E_:
-	or a
-	jp nz, _LABEL_39BD_
-	jr +
+    or a
+    jp nz, _LABEL_39BD_
+    jr +
 
 ; 7th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_3954_:
-	ld a, $01
-	cp e
-	jp c, _LABEL_39BD_
-	jr +
+    ld a, $01
+    cp e
+    jp c, _LABEL_39BD_
+    jr +
 
 ; 5th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_395C_:
-	or a
-	jr nz, _LABEL_39BD_
+    or a
+    jr nz, _LABEL_39BD_
 +:
-	ex af, af'
-	ld a, $FF
-	out (Port_PSG), a
-	ex af, af'
+    ex af, af'
+    ld a, $FF
+    out (Port_PSG), a
+    ex af, af'
 ++:
-	ld (_RAM_CD01_), a
-	ld a, $DF
-	out (Port_PSG), a
-	ld de, _RAM_CDA5_
-	jp _LABEL_399A_
+    ld (_RAM_CD01_), a
+    ld a, $DF
+    out (Port_PSG), a
+    ld de, _RAM_CDA5_
+    jp _LABEL_399A_
 
 ; 2nd entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_3972_:
-	ld a, $08
-	cp e
-	jp c, _LABEL_39BD_
-	jr +
+    ld a, $08
+    cp e
+    jp c, _LABEL_39BD_
+    jr +
 
 ; 9th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_397A_:
-	ld a, $04
-	cp e
-	jp c, _LABEL_39BD_
-	jr ++
+    ld a, $04
+    cp e
+    jp c, _LABEL_39BD_
+    jr ++
 
 ; 11th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_3982_:
-	ld a, $10
-	cp e
-	jp c, _LABEL_39BD_
-	jr ++
+    ld a, $10
+    cp e
+    jp c, _LABEL_39BD_
+    jr ++
 
 ; 13th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
 _LABEL_398A_:
-	ld a, $20
-	cp e
-	jp c, _LABEL_39BD_
+    ld a, $20
+    cp e
+    jp c, _LABEL_39BD_
 +:
-	ld (_RAM_CD01_), a
-	ld a, $FF
-	out (Port_PSG), a
+    ld (_RAM_CD01_), a
+    ld a, $FF
+    out (Port_PSG), a
 ++:
-	ld de, _RAM_CD85_
+    ld de, _RAM_CD85_
 _LABEL_399A_:
-	ld h, b
-	ld l, c
-	ld b, (hl)
-	inc hl
+    ld h, b
+    ld l, c
+    ld b, (hl)
+    inc hl
 -:
-	push bc
-	ld bc, $0009
-	ldir
-	ld a, $20
-	ld (de), a
-	inc de
-	ld a, $01
-	ld (de), a
-	inc de
-	xor a
-	ld (de), a
-	inc de
-	ld (de), a
-	inc de
-	ld (de), a
-	push hl
-	ld hl, $0012
-	add hl, de
-	ex de, hl
-	pop hl
-	inc de
-	pop bc
-	djnz -
+    push bc
+    ld bc, $0009
+    ldir
+    ld a, $20
+    ld (de), a
+    inc de
+    ld a, $01
+    ld (de), a
+    inc de
+    xor a
+    ld (de), a
+    inc de
+    ld (de), a
+    inc de
+    ld (de), a
+    push hl
+    ld hl, $0012
+    add hl, de
+    ex de, hl
+    pop hl
+    inc de
+    pop bc
+    djnz -
 _LABEL_39BD_:
-	ld a, $80
-	ld (_RAM_CD00_), a
-	ret
+    ld a, $80
+    ld (_RAM_CD00_), a
+    ret
 
 _LABEL_39C3_:
-	ld e, (ix+12)
-	ld d, (ix+13)
-	inc de
-	ld (ix+12), e
-	ld (ix+13), d
-	ld l, (ix+10)
-	ld h, (ix+11)
-	or a
-	sbc hl, de
-	call z, _LABEL_3AD6_
-	ld e, (ix+16)
-	ld d, (ix+17)
-	ld a, e
-	or d
-	jr nz, +
-	ld (ix+22), $0F
-	jp _LABEL_3A81_
+    ld e, (ix+12)
+    ld d, (ix+13)
+    inc de
+    ld (ix+12), e
+    ld (ix+13), d
+    ld l, (ix+10)
+    ld h, (ix+11)
+    or a
+    sbc hl, de
+    call z, _LABEL_3AD6_
+    ld e, (ix+16)
+    ld d, (ix+17)
+    ld a, e
+    or d
+    jr nz, +
+    ld (ix+22), $0F
+    jp _LABEL_3A81_
 
 +:
-	bit 5, (ix+0)
-	jr nz, +
-	ld (ix+18), e
-	ld (ix+19), d
-	jp _LABEL_3A3C_
+    bit 5, (ix+0)
+    jr nz, +
+    ld (ix+18), e
+    ld (ix+19), d
+    jp _LABEL_3A3C_
 
 _LABEL_39FC_:
-	dec a
-	ld c, a
-	ld b, $00
-	add hl, bc
-	add hl, bc
-	ld a, (hl)
-	inc hl
-	ld h, (hl)
-	ld l, a
-	ret
+    dec a
+    ld c, a
+    ld b, $00
+    add hl, bc
+    add hl, bc
+    ld a, (hl)
+    inc hl
+    ld h, (hl)
+    ld l, a
+    ret
 
 +:
-	push de
-	ld l, (ix+20)
-	ld h, (ix+21)
-	or a
-	sbc hl, de
-	push af
-	ld a, l
-	jp p, +
-	neg
+    push de
+    ld l, (ix+20)
+    ld h, (ix+21)
+    or a
+    sbc hl, de
+    push af
+    ld a, l
+    jp p, +
+    neg
 +:
-	ld h, a
-	ld e, (ix+12)
-	call _LABEL_3D0E_
-	ld e, (ix+10)
-	call _LABEL_3D1A_
-	ld e, a
-	ld d, $00
-	pop af
-	ld a, e
-	jp p, +
-	neg
-	jr z, +
-	dec d
-	ld e, a
+    ld h, a
+    ld e, (ix+12)
+    call _LABEL_3D0E_
+    ld e, (ix+10)
+    call _LABEL_3D1A_
+    ld e, a
+    ld d, $00
+    pop af
+    ld a, e
+    jp p, +
+    neg
+    jr z, +
+    dec d
+    ld e, a
 +:
-	pop hl
-	add hl, de
-	ex de, hl
-	ld (ix+18), e
-	ld (ix+19), d
+    pop hl
+    add hl, de
+    ex de, hl
+    ld (ix+18), e
+    ld (ix+19), d
 _LABEL_3A3C_:
-	ld a, (ix+7)
-	or a
-	jr nz, +
-	ld a, (ix+8)
-	cpl
-	and $0F
-	ld (ix+22), a
-	jr ++
+    ld a, (ix+7)
+    or a
+    jr nz, +
+    ld a, (ix+8)
+    cpl
+    and $0F
+    ld (ix+22), a
+    jr ++
 
 +:
-	ld hl, _DATA_4075_
-	call _LABEL_39FC_
-	call _LABEL_3A9F_
+    ld hl, _DATA_4075_
+    call _LABEL_39FC_
+    call _LABEL_3A9F_
 ++:
-	bit 6, (ix+0)
-	jr nz, _LABEL_3A81_
-	ld a, (ix+1)
-	and $0F
-	ld c, a
-	ld b, $00
-	ld hl, _DATA_3A94_
-	add hl, bc
-	ld c, (hl)
-	ld a, (ix+18)
-	and $0F
-	or c
-	call _LABEL_3C4E_
-	ld a, (ix+18)
-	and $F0
-	or (ix+19)
-	rrca
-	rrca
-	rrca
-	rrca
-	call _LABEL_3C4E_
+    bit 6, (ix+0)
+    jr nz, _LABEL_3A81_
+    ld a, (ix+1)
+    and $0F
+    ld c, a
+    ld b, $00
+    ld hl, _DATA_3A94_
+    add hl, bc
+    ld c, (hl)
+    ld a, (ix+18)
+    and $0F
+    or c
+    call _LABEL_3C4E_
+    ld a, (ix+18)
+    and $F0
+    or (ix+19)
+    rrca
+    rrca
+    rrca
+    rrca
+    call _LABEL_3C4E_
 _LABEL_3A81_:
-	ld a, (ix+1)
-	and $0F
-	ld c, a
-	ld b, $00
-	ld hl, _DATA_3A98_
-	add hl, bc
-	ld a, (hl)
-	or (ix+22)
-	jp _LABEL_3C4E_
+    ld a, (ix+1)
+    and $0F
+    ld c, a
+    ld b, $00
+    ld hl, _DATA_3A98_
+    add hl, bc
+    ld a, (hl)
+    or (ix+22)
+    jp _LABEL_3C4E_
 
 ; Data from 3A94 to 3A97 (4 bytes)
 _DATA_3A94_:
@@ -247,151 +247,151 @@ _DATA_3A98_:
 .db $90 $B0 $D0 $F0
 
 -:
-	ld (ix+14), a
+    ld (ix+14), a
 _LABEL_3A9F_:
-	push hl
-	ld a, (ix+14)
-	srl a
-	push af
-	ld c, a
-	ld b, $00
-	add hl, bc
-	pop af
-	ld a, (hl)
-	pop hl
-	jr c, ++
-	rrca
-	rrca
-	rrca
-	rrca
-	or a
-	jr z, -
-	cp $10
-	jr nz, +
-	dec (ix+14)
-	jr _LABEL_3A9F_
+    push hl
+    ld a, (ix+14)
+    srl a
+    push af
+    ld c, a
+    ld b, $00
+    add hl, bc
+    pop af
+    ld a, (hl)
+    pop hl
+    jr c, ++
+    rrca
+    rrca
+    rrca
+    rrca
+    or a
+    jr z, -
+    cp $10
+    jr nz, +
+    dec (ix+14)
+    jr _LABEL_3A9F_
 
 +:
-	cp $20
-	jr z, +++
+    cp $20
+    jr z, +++
 ++:
-	inc (ix+14)
-	or $F0
-	add a, (ix+8)
-	inc a
-	jr c, ++++
+    inc (ix+14)
+    or $F0
+    add a, (ix+8)
+    inc a
+    jr c, ++++
 +++:
-	xor a
+    xor a
 ++++:
-	cpl
-	and $0F
-	ld (ix+22), a
-	ret
+    cpl
+    and $0F
+    ld (ix+22), a
+    ret
 
 _LABEL_3AD6_:
-	ld e, (ix+3)
-	ld d, (ix+4)
+    ld e, (ix+3)
+    ld d, (ix+4)
 _LABEL_3ADC_:
-	ld a, (de)
-	inc de
-	cp $E0
-	jp nc, _LABEL_3B6A_
-	bit 3, (ix+0)
-	jr nz, _LABEL_3B49_
-	or a
-	jp p, ++
-	sub $80
-	jr z, +
-	add a, (ix+5)
+    ld a, (de)
+    inc de
+    cp $E0
+    jp nc, _LABEL_3B6A_
+    bit 3, (ix+0)
+    jr nz, _LABEL_3B49_
+    or a
+    jp p, ++
+    sub $80
+    jr z, +
+    add a, (ix+5)
 +:
-	ld hl, _DATA_3C7C_
-	ld c, a
-	ld b, $00
-	add hl, bc
-	add hl, bc
-	ld a, (hl)
-	ld (ix+16), a
-	inc hl
-	ld a, (hl)
-	ld (ix+17), a
-	bit 5, (ix+0)
-	jr z, _LABEL_3B63_
-	ld a, (de)
-	inc de
-	sub $80
-	add a, (ix+5)
-	ld hl, _DATA_3C7C_
-	ld c, a
-	ld b, $00
-	add hl, bc
-	add hl, bc
-	ld a, (hl)
-	ld (ix+20), a
-	inc hl
-	ld a, (hl)
-	ld (ix+21), a
+    ld hl, _DATA_3C7C_
+    ld c, a
+    ld b, $00
+    add hl, bc
+    add hl, bc
+    ld a, (hl)
+    ld (ix+16), a
+    inc hl
+    ld a, (hl)
+    ld (ix+17), a
+    bit 5, (ix+0)
+    jr z, _LABEL_3B63_
+    ld a, (de)
+    inc de
+    sub $80
+    add a, (ix+5)
+    ld hl, _DATA_3C7C_
+    ld c, a
+    ld b, $00
+    add hl, bc
+    add hl, bc
+    ld a, (hl)
+    ld (ix+20), a
+    inc hl
+    ld a, (hl)
+    ld (ix+21), a
 --:
-	ld a, (de)
+    ld a, (de)
 _LABEL_3B24_:
-	inc de
+    inc de
 ++:
-	push de
-	ld h, a
-	ld e, (ix+2)
-	call _LABEL_3D0E_
-	pop de
-	ld (ix+10), l
-	ld (ix+11), h
+    push de
+    ld h, a
+    ld e, (ix+2)
+    call _LABEL_3D0E_
+    pop de
+    ld (ix+10), l
+    ld (ix+11), h
 -:
-	xor a
-	ld (ix+14), a
-	ld (ix+15), a
-	ld (ix+3), e
-	ld (ix+4), d
-	xor a
-	ld (ix+12), a
-	ld (ix+13), a
-	ret
+    xor a
+    ld (ix+14), a
+    ld (ix+15), a
+    ld (ix+3), e
+    ld (ix+4), d
+    xor a
+    ld (ix+12), a
+    ld (ix+13), a
+    ret
 
 _LABEL_3B49_:
-	ld (ix+17), a
-	ld a, (de)
-	inc de
-	ld (ix+16), a
-	bit 5, (ix+0)
-	jr z, --
-	ld a, (de)
-	inc de
-	ld (ix+21), a
-	ld a, (de)
-	inc de
-	ld (ix+20), a
-	jr --
+    ld (ix+17), a
+    ld a, (de)
+    inc de
+    ld (ix+16), a
+    bit 5, (ix+0)
+    jr z, --
+    ld a, (de)
+    inc de
+    ld (ix+21), a
+    ld a, (de)
+    inc de
+    ld (ix+20), a
+    jr --
 
 _LABEL_3B63_:
-	ld a, (de)
-	or a
-	jp p, _LABEL_3B24_
-	jr -
+    ld a, (de)
+    or a
+    jp p, _LABEL_3B24_
+    jr -
 
 _LABEL_3B6A_:
-	ld hl, +	; Overriding return address
-	push hl
-	and $1F
-	ld hl, _DATA_3B81_
-	ld c, a
-	ld b, $00
-	add hl, bc
-	add hl, bc
-	ld a, (hl)
-	inc hl
-	ld h, (hl)
-	ld l, a
-	jp (hl)
+    ld hl, +	; Overriding return address
+    push hl
+    and $1F
+    ld hl, _DATA_3B81_
+    ld c, a
+    ld b, $00
+    add hl, bc
+    add hl, bc
+    ld a, (hl)
+    inc hl
+    ld h, (hl)
+    ld l, a
+    jp (hl)
 
 +:
-	inc de
-	jp _LABEL_3ADC_
+    inc de
+    jp _LABEL_3ADC_
 
 ; Jump Table from 3B81 to 3B9E (15 entries, indexed by unknown)
 _DATA_3B81_:
@@ -400,184 +400,184 @@ _DATA_3B81_:
 
 ; 14th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3B9F_:
-	ld a, (de)
-	add a, (ix+5)
-	ld (ix+5), a
-	ret
+    ld a, (de)
+    add a, (ix+5)
+    ld (ix+5), a
+    ret
 
 ; 1st entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BA7_:
-	ld a, (de)
-	ld (ix+2), a
-	ret
+    ld a, (de)
+    ld (ix+2), a
+    ret
 
 ; 2nd entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BAC_:
-	ld a, (de)
-	ld (ix+8), a
-	ret
+    ld a, (de)
+    ld (ix+8), a
+    ret
 
 ; 4th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BB1_:
-	ld a, (de)
-	or $E0
-	push af
-	call _LABEL_3C4E_
-	pop af
-	or $FC
-	inc a
-	jr nz, +
-	res 6, (ix+0)
-	ret
+    ld a, (de)
+    or $E0
+    push af
+    call _LABEL_3C4E_
+    pop af
+    or $FC
+    inc a
+    jr nz, +
+    res 6, (ix+0)
+    ret
 
 +:
-	set 6, (ix+0)
-	ret
+    set 6, (ix+0)
+    ret
 
 ; 5th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BC8_:
-	ld a, (de)
-	ld (ix+7), a
-	ret
+    ld a, (de)
+    ld (ix+7), a
+    ret
 
 ; 6th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BCD_:
-	ex de, hl
-	ld e, (hl)
-	inc hl
-	ld d, (hl)
-	dec de
-	ret
+    ex de, hl
+    ld e, (hl)
+    inc hl
+    ld d, (hl)
+    dec de
+    ret
 
 ; 7th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BD3_:
-	set 5, (ix+0)
-	dec de
-	ret
+    set 5, (ix+0)
+    dec de
+    ret
 
 ; 8th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BD9_:
-	res 5, (ix+0)
-	dec de
-	ret
+    res 5, (ix+0)
+    dec de
+    ret
 
 ; 9th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BDF_:
-	set 3, (ix+0)
-	dec de
-	ret
+    set 3, (ix+0)
+    dec de
+    ret
 
 ; 10th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BE5_:
-	res 3, (ix+0)
-	dec de
-	ret
+    res 3, (ix+0)
+    dec de
+    ret
 
 ; 15th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BEB_:
-	xor a
-	ld (_RAM_CD01_), a
+    xor a
+    ld (_RAM_CD01_), a
 ; 3rd entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BEF_:
-	xor a
-	ld (ix+0), a
-	call _LABEL_3C3F_
-	pop hl
-	pop hl
-	ret
+    xor a
+    ld (ix+0), a
+    call _LABEL_3C3F_
+    pop hl
+    pop hl
+    ret
 
 ; 11th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3BF9_:
-	ld a, (de)
-	ld c, a
-	inc de
-	ld a, (de)
-	ld b, a
-	push bc
-	push ix
-	pop hl
-	dec (ix+9)
-	ld c, (ix+9)
-	dec (ix+9)
-	ld b, $00
-	add hl, bc
-	ld (hl), d
-	dec hl
-	ld (hl), e
-	pop de
-	dec de
-	ret
+    ld a, (de)
+    ld c, a
+    inc de
+    ld a, (de)
+    ld b, a
+    push bc
+    push ix
+    pop hl
+    dec (ix+9)
+    ld c, (ix+9)
+    dec (ix+9)
+    ld b, $00
+    add hl, bc
+    ld (hl), d
+    dec hl
+    ld (hl), e
+    pop de
+    dec de
+    ret
 
 ; 12th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3C14_:
-	push ix
-	pop hl
-	ld c, (ix+9)
-	ld b, $00
-	add hl, bc
-	ld e, (hl)
-	inc hl
-	ld d, (hl)
-	inc (ix+9)
-	inc (ix+9)
-	ret
+    push ix
+    pop hl
+    ld c, (ix+9)
+    ld b, $00
+    add hl, bc
+    ld e, (hl)
+    inc hl
+    ld d, (hl)
+    inc (ix+9)
+    inc (ix+9)
+    ret
 
 ; 13th entry of Jump Table from 3B81 (indexed by unknown)
 _LABEL_3C27_:
-	ld a, (de)
-	inc de
-	add a, $17
-	ld c, a
-	ld b, $00
-	push ix
-	pop hl
-	add hl, bc
-	ld a, (hl)
-	or a
-	jr nz, +
-	ld a, (de)
-	ld (hl), a
+    ld a, (de)
+    inc de
+    add a, $17
+    ld c, a
+    ld b, $00
+    push ix
+    pop hl
+    add hl, bc
+    ld a, (hl)
+    or a
+    jr nz, +
+    ld a, (de)
+    ld (hl), a
 +:
-	inc de
-	dec (hl)
-	jp nz, _LABEL_3BCD_
-	inc de
-	ret
+    inc de
+    dec (hl)
+    jp nz, _LABEL_3BCD_
+    inc de
+    ret
 
 _LABEL_3C3F_:
-	ld a, (ix+1)
-	and $0F
-	ld c, a
-	ld b, $00
-	ld hl, _DATA_3A98_
-	add hl, bc
-	ld a, (hl)
-	or $0F
+    ld a, (ix+1)
+    and $0F
+    ld c, a
+    ld b, $00
+    ld hl, _DATA_3A98_
+    add hl, bc
+    ld a, (hl)
+    or $0F
 _LABEL_3C4E_:
-	bit 2, (ix+0)
-	ret nz
-	out (Port_PSG), a
-	ret
+    bit 2, (ix+0)
+    ret nz
+    out (Port_PSG), a
+    ret
 
 _LABEL_3C56_:
-	exx
-	ld hl, _RAM_CD05_
-	ld de, _RAM_CD05_ + 1
-	ld bc, $00BF
-	ld (hl), $00
-	ldir
-	exx
+    exx
+    ld hl, _RAM_CD05_
+    ld de, _RAM_CD05_ + 1
+    ld bc, $00BF
+    ld (hl), $00
+    ldir
+    exx
 _LABEL_3C65_:
-	exx
-	ld hl, _DATA_3C78_
-	ld c, Port_PSG
-	ld b, $04
-	otir
-	xor a
-	ld (_RAM_CD01_), a
-	ld (_RAM_CD02_), a
-	exx
-	ret
+    exx
+    ld hl, _DATA_3C78_
+    ld c, Port_PSG
+    ld b, $04
+    otir
+    xor a
+    ld (_RAM_CD01_), a
+    ld (_RAM_CD02_), a
+    exx
+    ret
 
 ; Data from 3C78 to 3C7B (4 bytes)
 _DATA_3C78_:
@@ -597,35 +597,35 @@ _DATA_3C7C_:
 .db $11 $00
 
 _LABEL_3D0E_:
-	ld d, $00
-	ld l, d
-	ld b, $08
+    ld d, $00
+    ld l, d
+    ld b, $08
 -:
-	add hl, hl
-	jr nc, +
-	add hl, de
+    add hl, hl
+    jr nc, +
+    add hl, de
 +:
-	djnz -
-	ret
+    djnz -
+    ret
 
 _LABEL_3D1A_:
-	ld b, $08
+    ld b, $08
 -:
-	adc hl, hl
-	ld a, h
-	jr c, +
-	cp e
-	jr c, ++
+    adc hl, hl
+    ld a, h
+    jr c, +
+    cp e
+    jr c, ++
 +:
-	sub e
-	ld h, a
-	or a
+    sub e
+    ld h, a
+    or a
 ++:
-	djnz -
-	ld a, l
-	rla
-	cpl
-	ret
+    djnz -
+    ld a, l
+    rla
+    cpl
+    ret
 
 ; 1st entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
 ; Data from 3D2D to 3D30 (4 bytes)
