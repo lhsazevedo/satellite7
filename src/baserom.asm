@@ -837,7 +837,7 @@ updateDemoState:
     jp _LABEL_EB_
 
 ++:
-    ld hl, _RAM_C151_
+    ld hl, unknownFlags_RAM_C151_
     set 1, (hl)
     ld a, (_RAM_C103_)
     or $01
@@ -1674,7 +1674,7 @@ _LABEL_BFC_:
     ld (action13_RAM_C116_), a ; Related to _DATA_745_ jumptable
 
     ld a, $03
-    ld (_RAM_C151_), a
+    ld (unknownFlags_RAM_C151_), a
 
     ; Initial lives
     ld a, INITIAL_LIVES
@@ -3025,7 +3025,7 @@ _LABEL_2A9A_:
 +:	
     ld hl, _RAM_C133_
     res 5, (hl)
-    ld hl, _RAM_C151_
+    ld hl, unknownFlags_RAM_C151_
     set 0, (hl)
     ld a, $0E
     ld (action14_RAM_C117_ + 1), a
@@ -3168,15 +3168,15 @@ _DATA_2B63_:
     ret
 
 _LABEL_2B98_:
-    ld a, (_RAM_C151_)
+    ld a, (unknownFlags_RAM_C151_)
     rrca
     ret nc
     rrca
     jp c, ++
 
-    ld a, (frame_parity_RAM_C311_)
+    ld a, (frame_timer_3_RAM_C311_)
     inc a
-    ld (frame_parity_RAM_C311_), a
+    ld (frame_timer_3_RAM_C311_), a
 
     cp $01
     jr z, +
@@ -3184,45 +3184,54 @@ _LABEL_2B98_:
     cp $03
     ret c
     xor a
-    ld (frame_parity_RAM_C311_), a
+    ld (frame_timer_3_RAM_C311_), a
     jp _LABEL_2C66_
 
 +:
     ld a, (timer_RAM_C312_)
     or a
     ret nz
+
+    ; Loop if the end of the map was reached
     ld de, $048C
-    ld a, (_RAM_C134_)
+    ld a, (mapIndex.low)
     cp e
     ret nz
-    ld a, (_RAM_C135_)
+    ld a, (mapIndex.high)
     cp d
     ret nz
+
     ld hl, $0000
-    ld (_RAM_C134_), hl
+    ld (mapIndex.low), hl
+
     xor a
     ld (wave), a
     ld (waveTimer), a
+
     ld hl, _RAM_C103_
     res 7, (hl)
     ret
 
 ++:
+    ; Reset timers
     xor a
     ld (timer_RAM_C312_), a
-    ld (frame_parity_RAM_C311_), a
+    ld (frame_timer_3_RAM_C311_), a
     ld (_RAM_C310_), a
     ld (waveTimer), a
-    ld a, (_RAM_C151_)
+
+    ld a, (unknownFlags_RAM_C151_)
     bit 3, a
     jr nz, _LABEL_2C40_
+
     or $08
-    ld (_RAM_C151_), a
+    ld (unknownFlags_RAM_C151_), a
     ld de, _RAM_C500_ + 1
     ld hl, _RAM_C500_
     ld (hl), $00
     ld bc, $0040
     ldir
+
     ld de, wave_RAM_C322_ + 1
     ld hl, wave_RAM_C322_
     ld (hl), $00
@@ -3231,12 +3240,16 @@ _LABEL_2B98_:
 
     call destroyEntities
 
+    ; Reset map and wave index
     ld hl, $0000
-    ld (_RAM_C134_), hl
+    ld (mapIndex.low), hl
+
     xor a
     ld (wave), a
+
     ld hl, $3D82
     ld (half_timer_15_RAM_C313_), hl
+
     ld b, $1C
     ld de, $3802
 -:
@@ -3264,11 +3277,11 @@ _LABEL_2C40_:
     ret nz
     ld hl, $3E02
     ld (half_timer_15_RAM_C313_), hl
-    ld hl, _RAM_C151_
+    ld hl, unknownFlags_RAM_C151_
     res 1, (hl)
     set 0, (hl)
     ld de, $3E82
-    call _LABEL_2C88_
+    call drawMetatile
     ld a, $01
     ld (wave), a
     xor a
@@ -3294,13 +3307,13 @@ _LABEL_2C66_:
     ld d, $89
     jp writeVDPCommandWord
 
-_LABEL_2C88_:
+drawMetatile:
     push de
-    ld de, (_RAM_C134_)
+    ld de, (mapIndex.low)
     ld hl, v_map
     add hl, de
     inc de
-    ld (_RAM_C134_), de
+    ld (mapIndex.low), de
     ld a, (hl)
     add a, a
     ld e, a
@@ -3381,7 +3394,7 @@ _LABEL_2CEE_:
     	cp $37
     	ret z
     	push de
-    	call _LABEL_2C88_
+    	call drawMetatile
     	pop hl
     	ld de, $FF80
     	add hl, de
@@ -3402,7 +3415,7 @@ _LABEL_2D01_:
 _LABEL_2D11_:
     ld de, (half_timer_15_RAM_C313_)
     push de
-    call _LABEL_2C88_
+    call drawMetatile
     pop hl
     ld de, $FF80
     add hl, de
@@ -3664,7 +3677,7 @@ _LABEL_2E36_:
     dec (hl)
     ld hl, _RAM_C133_
     set 5, (hl)
-    ld hl, _RAM_C151_
+    ld hl, unknownFlags_RAM_C151_
     res 0, (hl)
     ret
 
