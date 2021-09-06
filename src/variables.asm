@@ -61,6 +61,7 @@ _RAM_C130_ db
 _RAM_C131_ db
 _RAM_C132_ db
 _RAM_C133_ db
+mapIndex .dw
 mapIndex.low db
 mapIndex.high db
 _RAM_C136_ db

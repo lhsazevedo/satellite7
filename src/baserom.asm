@@ -3202,7 +3202,7 @@ _LABEL_2B98_:
     ret nz
 
     ld hl, $0000
-    ld (mapIndex.low), hl
+    ld (mapIndex), hl
 
     xor a
     ld (wave), a
@@ -3242,7 +3242,7 @@ _LABEL_2B98_:
 
     ; Reset map and wave index
     ld hl, $0000
-    ld (mapIndex.low), hl
+    ld (mapIndex), hl
 
     xor a
     ld (wave), a
@@ -3309,11 +3309,11 @@ _LABEL_2C66_:
 
 drawMetatile:
     push de
-    ld de, (mapIndex.low)
+    ld de, (mapIndex)
     ld hl, v_map
     add hl, de
     inc de
-    ld (mapIndex.low), de
+    ld (mapIndex), de
     ld a, (hl)
     add a, a
     ld e, a
