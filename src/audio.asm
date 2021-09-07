@@ -1,3 +1,66 @@
+_AUDIO_3894_:
+    call ++
+    call +
+    ld ix, _RAM_CD05_
+    ld b, $06
+-:
+    push bc
+    bit 7, (ix+0)
+    call nz, _AUDIO_39C3_
+    ld de, $0020
+    add ix, de
+    pop bc
+    djnz -
+    ret
+
++:
+    ld hl, _RAM_CD05_
+    ld de, $0020
+    exx
+    ld hl, _RAM_CD65_
+    ld de, $0020
+    ld b, $03
+-:
+    bit 7, (hl)
+    exx
+    set 2, (hl)
+    jp nz, +
+    res 2, (hl)
++:
+    add hl, de
+    exx
+    add hl, de
+    djnz -
+    exx
+    ret
+
+++:
+    ld a, (_RAM_CD00_)
+    bit 7, a
+    jp z, _AUDIO_3C56_
+    cp $91
+    jp nc, _AUDIO_3C56_
+    sub $80
+    ret z
+    dec a
+    ld c, a
+    ld b, $00
+    ld hl, _DATA_38FA_
+    add hl, bc
+    add hl, bc
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    ld de, $001D
+    add hl, de
+    ld a, (hl)
+    inc hl
+    ld h, (hl)
+    ld l, a
+    ld a, (_RAM_CD01_)
+    ld e, a
+    jp (hl)
+
 ; Pointer Table from 38FA to 3917 (15 entries, indexed by _RAM_CD00_)
 _DATA_38FA_:
 .dw _DATA_3D2D_ _DATA_403B_ _DATA_3DD6_ _DATA_3EF9_ _DATA_3F56_ _DATA_3F69_ _DATA_3F77_ _DATA_3F92_
@@ -5,45 +68,45 @@ _DATA_38FA_:
 
 ; Jump Table from 3918 to 3935 (15 entries, indexed by _RAM_CD00_)
 _DATA_3918_:
-.dw _LABEL_3936_ _LABEL_3972_ _LABEL_3941_ _LABEL_3936_ _LABEL_395C_ _LABEL_394E_ _LABEL_3954_ _LABEL_3954_
-.dw _LABEL_397A_ _LABEL_394A_ _LABEL_3982_ _LABEL_3972_ _LABEL_398A_ _LABEL_395C_ _LABEL_394A_
+.dw _AUDIO_3936_ _AUDIO_3972_ _AUDIO_3941_ _AUDIO_3936_ _AUDIO_395C_ _AUDIO_394E_ _AUDIO_3954_ _AUDIO_3954_
+.dw _AUDIO_397A_ _AUDIO_394A_ _AUDIO_3982_ _AUDIO_3972_ _AUDIO_398A_ _AUDIO_395C_ _AUDIO_394A_
 
 ; 1st entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_3936_:
-    call _LABEL_3C56_
+_AUDIO_3936_:
+    call _AUDIO_3C56_
     ld a, $80
     ld (_RAM_CD01_), a
     jp +
 
 ; 3rd entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_3941_:
-    call _LABEL_3C56_
+_AUDIO_3941_:
+    call _AUDIO_3C56_
 +:
     ld de, _RAM_CD05_
-    jp _LABEL_399A_
+    jp _AUDIO_399A_
 
 ; 10th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_394A_:
+_AUDIO_394A_:
     ld a, $40
     jr ++
 
 ; 6th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_394E_:
+_AUDIO_394E_:
     or a
-    jp nz, _LABEL_39BD_
+    jp nz, _AUDIO_39BD_
     jr +
 
 ; 7th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_3954_:
+_AUDIO_3954_:
     ld a, $01
     cp e
-    jp c, _LABEL_39BD_
+    jp c, _AUDIO_39BD_
     jr +
 
 ; 5th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_395C_:
+_AUDIO_395C_:
     or a
-    jr nz, _LABEL_39BD_
+    jr nz, _AUDIO_39BD_
 +:
     ex af, af'
     ld a, $FF
@@ -54,41 +117,41 @@ _LABEL_395C_:
     ld a, $DF
     out (Port_PSG), a
     ld de, _RAM_CDA5_
-    jp _LABEL_399A_
+    jp _AUDIO_399A_
 
 ; 2nd entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_3972_:
+_AUDIO_3972_:
     ld a, $08
     cp e
-    jp c, _LABEL_39BD_
+    jp c, _AUDIO_39BD_
     jr +
 
 ; 9th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_397A_:
+_AUDIO_397A_:
     ld a, $04
     cp e
-    jp c, _LABEL_39BD_
+    jp c, _AUDIO_39BD_
     jr ++
 
 ; 11th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_3982_:
+_AUDIO_3982_:
     ld a, $10
     cp e
-    jp c, _LABEL_39BD_
+    jp c, _AUDIO_39BD_
     jr ++
 
 ; 13th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
-_LABEL_398A_:
+_AUDIO_398A_:
     ld a, $20
     cp e
-    jp c, _LABEL_39BD_
+    jp c, _AUDIO_39BD_
 +:
     ld (_RAM_CD01_), a
     ld a, $FF
     out (Port_PSG), a
 ++:
     ld de, _RAM_CD85_
-_LABEL_399A_:
+_AUDIO_399A_:
     ld h, b
     ld l, c
     ld b, (hl)
@@ -117,12 +180,12 @@ _LABEL_399A_:
     inc de
     pop bc
     djnz -
-_LABEL_39BD_:
+_AUDIO_39BD_:
     ld a, $80
     ld (_RAM_CD00_), a
     ret
 
-_LABEL_39C3_:
+_AUDIO_39C3_:
     ld e, (ix+12)
     ld d, (ix+13)
     inc de
@@ -132,23 +195,23 @@ _LABEL_39C3_:
     ld h, (ix+11)
     or a
     sbc hl, de
-    call z, _LABEL_3AD6_
+    call z, _AUDIO_3AD6_
     ld e, (ix+16)
     ld d, (ix+17)
     ld a, e
     or d
     jr nz, +
     ld (ix+22), $0F
-    jp _LABEL_3A81_
+    jp _AUDIO_3A81_
 
 +:
     bit 5, (ix+0)
     jr nz, +
     ld (ix+18), e
     ld (ix+19), d
-    jp _LABEL_3A3C_
+    jp _AUDIO_3A3C_
 
-_LABEL_39FC_:
+_AUDIO_39FC_:
     dec a
     ld c, a
     ld b, $00
@@ -173,9 +236,9 @@ _LABEL_39FC_:
 +:
     ld h, a
     ld e, (ix+12)
-    call _LABEL_3D0E_
+    call _AUDIO_3D0E_
     ld e, (ix+10)
-    call _LABEL_3D1A_
+    call _AUDIO_3D1A_
     ld e, a
     ld d, $00
     pop af
@@ -191,7 +254,7 @@ _LABEL_39FC_:
     ex de, hl
     ld (ix+18), e
     ld (ix+19), d
-_LABEL_3A3C_:
+_AUDIO_3A3C_:
     ld a, (ix+7)
     or a
     jr nz, +
@@ -203,11 +266,11 @@ _LABEL_3A3C_:
 
 +:
     ld hl, _DATA_4075_
-    call _LABEL_39FC_
-    call _LABEL_3A9F_
+    call _AUDIO_39FC_
+    call _AUDIO_3A9F_
 ++:
     bit 6, (ix+0)
-    jr nz, _LABEL_3A81_
+    jr nz, _AUDIO_3A81_
     ld a, (ix+1)
     and $0F
     ld c, a
@@ -218,7 +281,7 @@ _LABEL_3A3C_:
     ld a, (ix+18)
     and $0F
     or c
-    call _LABEL_3C4E_
+    call _AUDIO_3C4E_
     ld a, (ix+18)
     and $F0
     or (ix+19)
@@ -226,8 +289,8 @@ _LABEL_3A3C_:
     rrca
     rrca
     rrca
-    call _LABEL_3C4E_
-_LABEL_3A81_:
+    call _AUDIO_3C4E_
+_AUDIO_3A81_:
     ld a, (ix+1)
     and $0F
     ld c, a
@@ -236,7 +299,7 @@ _LABEL_3A81_:
     add hl, bc
     ld a, (hl)
     or (ix+22)
-    jp _LABEL_3C4E_
+    jp _AUDIO_3C4E_
 
 ; Data from 3A94 to 3A97 (4 bytes)
 _DATA_3A94_:
@@ -248,7 +311,7 @@ _DATA_3A98_:
 
 -:
     ld (ix+14), a
-_LABEL_3A9F_:
+_AUDIO_3A9F_:
     push hl
     ld a, (ix+14)
     srl a
@@ -269,7 +332,7 @@ _LABEL_3A9F_:
     cp $10
     jr nz, +
     dec (ix+14)
-    jr _LABEL_3A9F_
+    jr _AUDIO_3A9F_
 
 +:
     cp $20
@@ -288,16 +351,16 @@ _LABEL_3A9F_:
     ld (ix+22), a
     ret
 
-_LABEL_3AD6_:
+_AUDIO_3AD6_:
     ld e, (ix+3)
     ld d, (ix+4)
-_LABEL_3ADC_:
+_AUDIO_3ADC_:
     ld a, (de)
     inc de
     cp $E0
-    jp nc, _LABEL_3B6A_
+    jp nc, _AUDIO_3B6A_
     bit 3, (ix+0)
-    jr nz, _LABEL_3B49_
+    jr nz, _AUDIO_3B49_
     or a
     jp p, ++
     sub $80
@@ -315,7 +378,7 @@ _LABEL_3ADC_:
     ld a, (hl)
     ld (ix+17), a
     bit 5, (ix+0)
-    jr z, _LABEL_3B63_
+    jr z, _AUDIO_3B63_
     ld a, (de)
     inc de
     sub $80
@@ -332,13 +395,13 @@ _LABEL_3ADC_:
     ld (ix+21), a
 --:
     ld a, (de)
-_LABEL_3B24_:
+_AUDIO_3B24_:
     inc de
 ++:
     push de
     ld h, a
     ld e, (ix+2)
-    call _LABEL_3D0E_
+    call _AUDIO_3D0E_
     pop de
     ld (ix+10), l
     ld (ix+11), h
@@ -353,7 +416,7 @@ _LABEL_3B24_:
     ld (ix+13), a
     ret
 
-_LABEL_3B49_:
+_AUDIO_3B49_:
     ld (ix+17), a
     ld a, (de)
     inc de
@@ -368,13 +431,13 @@ _LABEL_3B49_:
     ld (ix+20), a
     jr --
 
-_LABEL_3B63_:
+_AUDIO_3B63_:
     ld a, (de)
     or a
-    jp p, _LABEL_3B24_
+    jp p, _AUDIO_3B24_
     jr -
 
-_LABEL_3B6A_:
+_AUDIO_3B6A_:
     ld hl, +	; Overriding return address
     push hl
     and $1F
@@ -391,38 +454,38 @@ _LABEL_3B6A_:
 
 +:
     inc de
-    jp _LABEL_3ADC_
+    jp _AUDIO_3ADC_
 
 ; Jump Table from 3B81 to 3B9E (15 entries, indexed by unknown)
 _DATA_3B81_:
-.dw _LABEL_3BA7_ _LABEL_3BAC_ _LABEL_3BEF_ _LABEL_3BB1_ _LABEL_3BC8_ _LABEL_3BCD_ _LABEL_3BD3_ _LABEL_3BD9_
-.dw _LABEL_3BDF_ _LABEL_3BE5_ _LABEL_3BF9_ _LABEL_3C14_ _LABEL_3C27_ _LABEL_3B9F_ _LABEL_3BEB_
+.dw _AUDIO_3BA7_ _AUDIO_3BAC_ _AUDIO_3BEF_ _AUDIO_3BB1_ _AUDIO_3BC8_ _AUDIO_3BCD_ _AUDIO_3BD3_ _AUDIO_3BD9_
+.dw _AUDIO_3BDF_ _AUDIO_3BE5_ _AUDIO_3BF9_ _AUDIO_3C14_ _AUDIO_3C27_ _AUDIO_3B9F_ _AUDIO_3BEB_
 
 ; 14th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3B9F_:
+_AUDIO_3B9F_:
     ld a, (de)
     add a, (ix+5)
     ld (ix+5), a
     ret
 
 ; 1st entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BA7_:
+_AUDIO_3BA7_:
     ld a, (de)
     ld (ix+2), a
     ret
 
 ; 2nd entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BAC_:
+_AUDIO_3BAC_:
     ld a, (de)
     ld (ix+8), a
     ret
 
 ; 4th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BB1_:
+_AUDIO_3BB1_:
     ld a, (de)
     or $E0
     push af
-    call _LABEL_3C4E_
+    call _AUDIO_3C4E_
     pop af
     or $FC
     inc a
@@ -435,13 +498,13 @@ _LABEL_3BB1_:
     ret
 
 ; 5th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BC8_:
+_AUDIO_3BC8_:
     ld a, (de)
     ld (ix+7), a
     ret
 
 ; 6th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BCD_:
+_AUDIO_3BCD_:
     ex de, hl
     ld e, (hl)
     inc hl
@@ -450,44 +513,44 @@ _LABEL_3BCD_:
     ret
 
 ; 7th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BD3_:
+_AUDIO_3BD3_:
     set 5, (ix+0)
     dec de
     ret
 
 ; 8th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BD9_:
+_AUDIO_3BD9_:
     res 5, (ix+0)
     dec de
     ret
 
 ; 9th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BDF_:
+_AUDIO_3BDF_:
     set 3, (ix+0)
     dec de
     ret
 
 ; 10th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BE5_:
+_AUDIO_3BE5_:
     res 3, (ix+0)
     dec de
     ret
 
 ; 15th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BEB_:
+_AUDIO_3BEB_:
     xor a
     ld (_RAM_CD01_), a
 ; 3rd entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BEF_:
+_AUDIO_3BEF_:
     xor a
     ld (ix+0), a
-    call _LABEL_3C3F_
+    call _AUDIO_3C3F_
     pop hl
     pop hl
     ret
 
 ; 11th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3BF9_:
+_AUDIO_3BF9_:
     ld a, (de)
     ld c, a
     inc de
@@ -509,7 +572,7 @@ _LABEL_3BF9_:
     ret
 
 ; 12th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3C14_:
+_AUDIO_3C14_:
     push ix
     pop hl
     ld c, (ix+9)
@@ -523,7 +586,7 @@ _LABEL_3C14_:
     ret
 
 ; 13th entry of Jump Table from 3B81 (indexed by unknown)
-_LABEL_3C27_:
+_AUDIO_3C27_:
     ld a, (de)
     inc de
     add a, $17
@@ -540,11 +603,11 @@ _LABEL_3C27_:
 +:
     inc de
     dec (hl)
-    jp nz, _LABEL_3BCD_
+    jp nz, _AUDIO_3BCD_
     inc de
     ret
 
-_LABEL_3C3F_:
+_AUDIO_3C3F_:
     ld a, (ix+1)
     and $0F
     ld c, a
@@ -553,13 +616,13 @@ _LABEL_3C3F_:
     add hl, bc
     ld a, (hl)
     or $0F
-_LABEL_3C4E_:
+_AUDIO_3C4E_:
     bit 2, (ix+0)
     ret nz
     out (Port_PSG), a
     ret
 
-_LABEL_3C56_:
+_AUDIO_3C56_:
     exx
     ld hl, _RAM_CD05_
     ld de, _RAM_CD05_ + 1
@@ -567,7 +630,7 @@ _LABEL_3C56_:
     ld (hl), $00
     ldir
     exx
-_LABEL_3C65_:
+_AUDIO_3C65_:
     exx
     ld hl, _DATA_3C78_
     ld c, Port_PSG
@@ -596,7 +659,7 @@ _DATA_3C7C_:
 .db $1B $00 $19 $00 $18 $00 $16 $00 $15 $00 $14 $00 $13 $00 $12 $00
 .db $11 $00
 
-_LABEL_3D0E_:
+_AUDIO_3D0E_:
     ld d, $00
     ld l, d
     ld b, $08
@@ -608,7 +671,7 @@ _LABEL_3D0E_:
     djnz -
     ret
 
-_LABEL_3D1A_:
+_AUDIO_3D1A_:
     ld b, $08
 -:
     adc hl, hl

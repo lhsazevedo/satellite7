@@ -26,13 +26,13 @@ updateEntity05:
     cp $01
     jr nz, +
     set 2, (hl)
-    ld hl, _RAM_C103_
+    ld hl, flags_RAM_C103_
     res 2, (hl)
     ret
 
 +:
     set 6, (hl)
-    ld hl, _RAM_C103_
+    ld hl, flags_RAM_C103_
     res 3, (hl)
     ret
 
@@ -92,7 +92,7 @@ updateEntity06:
     ld bc, $000E
     call memcpyIYToHL
     ld c, a
-    ld a, (_RAM_C103_)
+    ld a, (flags_RAM_C103_)
     bit 0, a
     ret z
     ld (iy + Entity.xPos.low), $70
@@ -496,7 +496,7 @@ updateEntity0B:
     rrca
     ret nc
 +:
-    ld a, (_RAM_C103_)
+    ld a, (flags_RAM_C103_)
     bit 0, a
     ret z
     ld a, (_RAM_C622_)
@@ -984,7 +984,7 @@ _LABEL_15FE_:
 
 _LABEL_161A_:
     ld de, $0280
-    ld hl, _RAM_C103_
+    ld hl, flags_RAM_C103_
     ld a, (_RAM_C146_)
     dec a
     jr nz, +
@@ -1120,12 +1120,12 @@ _LABEL_16F8_:
     dec a
     jr nz, +
     ld a, $08
-    ld (action9_RAM_C112_), a
+    ld (vdpActionSlot9), a
     ret
 
 +:
     ld a, $09
-    ld (action10_RAM_C113_), a
+    ld (vdpActionSlot10), a
     ret
 
 _LABEL_170F_:
@@ -1198,7 +1198,7 @@ _LABEL_1760_:
     ld (_RAM_C338_), a
     ret nz
     ld a, $11
-    ld (_RAM_C11B_), a ; Related to _DATA_745_ jumptable
+    ld (_RAM_C11B_), a ; Related to vdpActions jumptable
     ret
 
 updateEntity10:
@@ -1306,7 +1306,7 @@ _LABEL_1805_:
     ld a, (player1.xPos.low)
     call _LABEL_1884_
     jp c, +
-    ld a, (_RAM_C103_)
+    ld a, (flags_RAM_C103_)
     bit 0, a
     jp z, updateEntityXY
     ld a, (player2.xPos.low)
@@ -1689,7 +1689,7 @@ _LABEL_1AD4_:
     add a, $3A
     ld (_RAM_C145_), a
     ld a, $0A
-    ld (action11_RAM_C114_), a
+    ld (vdpActionSlot11), a
     ld a, (iy + Entity.data05)
     ld (_RAM_C146_), a
     jp putIYEntityOffscreen
@@ -1764,7 +1764,7 @@ updateEntity1B:
     call memcpyIYToHL
     ld hl, $0206
     call _LABEL_1049_
-    ld a, (_RAM_C103_)
+    ld a, (flags_RAM_C103_)
     rrca
     jr c, ++
 --:
@@ -2356,7 +2356,7 @@ _LABEL_2039_:
     or a
     ret z
     dec hl
-    ld a, (_RAM_C103_)
+    ld a, (flags_RAM_C103_)
     rrca
     jr nc, +
     ld a, (hl)

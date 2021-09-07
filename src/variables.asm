@@ -3,29 +3,29 @@ _RAM_C000_ dsb $100
 _RAM_C100_ db
 _RAM_C101_ db
 state db
-_RAM_C103_ db
+flags_RAM_C103_ db
 _RAM_C104_ db
 p1Lives db
-_RAM_C106_ db
+p2Lives db
 interruptFlag db
-_RAM_C108_ db
+two_frame_toggle_RAM_C108_ db
 .ende
 
 .enum $C10A export
-action1_RAM_C10A_ db
-action2_RAM_C10B_ db
-action3_RAM_C10C_ db
-action4_RAM_C10D_ db
-action5_RAM_C10E_ db
-action6_RAM_C10F_ db
-action7_RAM_C110_ db
-action8_RAM_C111_ db
-action9_RAM_C112_ db
-action10_RAM_C113_ db
-action11_RAM_C114_ db
-action12_RAM_C115_ db
-action13_RAM_C116_ db
-action14_RAM_C117_ db
+vdpActionSlot1 db
+vdpActionSlot2 db
+vdpActionSlot3 db
+vdpActionSlot4 db
+vdpActionSlot5 db
+vdpActionSlot6 db
+vdpActionSlot7 db
+vdpActionSlot8 db
+vdpActionSlot9 db
+vdpActionSlot10 db
+vdpActionSlot11 db
+vdpActionSlot12 db
+vdpActionSlot13 db
+vdpActionSlot14 db
 .ende
 
 .enum $C119 export
@@ -35,7 +35,7 @@ _RAM_C11B_ db
 .ende
 
 .enum $C11E export
-statebak_RAM_C11E_ db
+stateBackup db
 _RAM_C11F_ .dw
 highScoreByte1 db
 highScoreByte2 db
@@ -54,12 +54,12 @@ _RAM_C12B_ db
 .ende
 
 .enum $C12D export
-_RAM_C12D_ db
+frameCounter db
 _RAM_C12E_ db
-_RAM_C12F_ db
-_RAM_C130_ db
-_RAM_C131_ db
-_RAM_C132_ db
+input.player1 db
+input.player1Changes db
+input.player2 db
+input.player2Changes db
 _RAM_C133_ db
 mapIndex .dw
 mapIndex.low db
@@ -72,8 +72,8 @@ _RAM_C145_ db
 _RAM_C146_ db
 _RAM_C147_ db
 _RAM_C148_ dw
-_RAM_C14A_ db
-_RAM_C14B_ db
+cheatCounter1 db
+cheatCounter2 db
 _RAM_C14C_ dw
 _RAM_C14E_ db
 _RAM_C14F_ db
@@ -108,10 +108,10 @@ enemy1Counter db
 .ende
 
 .enum $C310 export
-_RAM_C310_ db
-frame_timer_3_RAM_C311_ db
-timer_RAM_C312_ db
-half_timer_15_RAM_C313_ dw
+verticalScroll db
+scrollTimer db
+metatileOffset db
+nextMetatileVramPointer dw
 waveTimer db
 wave db
 .ende
@@ -152,7 +152,7 @@ _RAM_C339_ db
 .ende
 
 .enum $C500 export
-_RAM_C500_ dsb $40
+spriteTable dsb $40
 _RAM_C540_ db
 .ende
 

@@ -13,7 +13,7 @@ updatePlayer1:
     ret
 
 +:
-    ld a, (_RAM_C12F_)
+    ld a, (input.player1)
     jr ++
 
 updatePlayer2:
@@ -31,7 +31,7 @@ updatePlayer2:
     ret
 
 +:
-    ld a, (_RAM_C131_)
+    ld a, (input.player2)
 ++:
     ld (_RAM_C12E_), a
     ld a, (iy + Entity.data18)
