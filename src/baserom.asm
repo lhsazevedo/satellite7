@@ -37,7 +37,7 @@ start:
     di
     ld sp, $C0FF
     im 1
-    jr _LABEL_69_
+    jr init
 
 _LABEL_8_:
     call writeVDPCommandWord
@@ -104,19 +104,22 @@ _DATA_64_:
 handlePauseInterruptEntrypoint:
     jp handlePauseInterrupt
 
-_LABEL_69_:
+init:
     ld hl, _RAM_C000_
     ld de, _RAM_C000_ + 1
     ld (hl), $00
     ld bc, $1FFF
     ldir
+
     ld de, _RAM_D100_
     ld hl, _DATA_5F6_
     call extract
+
     ld (de), a
     ld de, v_map
     ld hl, map
     call extract
+
     call _LABEL_14A_
     call _LABEL_BA9_
     call _LABEL_BE7_
@@ -165,18 +168,23 @@ _LABEL_69_:
     ld a, STATE_MARK_3_LOGO
     ld (state), a
 
-_LABEL_EB_:
+resetPlayfieldAndUpdate:
     di
-    call _LABEL_13C_
+    call clear_some_ram_LABEL_13C_
     call _AUDIO_3C65_
+
     ld a, $01 ; jumpToClearTilemap
-    ld (vdpActionSlot2), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot2), a
     ld a, $06 ; clearSprites
-    ld (vdpActionSlot7), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot7), a
+
     xor a
     ld (_RAM_C133_), a
+
     ld hl, flags_RAM_C103_
     res 7, (hl)
+
+    ; Reset VDP vertical scroll register
     ld de, $8900
     call writeVDPCommandWord
 
@@ -190,28 +198,22 @@ update:
 
     ld a, (state)
 
-    ; Mark 3 Logo
     rrca
     jp c, updateMark3LogoState
 
-    ; Push Start screen
     rrca
     jp c, updateStartScreenState
 
-    ; Demo
     rrca
     jp c, updateDemoState
 
-    ; Gameplay
     rrca
     jp c, updateGameplayState
 
-    ; Paused
     rrca
     jp c, updatePauseState
 
-    ; @TODO
-    jp _LABEL_EB_
+    jp resetPlayfieldAndUpdate
 
     ; Unused code 
     ld de, _RAM_C301_
@@ -219,7 +221,7 @@ update:
     ld bc, $01FF
     jr +
 
-_LABEL_13C_:
+clear_some_ram_LABEL_13C_:
     ld de, _RAM_C133_ + 1
     ld hl, _RAM_C133_
     ld bc, $0FCD
@@ -312,135 +314,7 @@ extract:
     inc hl
     jp extract
 
-handleInterrupt:
-    push af
-    in a, (Port_VDPStatus)
-    push bc
-    push de
-    push hl
-    push ix
-    push iy
-    ld a, $FF
-    ld (interruptFlag), a
-
-    ; Return if paused
-    ld a, (state)
-    cp STATE_PAUSED
-    jr z, interruptHandlerExit
-
-    call copySpritesToVram
-
-    ; Set a random color for the last palette slot
-    ld a, $1F
-    out (Port_VDPAddress), a
-    ld a, $C0
-    out (Port_VDPAddress), a
-    ld a, r
-    and $0F
-    out (Port_VDPData), a
-
-    call runVdpActions
-
-    call handleMapScrolling
-
-    call readInput
-
-    ; Increment frame counter.
-    ld hl, frameCounter
-    inc (hl)
-    ld a, (hl)
-
-    ; The following routines are called only on even frames.
-    rrca
-    jp c, @oddFrame
-
-    call entities_slot_6_and_10_LABEL_2AE6_
-    call _LABEL_2FD2_ ; no effect observed
-    call _LABEL_2D63_ ; If skipped: no entity waves
-    call _AUDIO_3894_ ; If skipped: no audio
-    call _LABEL_110C_ ; If skipped: unlimited grade period without flashing
-    jp interruptHandlerExit
-
-    @oddFrame:
-    ; The following routines are called only on odd frames.
-    call _LABEL_170F_ ; no effect observed
-    call _LABEL_1760_ ; no effect observed
-    call _LABEL_25F1_ ; no effect observed
-    call _LABEL_2682_ ; if skipped: no collisions
-    
-    ; Flag toggled every two frames.
-    ld hl, two_frame_toggle_RAM_C108_
-    inc (hl)
-    ld a, (hl)
-    cp $02
-    jr c, interruptHandlerExit
-    ld (hl), $00
-
-interruptHandlerExit:
-    pop iy
-    pop ix
-    pop hl
-    pop de
-    pop bc
-    pop af
-    ei
-    ret
-
-handlePauseInterrupt:
-    push af
-
-    ld a, (state)
-
-    ; Exit if already paused
-    cp STATE_PAUSED
-    jr z, exitPause
-
-    ; Pause only during gameplay state
-    cp STATE_GAMEPLAY
-    jr nz, returnPauseInterrupt
-
-    ; Backup game state
-    ld (stateBackup), a
-
-    ; Set state to paused
-    ld a, STATE_PAUSED
-    ld (state), a
-
-returnPauseInterrupt:
-    pop af
-    retn
-
-exitPause:
-    ld a, (stateBackup)
-    ld (state), a
-
-    ; Enable cheats if the correct button combination was pressed.
-    ld a, (cheatCounter1)
-    cp $03
-    jr nz, +
-
-    ld a, (cheatCounter2)
-    cp $07
-    jr nz, +
-
-    ld a, (flags_RAM_C103_)
-    or $80
-    ld (flags_RAM_C103_), a
-
-    jr ++
-
-+:
-    ld a, (flags_RAM_C103_)
-    and $7F
-    ld (flags_RAM_C103_), a
-
-++:
-    ; Reset cheat counters
-    xor a
-    ld (cheatCounter1), a
-    ld (cheatCounter2), a
-
-    jr returnPauseInterrupt
+.INCLUDE "interrupts.asm"
 
 updatePauseState:
     call _AUDIO_3C65_
@@ -492,7 +366,7 @@ updateGameplayState:
     cp $E0
     jp c, update
 +:
-    ld iy, _RAM_C600_
+    ld iy, player1
     call putIYEntityOffscreen
     jp +++
 
@@ -512,9 +386,9 @@ updateGameplayState:
     cp $E0
     jp c, update
 +:
-    ld iy, _RAM_C600_
+    ld iy, player1
     call putIYEntityOffscreen
-    ld iy, _RAM_C620_
+    ld iy, player2
     call putIYEntityOffscreen
     ld a, (_RAM_C133_)
     and $F9
@@ -523,14 +397,14 @@ updateGameplayState:
     ld a, STATE_MARK_3_LOGO
     ld (state), a
 
-    jp _LABEL_EB_
+    jp resetPlayfieldAndUpdate
 
 ++++:
     call +
     jp c, update
     ld hl, _RAM_C133_
     res 1, (hl)
-    ld iy, _RAM_C600_
+    ld iy, player1
     call putIYEntityOffscreen
     jp update
 
@@ -539,7 +413,7 @@ _LABEL_324_:
     jp c, update
     ld hl, _RAM_C133_
     res 2, (hl)
-    ld iy, _RAM_C620_
+    ld iy, player2
     call putIYEntityOffscreen
     jp update
 
@@ -627,9 +501,9 @@ _LABEL_39E_:
     ld hl, _RAM_C133_
     set 1, (hl)
     ld a, $06
-    ld (entities.1.type), a
+    ld (player1.type), a
     ld a, $01
-    ld (_RAM_C605_), a
+    ld (player1.data05), a
     ld a, (flags_RAM_C103_)
     rrca
     jr nc, +
@@ -731,7 +605,7 @@ _LABEL_48D_:
     ld a, (_RAM_C104_)
     bit 0, a
     jr z, +
-    ld de, _RAM_C600_
+    ld de, player1
     ld hl, _DATA_5B_
     ld bc, $0009
     ldir
@@ -740,7 +614,7 @@ _LABEL_48D_:
     ld a, $01
     ld (_RAM_C61B_), a
     ld a, $02
-    ld (_RAM_C612_), a
+    ld (player1.data12), a
     ld a, $03
     ld (_RAM_C614_), a
     ld a, $18
@@ -759,7 +633,7 @@ _LABEL_48D_:
     ld a, (_RAM_C104_)
     bit 4, a
     ret z
-    ld de, _RAM_C620_
+    ld de, player2
     ld hl, _DATA_517_
     ld bc, $0009
     ldir
@@ -773,11 +647,11 @@ _LABEL_48D_:
     ld (_RAM_C634_), a
     ld a, $18
     ld (_RAM_C63C_), a
-    ld (_RAM_C303_), a
+    ld (autofireTimer), a
     ret
 
 ; Data from 4F6 to 516 (33 bytes)
-_DATA_4F6_:
+player1AnimationDescriptor:
 .dw _DATA_506_
 .dw _DATA_541_
 .dw _DATA_541_
@@ -814,7 +688,7 @@ _DATA_520_:
 .db $13 $05
 
 ; Data from 524 to 55A (55 bytes)
-_DATA_524_:
+player2AnimationDescriptor:
 .dw _DATA_534_
 .dw _DATA_541_
 .dw _DATA_541_
@@ -867,7 +741,7 @@ updateDemoState:
 +:
     ld a, STATE_MARK_3_LOGO
     ld (state), a
-    jp _LABEL_EB_
+    jp resetPlayfieldAndUpdate
 
 ++:
     ld hl, unknownFlags_RAM_C151_
@@ -963,8 +837,8 @@ updateStartScreenState:
     ld a, STATE_DEMO
     ld (state), a
     xor a
-    ld (vdpActionSlot5), a ; Related to vdpActions jumptable
-    jp _LABEL_EB_
+    ld (interruptActionSlot5), a ; Related to interruptActions jumptable
+    jp resetPlayfieldAndUpdate
 
 ++:
     di
@@ -972,11 +846,11 @@ updateStartScreenState:
     call _LABEL_36A1_
     pop hl
     ld a, $01 ; jumpToClearTilemap
-    ld (vdpActionSlot2), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot2), a ; Related to interruptActions jumptable
     ld a, $02 ; drawBlueBG
-    ld (vdpActionSlot3), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot3), a ; Related to interruptActions jumptable
     ld a, $04 ; drawMenu
-    ld (vdpActionSlot5), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot5), a ; Related to interruptActions jumptable
 
     ld a, $81
     ld (_RAM_CD00_), a
@@ -1019,16 +893,16 @@ updateMark3LogoState:
     call ++++
 ++:
     xor a
-    ld (vdpActionSlot3), a
-    jp _LABEL_EB_
+    ld (interruptActionSlot3), a
+    jp resetPlayfieldAndUpdate
 
 +++:
     ld a, $02 ; drawBlueBG
-    ld (vdpActionSlot3), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot3), a ; Related to interruptActions jumptable
 
     
     ld a, $05 ; drawMark3Logo
-    ld (vdpActionSlot6), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot6), a ; Related to interruptActions jumptable
     ld (_RAM_C152_), a
     ret
 
@@ -1047,8 +921,8 @@ _LABEL_70E_:
     or a
     ret
 
-runVdpActions:
-    ld hl, vdpActionSlot1
+runInterruptActions:
+    ld hl, interruptActionSlot1
     ld b, $12
 -:
     push hl
@@ -1067,7 +941,7 @@ runVdpActions:
     add a, a
     ld e, a
     ld d, $00
-    ld hl, vdpActions - 2
+    ld hl, interruptActions - 2
     add hl, de
     ld e, (hl)
     inc hl
@@ -1075,8 +949,8 @@ runVdpActions:
     ex de, hl
     jp (hl)
 
-; Jump Table from 745 to 76C (20 entries, indexed by vdpActionSlot1)
-vdpActions:
+; Jump Table from 745 to 76C (20 entries, indexed by interruptActionSlot1)
+interruptActions:
 .dw jumpToClearTilemap
 .dw drawBlueBG
 .dw setBGColorsToBlack
@@ -1086,7 +960,7 @@ vdpActions:
 .dw drawInfoBar
 .dw incrementAndDrawPlayer1Lives
 .dw incrementAndDrawPlayer2Lives
-.dw _LABEL_9D5_
+.dw incrementAndDrawStar
 .dw _LABEL_A3E_
 .dw loadBossTiles
 .dw _LABEL_A9C_
@@ -1094,11 +968,11 @@ vdpActions:
 .dw drawExtraText
 .dw drawBonus10KText
 .dw _LABEL_B0F_
-.dw actionNop
-.dw actionNop
-.dw actionNop
+.dw interruptNopAction
+.dw interruptNopAction
+.dw interruptNopAction
 
-; 1st entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 1st entry of Jump Table from 745 (indexed by interruptActionSlot1)
 jumpToClearTilemap:
     jp clearTilemap
 
@@ -1116,7 +990,7 @@ mark3Logo:
 .db $EA $EB $EC $ED $EE $EF $F0 $F1 $F2 $F3 $F4 $00 $F5 $F6 $F3 $F4
 .db $F7 $F8 $F9 $57 $58 $44
 
-; 3rd entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 3rd entry of Jump Table from 745 (indexed by interruptActionSlot1)
 setBGColorsToBlack:
     ; Set PAL1 1st color to black
     ld a, $00
@@ -1128,7 +1002,7 @@ setBGColorsToBlack:
     ld de, $C003
     jp writeToVdpAddress
 
-; 4th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 4th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 drawMenu:
     ld hl, logo
     ld de, $390A
@@ -1200,7 +1074,7 @@ logo:
 .db $C3 $08 $C2 $0C $C3 $08 $C4 $0C $D3 $08 $D3 $0A $C2 $0C $C3 $08
 .db $00 $08 $D4 $08 $D5 $08 $00 $08
 
-; 2nd entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 2nd entry of Jump Table from 745 (indexed by interruptActionSlot1)
 drawBlueBG:
     ; Set PAL1 1st color to blue
     ld a, $34
@@ -1216,14 +1090,14 @@ drawBlueBG:
     ld l, $20
     jp fillTilemap
 
-; 6th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 6th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 clearSprites:
     ld de, $3F00
     ld bc, $0020
     ld hl, $D0D0
     jp fillVram
 
-; 7th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 7th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 drawInfoBar:
     ; @TODO
     ld de, $382E
@@ -1345,7 +1219,7 @@ _DATA_9B3_:
 _DATA_9B9_:
 .db $10 $11 $14 $15
 
-; 8th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 8th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 incrementAndDrawPlayer1Lives:
     ld a, $8B
     ld (_RAM_CD00_), a
@@ -1353,7 +1227,7 @@ incrementAndDrawPlayer1Lives:
     inc (hl)
     jp drawPlayer1Lives
 
-; 9th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 9th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 incrementAndDrawPlayer2Lives:
     ld a, $8B
     ld (_RAM_CD00_), a
@@ -1361,25 +1235,35 @@ incrementAndDrawPlayer2Lives:
     inc (hl)
     jp drawPlayer2Lives
 
-; 10th entry of Jump Table from 745 (indexed by vdpActionSlot1)
-_LABEL_9D5_:
-    ld a, (_RAM_C145_)
+; 10th entry of Jump Table from 745 (indexed by interruptActionSlot1)
+incrementAndDrawStar:
+    ; Get star type (calculated from tile index)
+    ; From 0 to 4: red, purple, green, yellow and white.
+    ld a, (lastStarTileIndex)
     sub $3A
+
     ld c, a
-    call _LABEL_A08_
+    call getStarTilemapAddress
+
+    ; Calculate address for current star type count.
     ld a, c
     add a, a
     add a, c
     push de
     ld e, a
     ld d, $00
-    ld hl, _RAM_C136_
+    ld hl, starsCounts
     add hl, de
     pop de
+
+    ; Return if in power up awarded state.
     bit 7, (hl)
     ret nz
+
     inc (hl)
     ld a, (hl)
+
+    ; Update UI with collected star
     push hl
     dec a
     add a, a
@@ -1387,18 +1271,21 @@ _LABEL_9D5_:
     ld h, $00
     add hl, de
     ex de, hl
-    ld a, (_RAM_C145_)
-    rst $18	; writeToVdpAddress
+    ld a, (lastStarTileIndex)
+    rst writeToVdpAddress
     ld a, $08
     call writeVDPData
     pop hl
+
+    ; Return if less than 5 stars
     ld a, (hl)
     cp $05
     ret c
-    jp +
 
-_LABEL_A08_:
-    ld hl, _DATA_A14_
+    jp powerUpAwarded
+
+getStarTilemapAddress:
+    ld hl, starsTilemapAddresses
     add a, a
     ld e, a
     ld d, $00
@@ -1409,10 +1296,14 @@ _LABEL_A08_:
     ret
 
 ; Data from A14 to A1D (10 bytes)
-_DATA_A14_:
-.db $B0 $3A $F0 $3A $30 $3B $70 $3B $B0 $3B
+starsTilemapAddresses:
+.db $B0 $3A
+.db $F0 $3A
+.db $30 $3B
+.db $70 $3B
+.db $B0 $3B
 
-+:
+powerUpAwarded:
     set 7, (hl)
     inc hl
     ld (hl), $00
@@ -1422,16 +1313,16 @@ _DATA_A14_:
     ld (_RAM_CD00_), a
     ld a, c
     or a
-    jp z, _LABEL_1688_
+    jp z, powerUpAutofireRate
     dec a
-    jp z, _LABEL_169A_
+    jp z, powerUpSpeedUp
     dec a
-    jp z, _LABEL_161A_
+    jp z, powerUpShield
     dec a
-    jp z, _LABEL_16A9_
-    jp _LABEL_16F8_
+    jp z, powerUpBonus
+    jp powerUpExtraLife
 
-; 11th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 11th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 _LABEL_A3E_:
     call _LABEL_A63_
     ld d, (iy+30)
@@ -1471,14 +1362,14 @@ _LABEL_A63_:
     ld (_RAM_C946_), a
     ret
 
-; 12th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 12th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 loadBossTiles:
     ld hl, (enemyTiles)
     ld de, $0C00
     ld bc, $4B08
     jp _LABEL_313C_
 
-; 13th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 13th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 _LABEL_A9C_:
     call _LABEL_A63_
     ld a, (iy+5)
@@ -1496,13 +1387,13 @@ _LABEL_A9C_:
     ld (_RAM_C942_), a
     ret
 
-; 14th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 14th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 _LABEL_ABB_:
     ld a, $8F
     ld (_RAM_CD00_), a
     ret
 
-; 15th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 15th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 drawExtraText:
     ld a, $80
     ld (_RAM_C338_), a
@@ -1513,7 +1404,7 @@ drawExtraText:
 _DATA_ACC_:
 .db $45 $51 $54 $52 $41 $20 $20 $20 $20 $20 $20 $20
 
-; 16th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 16th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 drawBonus10KText:
     ld a, $80
     ld (_RAM_C338_), a
@@ -1539,7 +1430,7 @@ _DATA_AF9_:
 _DATA_B05_:
 .db $20 $31 $20 $33 $20 $35 $20 $37 $31 $30
 
-; 17th entry of Jump Table from 745 (indexed by vdpActionSlot1)
+; 17th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 _LABEL_B0F_:
     ld hl, _DATA_B20_
 _LABEL_B12_:
@@ -1553,8 +1444,8 @@ _LABEL_B12_:
 _DATA_B20_:
 .dsb 12, $20
 
-; 18th entry of Jump Table from 745 (indexed by vdpActionSlot1)
-actionNop:
+; 18th entry of Jump Table from 745 (indexed by interruptActionSlot1)
+interruptNopAction:
     ret
 
 drawTiles:
@@ -1693,15 +1584,15 @@ _LABEL_BEE_:
 
 _LABEL_BFC_:
     ld a, $03 ; setBGColorsToBlack
-    ld (vdpActionSlot4), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot4), a ; Related to interruptActions jumptable
     ld a, $01 ; jumpToClearTilemap
-    ld (vdpActionSlot2), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot2), a ; Related to interruptActions jumptable
     ld a, $06 ; clearSprites
-    ld (vdpActionSlot7), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot7), a ; Related to interruptActions jumptable
     ld a, $07 ; drawInfoBar
-    ld (vdpActionSlot8), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot8), a ; Related to interruptActions jumptable
     ld a, $0C ; loadBossTiles
-    ld (vdpActionSlot13), a ; Related to vdpActions jumptable
+    ld (interruptActionSlot13), a ; Related to interruptActions jumptable
 
     ld a, $03
     ld (unknownFlags_RAM_C151_), a
@@ -1764,7 +1655,7 @@ _LABEL_2301_:
     and $0F
     or a
     jr nz, +
-    ld ix, _RAM_C600_
+    ld ix, player1
     ld a, (ix + Entity.type)
     cp $01
     jr nz, +
@@ -1787,13 +1678,13 @@ _LABEL_2301_:
     and $F0
     or a
     ret nz
-    ld ix, _RAM_C620_
+    ld ix, player2
     ld a, (ix + Entity.type)
     cp $02
     ret nz
     ld iy, _RAM_C6C0_
     ld hl, input.player2
-    ld de, _RAM_C303_
+    ld de, autofireTimer
     call _LABEL_2371_
     ld a, (ix+24)
     or a
@@ -1811,14 +1702,14 @@ _LABEL_2371_:
     inc hl
     ld c, (hl)
     ex de, hl
-    bit 5, b
+    bit JOY_BTN2_BIT, b
     ret z
-    bit 5, c
+    bit JOY_BTN2_BIT, c
     jr nz, +
     dec (hl)
     ret nz
 +:
-    ld a, (ix + Entity.data1c)
+    ld a, (ix + Player.autofireRate)
     ld (hl), a
     call _LABEL_246F_
     ret nc
@@ -1963,12 +1854,12 @@ unknown_LABEL_2456_:
 
     ld (ix + Entity.data1b), $00
 
-    ld hl, _DATA_4F6_
+    ld hl, player1AnimationDescriptor
     ld a, (ix + Entity.data05)
     dec a
 
     jp z, _LABEL_1149_
-    ld hl, _DATA_524_
+    ld hl, player2AnimationDescriptor
     jp _LABEL_1149_
 
 _LABEL_246F_:
@@ -2015,18 +1906,18 @@ _LABEL_2484_:
     ret
 
 +++:
-    ld iy, _RAM_C600_
+    ld iy, player1
     ld a, (iy + Entity.type)
     cp $05
     jr z, +
     call ++
-    ld iy, _RAM_C620_
+    ld iy, player2
     jr ++
 
 +:
-    ld iy, _RAM_C620_
+    ld iy, player2
     call ++
-    ld iy, _RAM_C600_
+    ld iy, player1
 ++:
     ld a, (iy+3)
     or a
@@ -2186,12 +2077,12 @@ _LABEL_255E_:
     dec a
     jr nz, +
     ld a, $08
-    ld (vdpActionSlot9), a
+    ld (interruptActionSlot9), a
     ret
 
 +:
     ld a, $09
-    ld (vdpActionSlot10), a
+    ld (interruptActionSlot10), a
     ret
 
 
@@ -2469,7 +2360,7 @@ _LABEL_2760_:
     ld a, (flags_RAM_C103_)
     bit 0, a
     ret z
-    ld a, (entities.1.type)
+    ld a, (player1.type)
     cp $01
     ret nz
     ld a, (_RAM_C622_)
@@ -2596,7 +2487,7 @@ _LABEL_284B_:
     ld a, (flags_RAM_C103_)
     and $04
     ld (_RAM_C337_), a
-    ld iy, _RAM_C600_
+    ld iy, player1
     ld a, (iy + Entity.type)
     cp $01
     jr nz, +
@@ -2611,7 +2502,7 @@ _LABEL_284B_:
     or a
     ret nz
     ld bc, $0111
-    ld iy, _RAM_C620_
+    ld iy, player2
     ld a, (iy + Entity.type)
     cp $02
     ret nz
@@ -2796,12 +2687,12 @@ _LABEL_29C3_:
     cp $01
     jr nz, +
     ld a, $08
-    ld (vdpActionSlot9), a
+    ld (interruptActionSlot9), a
     ret
 
 +:
     ld a, $09
-    ld (vdpActionSlot10), a
+    ld (interruptActionSlot10), a
     ret
 
 ; Unused code
@@ -2932,7 +2823,7 @@ _LABEL_2A9A_:
     ld hl, unknownFlags_RAM_C151_
     set 0, (hl)
     ld a, $0E
-    ld (vdpActionSlot14 + 1), a
+    ld (interruptActionSlot14 + 1), a
     ld a, $01
     ld (entities.12.frame), a
     ld (entities.12.data1c), a
@@ -3022,13 +2913,13 @@ entities_slot_6_and_10_LABEL_2AE6_:
     cp $82
     jr nz, +
     ld a, $0B
-    ld (vdpActionSlot12), a
+    ld (interruptActionSlot12), a
     ret
 
 +:
     ld (_RAM_C334_), a
     ld a, $0D
-    ld (vdpActionSlot14), a
+    ld (interruptActionSlot14), a
     ret
 
 ; Data from 2B63 to 2B6A (8 bytes)
@@ -3659,7 +3550,7 @@ _LABEL_2FBB_:
     ret
 
 _LABEL_2FD2_:
-    ld a, (_RAM_C30B_)
+    ld a, (jellyFishCount)
     cp $07
     jr c, ++
     call rng_LABEL_2D2A_
@@ -3670,7 +3561,7 @@ _LABEL_2FD2_:
 +:
     ld (_RAM_C30C_), a
     xor a
-    ld (_RAM_C30B_), a
+    ld (jellyFishCount), a
 ++:
     ld hl, _RAM_C30D_
     ld a, (hl)
@@ -3685,12 +3576,12 @@ _LABEL_2FD2_:
     dec (hl)
 +:
     ld de, flags_RAM_C103_
-    ld hl, (entities.1.data0b)
+    ld hl, (player1.timer_data0b)
     ld a, h
     or l
     jr z, +
     dec hl
-    ld (entities.1.data0b), hl
+    ld (player1.timer_data0b), hl
     call +++
     jp ++
 
@@ -3699,27 +3590,27 @@ _LABEL_2FD2_:
     and $0F
     or a
     jr nz, +
-    ld a, (entities.1.data1b)
+    ld a, (player1.data1b)
     or a
     jr nz, +
     push hl
-    ld hl, _DATA_4F6_
+    ld hl, player1AnimationDescriptor
     ld a, l
-    ld (entities.1.animationDescriptorPointer.low), a
+    ld (player1.animationDescriptorPointer.low), a
     ld a, h
-    ld (entities.1.animationDescriptorPointer.high), a
+    ld (player1.animationDescriptorPointer.high), a
     pop hl
 +:
     ex de, hl
     res 2, (hl)
     ex de, hl
 ++:
-    ld hl, (entities.2.data0b)
+    ld hl, (player2.timer_data0b)
     ld a, h
     or l
     jr z, ++++
     dec hl
-    ld (entities.2.data0b), hl
+    ld (player2.timer_data0b), hl
 +++:
     ld a, h
     or a
@@ -3740,14 +3631,14 @@ _LABEL_2FD2_:
     and $F0
     or a
     ret nz
-    ld a, (entities.2.data1b)
+    ld a, (player2.data1b)
     or a
     ret nz
-    ld hl, _DATA_524_
+    ld hl, player2AnimationDescriptor
     ld a, l
-    ld (entities.2.animationDescriptorPointer.low), a
+    ld (player2.animationDescriptorPointer.low), a
     ld a, h
-    ld (entities.2.animationDescriptorPointer.high), a
+    ld (player2.animationDescriptorPointer.high), a
     ret
 
 ; Related to enemy1 shoot
@@ -3788,7 +3679,7 @@ fire_LABEL_3063_:
     jr nc, ++
 +:
     ld c, $01
-    ld a, (entities.1.type)
+    ld a, (player1.type)
     cp c
     jp z, _LABEL_2F92_
     ld c, $02
@@ -3803,7 +3694,7 @@ fire_LABEL_3063_:
     cp c
     jp z, _LABEL_2F92_
     ld c, $01
-    ld a, (entities.1.type)
+    ld a, (player1.type)
     cp c
     ret nz
     jp _LABEL_2F92_

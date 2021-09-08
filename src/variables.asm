@@ -12,20 +12,20 @@ two_frame_toggle_RAM_C108_ db
 .ende
 
 .enum $C10A export
-vdpActionSlot1 db
-vdpActionSlot2 db
-vdpActionSlot3 db
-vdpActionSlot4 db
-vdpActionSlot5 db
-vdpActionSlot6 db
-vdpActionSlot7 db
-vdpActionSlot8 db
-vdpActionSlot9 db
-vdpActionSlot10 db
-vdpActionSlot11 db
-vdpActionSlot12 db
-vdpActionSlot13 db
-vdpActionSlot14 db
+interruptActionSlot1 db
+interruptActionSlot2 db
+interruptActionSlot3 db
+interruptActionSlot4 db
+interruptActionSlot5 db
+interruptActionSlot6 db
+interruptActionSlot7 db
+interruptActionSlot8 db
+interruptActionSlot9 db
+interruptActionSlot10 db
+interruptActionSlot11 db
+interruptActionSlot12 db
+interruptActionSlot13 db
+interruptActionSlot14 db
 .ende
 
 .enum $C119 export
@@ -64,12 +64,12 @@ _RAM_C133_ db
 mapIndex .dw
 mapIndex.low db
 mapIndex.high db
-_RAM_C136_ db
+starsCounts db
 .ende
 
 .enum $C145 export
-_RAM_C145_ db
-_RAM_C146_ db
+lastStarTileIndex db
+playerThatCollectedTheLastStar db
 _RAM_C147_ db
 _RAM_C148_ dw
 cheatCounter1 db
@@ -89,7 +89,7 @@ _RAM_C152_ db
 _RAM_C300_ db
 _RAM_C301_ db
 _RAM_C302_ db
-_RAM_C303_ db
+autofireTimer db
 _RAM_C304_ db
 _RAM_C305_ db
 .ende
@@ -101,7 +101,7 @@ _RAM_C308_ db
 
 .enum $C30A export
 _RAM_C30A_ db
-_RAM_C30B_ db
+jellyFishCount db
 _RAM_C30C_ db
 _RAM_C30D_ db
 enemy1Counter db
@@ -165,23 +165,8 @@ _RAM_C540_ db
     entities INSTANCEOF Entity ENTITY_ARRAY_SIZE
 .ende
 
-.enum $C600 export
-_RAM_C600_ db
-_RAM_C601_ db
-.ende
-
-.enum $C603 export
-_RAM_C603_ db
-_RAM_C604_ db
-_RAM_C605_ db
-.ende
-
 .enum $C60B export
 _RAM_C60B_ dw
-.ende
-
-.enum $C612 export
-_RAM_C612_ db
 .ende
 
 .enum $C614 export
@@ -196,9 +181,7 @@ _RAM_C61B_ db
 _RAM_C61C_ db
 .ende
 
-.enum $C620 export
-_RAM_C620_ db
-_RAM_C621_ db
+.enum $C622 export
 _RAM_C622_ db
 _RAM_C623_ db
 _RAM_C624_ db

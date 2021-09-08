@@ -19,7 +19,7 @@ entityUpdatersPointers:
 .dw updateEntity12
 .dw updateEntity13
 .dw updateEntity14
-.dw updateEntity15
+.dw updateJellyfish
 .dw updateEntity16
 .dw updateEnemy2
 .dw updateEntity18

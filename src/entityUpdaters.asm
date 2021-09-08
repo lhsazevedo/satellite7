@@ -374,13 +374,13 @@ updateEntityXY:
     ld l,e
 
 _LABEL_110C_:
-    ld iy, _RAM_C600_
-    ld hl, _DATA_4F6_
+    ld iy, player1
+    ld hl, player1AnimationDescriptor
     ld a, (_RAM_C104_)
     and $0F
     call +
-    ld iy, _RAM_C620_
-    ld hl, _DATA_524_
+    ld iy, player2
+    ld hl, player2AnimationDescriptor
     ld a, (_RAM_C104_)
     and $F0
 +:
@@ -489,7 +489,7 @@ updateEntity0B:
     call _LABEL_1049_
     ld (iy + Entity.data05), $01
     ld (iy + Entity.data19), $38
-    ld a, (_RAM_C603_)
+    ld a, (player1.data03)
     cp $01
     jr nz, +
     ld a, r
@@ -982,39 +982,39 @@ _LABEL_15FE_:
     call updateEntityYWith
     jp updateEntityX
 
-_LABEL_161A_:
+powerUpShield:
     ld de, $0280
     ld hl, flags_RAM_C103_
-    ld a, (_RAM_C146_)
+    ld a, (playerThatCollectedTheLastStar)
     dec a
-    jr nz, +
+    jr nz, @player2
     push hl
-    ld hl, _DATA_164E_
+    ld hl, player1ArmorAnimationDescriptor
     ld a, l
-    ld (entities.1.animationDescriptorPointer.low), a
+    ld (player1.animationDescriptorPointer.low), a
     ld a, h
-    ld (entities.1.animationDescriptorPointer.high), a
+    ld (player1.animationDescriptorPointer.high), a
     pop hl
     set 2, (hl)
     ex de, hl
-    ld (_RAM_C60B_), hl
+    ld (player1.timer_data0b), hl
     ret
 
-+:
+@player2:
     push hl
-    ld hl, _DATA_165E_
+    ld hl, player2ArmorAnimationDescriptor
     ld a, l
-    ld (_RAM_C620_), a
+    ld (player2.animationDescriptorPointer.low), a
     ld a, h
-    ld (_RAM_C621_), a
+    ld (player2.animationDescriptorPointer.high), a
     pop hl
     set 3, (hl)
     ex de, hl
-    ld (_RAM_C62B_), hl
+    ld (player2.timer_data0b), hl
     ret
 
 ; Data from 164E to 165D (16 bytes)
-_DATA_164E_:
+player1ArmorAnimationDescriptor:
 .dw _DATA_166E_
 .dw _DATA_541_
 .dw _DATA_541_
@@ -1025,7 +1025,7 @@ _DATA_164E_:
 .dw _DATA_54E_
 
 ; Data from 165E to 1687 (42 bytes)
-_DATA_165E_:
+player2ArmorAnimationDescriptor:
 .dw _DATA_167B_
 .dw _DATA_541_
 .dw _DATA_541_
@@ -1049,41 +1049,41 @@ _DATA_167B_:
 .db $08 $00 $14
 .db $08 $08 $15
 
-_LABEL_1688_:
+powerUpAutofireRate:
     ld c, $08
-    ld a, (_RAM_C146_)
+    ld a, (playerThatCollectedTheLastStar)
     dec a
-    jr nz, +
+    jr nz, @player2
     ld a, c
-    ld (_RAM_C61C_), a
+    ld (player1.data1c), a
     ret
 
-+:
+@player2:
     ld a, c
     ld (_RAM_C63C_), a
     ret
 
-_LABEL_169A_:
-    ld hl, _RAM_C604_
-    ld a, (_RAM_C146_)
+powerUpSpeedUp:
+    ld hl, player1.data04
+    ld a, (playerThatCollectedTheLastStar)
     dec a
-    jr z, +
+    jr z, @player2
     ld hl, _RAM_C624_
-+:
+@player2:
     ld (hl), $01
     ret
 
-_LABEL_16A9_:
-    ld iy, _RAM_C600_
+powerUpBonus:
+    ld iy, player1
     ld a, (p1ScoreByte1)
     ld c, a
-    ld a, (_RAM_C146_)
+    ld a, (playerThatCollectedTheLastStar)
     dec a
-    jr z, +
-    ld iy, _RAM_C620_
+    jr z, @player2
+    ld iy, player2
     ld a, (_RAM_C128_)
     ld c, a
-+:
+@player2:
     ld a, c
     rrca
     rrca
@@ -1113,23 +1113,24 @@ _LABEL_16A9_:
     ld (_RAM_C339_), a
     ret
 
-_LABEL_16F8_:
+powerUpExtraLife:
     ld a, $0F
     ld (_RAM_C119_), a
-    ld a, (_RAM_C146_)
+
+    ld a, (playerThatCollectedTheLastStar)
     dec a
     jr nz, +
-    ld a, $08
-    ld (vdpActionSlot9), a
+    ld a, $08 ; incrementAndDrawPlayer1Lives
+    ld (interruptActionSlot9), a
     ret
 
 +:
-    ld a, $09
-    ld (vdpActionSlot10), a
+    ld a, $09 ; incrementAndDrawPlayer2Lives
+    ld (interruptActionSlot10), a
     ret
 
 _LABEL_170F_:
-    ld hl, _RAM_C136_
+    ld hl, starsCounts
     ld b, $05
 -:
     push hl
@@ -1162,7 +1163,7 @@ _LABEL_170F_:
     inc hl
     push hl
     ld a, (hl)
-    call _LABEL_A08_
+    call getStarTilemapAddress
     pop hl
     dec hl
     bit 0, (hl)
@@ -1198,7 +1199,7 @@ _LABEL_1760_:
     ld (_RAM_C338_), a
     ret nz
     ld a, $11
-    ld (_RAM_C11B_), a ; Related to vdpActions jumptable
+    ld (_RAM_C11B_), a ; Related to interruptActions jumptable
     ret
 
 updateEntity10:
@@ -1380,7 +1381,7 @@ updateEntity12:
     ld (iy + Entity.xPos.low), $B4
 +:
     ld (iy + Entity.data05), $01
-    ld a, (_RAM_C603_)
+    ld a, (player1.data03)
     or a
     jr z, +
     call rng_LABEL_2D2A_
@@ -1483,7 +1484,7 @@ updateEntity13:
     jp z, _LABEL_144B_
     jp _LABEL_15FE_
 
-updateEntity15:
+updateJellyfish:
     ld a, (iy + Entity.data03)
     or a
     jr nz, _LABEL_1A0B_
@@ -1493,7 +1494,7 @@ updateEntity15:
     ld hl, $020A
     call _LABEL_1049_
     ld (iy + Entity.data18), $06
-    ld hl, _RAM_C30B_
+    ld hl, jellyFishCount
     inc (hl)
     ld a, (_RAM_C30C_)
     inc a
@@ -1687,11 +1688,11 @@ _LABEL_1AD4_:
     ld (iy + Entity.data18), $00
     ld a, (iy + Entity.frame)
     add a, $3A
-    ld (_RAM_C145_), a
+    ld (lastStarTileIndex), a
     ld a, $0A
-    ld (vdpActionSlot11), a
-    ld a, (iy + Entity.data05)
-    ld (_RAM_C146_), a
+    ld (interruptActionSlot11), a
+    ld a, (iy + Player.playerNumber)
+    ld (playerThatCollectedTheLastStar), a
     jp putIYEntityOffscreen
 
 .INCLUDE "entities/updateEnemy2.asm"
@@ -1768,7 +1769,7 @@ updateEntity1B:
     rrca
     jr c, ++
 --:
-    ld a, (entities.1.type)
+    ld a, (player1.type)
     cp $01
     jr z, +
 -:
@@ -1780,7 +1781,7 @@ updateEntity1B:
     ret
 
 ++:
-    ld a, (_RAM_C603_)
+    ld a, (player1.data03)
     or a
     jr z, _LABEL_1C56_
     ld a, (_RAM_C623_)
@@ -2364,7 +2365,7 @@ _LABEL_2039_:
     jr nz, ++
 +:
     ld b, $01
-    ld a, (_RAM_C603_)
+    ld a, (player1.data03)
     or a
     jr z, ++++
     ld ix, _RAM_C900_

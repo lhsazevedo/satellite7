@@ -1,3 +1,12 @@
+player1.timer_data0b = player1.data0b
+player2.timer_data0b = player2.data0b
+
+Player.speedUp = Entity.data04
+Player.playerNumber = Entity.data05
+
+Player.autofireRate = Entity.data1c
+player1.autofireRate = player1.data1c
+
 updatePlayer1:
     ld a, (iy + Entity.data1b)
     cp $01
@@ -45,13 +54,13 @@ updatePlayer2:
     ld c, a
 +:
     bit 0, c
-    call nz, +++
+    call nz, moveUp
     bit 1, c
-    call nz, _LABEL_D4B_
+    call nz, moveDown
     bit 2, c
-    call nz, _LABEL_D61_
+    call nz, moveLeft
     bit 3, c
-    call nz, _LABEL_D77_
+    call nz, moveRight
 ++:
     ld a, (iy + Entity.data19)
     or a
@@ -69,45 +78,45 @@ updatePlayer2:
     ld (iy + Entity.data13), a
     ret
 
-+++:
+moveUp:
     ld a, (iy + Entity.yPos.low)
     cp $40
     ret c
-    ld de, $FF00
-    ld a, (iy + Entity.data04)
+    ld de, -$0100
+    ld a, (iy + Player.speedUp)
     or a
     jp z, updateEntityYWith
-    ld de, $FE40
+    ld de, -$01C0
     jp updateEntityYWith
 
-_LABEL_D4B_:
+moveDown:
     ld a, (iy + Entity.yPos.low)
     cp $B0
     ret nc
     ld de, $0100
-    ld a, (iy + Entity.data04)
+    ld a, (iy + Player.speedUp)
     or a
     jp z, updateEntityYWith
     ld de, $01A0
     jp updateEntityYWith
 
-_LABEL_D61_:
+moveLeft:
     ld a, (iy + Entity.xPos.low)
     cp $08
     ret c
-    ld de, $FF00
-    ld a, (iy + Entity.data04)
+    ld de, -$0100
+    ld a, (iy + Player.speedUp)
     or a
     jp z, updateEntityXWith
-    ld de, $FE40
+    ld de, -$01C0
     jp updateEntityXWith
 
-_LABEL_D77_:
+moveRight:
     ld a, (iy + Entity.xPos.low)
     cp $A8
     ret nc
     ld de, $0100
-    ld a, (iy + Entity.data04)
+    ld a, (iy + Player.speedUp)
     or a
     jp z, updateEntityXWith
     ld de, $01A0

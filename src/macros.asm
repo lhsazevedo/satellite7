@@ -8,13 +8,13 @@
 ;
 ; Entity count and type byte is divided as follows:
 ; cccttttt
-; c = Entity cuont
+; c = Entity count
 ; t = Entity type
-.MACRO entity_wave
-    .db \1
-    .db \2 << 5 | \3
+.MACRO entity_wave args interval, aCount, aType, bCount, bType
+    .db interval
+    .db aCount << 5 | aType
     .IF NARGS > 3
-        .db \4 << 5 | \5
+        .db bCount << 5 | bType
     .ELSE
         .db 0
     .ENDIF
