@@ -1141,7 +1141,7 @@ drawInfoBar:
     call _LABEL_9A1_
 
     ; @TODO: Related to high scores
-    call _LABEL_2638_
+    call drawHighscore
 
     ; Draw high score
     ld hl, _DATA_9A9_
@@ -2148,42 +2148,56 @@ scoresTable:
 .db $00 $05 $00
 .db $00 $15 $00
 
-_LABEL_25F1_:
+/*
+ * Draw high score and players scores.
+ * Update high score if needed.
+ */
+drawScores:
     ; Skip player 1 if score hasn't changed.
     ld de, player1ScoreChanged
     ld a, (de)
     or a
     jr z, +
 
-    ; Reset scoreChanged flag.
-    xor a
-    ld (de), a
+        ; Reset scoreChanged flag.
+        xor a
+        ld (de), a
 
-    inc de
-    call @updateHighScore
+        ; Update high score if needed.
+        inc de
+        call @updateAndDrawHighScore
 
-    ld hl, p1ScoreByte3
-    ld de, $3970
-    ld b, $06
-    call +++
-+:
+        ; Draw player 1 score.
+        ld hl, p1ScoreByte3
+        ld de, $3970
+        ld b, $06
+        call drawScore
+
+    +:
+
+    ; Skip player 2 if score hasn't changed.
     ld de, player2ScoreChanged
     ld a, (de)
     or a
     ret z
+
+    ; Reset player 2 score flag.
     xor a
     ld (de), a
-    inc de
-    call @updateHighScore
 
+    ; Update high score if needed.
+    inc de
+    call @updateAndDrawHighScore
+
+    ; Draw player 2 high score.
     ld hl, p2ScoreByte2
     ld de, $3A30
     ld b, $06
-    jp +++
+    jp drawScore
 
-@updateHighScore:
+@updateAndDrawHighScore:
     ; Check if score is higher
-    ; and return if it hasn't.
+    ; and return if it isn't.
     ld hl, highScoreByte1
     ld b, $03
     and a
@@ -2205,42 +2219,48 @@ _LABEL_25F1_:
     ld bc, $0003
     ldir
 
-_LABEL_2638_:
+drawHighscore:
     ld hl, highScoreByte3
     ld de, $38B0
     ld b, $06
-+++:
+
+drawScore:
     xor a
     ex af, af'
+
+    ; Score byte in DE, Vram address in HL.
     ex de, hl
     srl b
-    jr nc, _LABEL_264A_
+    jr nc, @drawByte
     inc b
-    jr +
+    jr @drawLowNibble
 
-_LABEL_264A_:
+@drawByte:
+    ; Draw high nibble
     ld a, (de)
     rrca
     rrca
     rrca
     rrca
-    call ++
-+:
+    call @drawDigit
+
+@drawLowNibble:
+    ; Draw low nibble
     ld a, (de)
-    call ++
+    call @drawDigit
     dec de
-    djnz _LABEL_264A_
+    djnz @drawByte
     ex af, af'
     ret
 
-++:
+@drawDigit:
     and $0F
     push bc
     ld c, a
     ex af, af'
     or c
     pop bc
-    jr z, +
+    jr z, @drawEmptyTile
     ex af, af'
 
     ; Draw zero tile.
@@ -2257,7 +2277,7 @@ _LABEL_264A_:
     inc hl
     ret
 
-+:
+@drawEmptyTile:
     ex af, af'
     push af
 
