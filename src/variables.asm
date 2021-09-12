@@ -48,9 +48,9 @@ p1ScoreByte1 db
 p1ScoreByte2 db
 p1ScoreByte3 db
 _RAM_C127_ db
-_RAM_C128_ dw
-_RAM_C12A_ db
-_RAM_C12B_ db
+p2ScoreByte1 dw
+p2ScoreByte2 db
+p2ScoreByte3 db
 .ende
 
 .enum $C12D export

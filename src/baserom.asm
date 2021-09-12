@@ -340,7 +340,7 @@ updatePauseState:
 updateGameplayState:
     ld a, (_RAM_C133_)
     bit 0, a
-    jp z, _LABEL_345_
+    jp z, resetScores
     bit 3, a
     call nz, _LABEL_369_
     call _LABEL_2301_
@@ -426,7 +426,7 @@ _LABEL_324_:
     xor a
     ret
 
-_LABEL_345_:
+resetScores:
     ld a, (state)
     cp STATE_DEMO
     jr z, +
@@ -978,7 +978,7 @@ jumpToClearTilemap:
 
 drawMark3Logo:
     ld a, $08
-    ld (_RAM_C12B_), a
+    ld (p2ScoreByte3), a
     ld de, $3A4C
     ld hl, mark3Logo
     ld bc, $0213
@@ -995,7 +995,7 @@ setBGColorsToBlack:
     ; Set PAL1 1st color to black
     ld a, $00
     ld de, $C010
-    rst $18	; writeToVdpAddress
+    rst writeToVdpAddress
 
     ; Set PAL0 4th color to black
     ld a, $00
@@ -1013,7 +1013,7 @@ drawMenu:
     ld de, $38EE
     ld b, $02
     ld a, $08
-    ld (_RAM_C12B_), a
+    ld (p2ScoreByte3), a
     call drawTiles
     ld a, $D6
     out (Port_VDPData), a
@@ -1039,7 +1039,7 @@ drawMenu:
     call drawTiles
     ld a, $32
     ld de, $3C92
-    rst $18	; writeToVdpAddress
+    rst writeToVdpAddress
 
     ; Draw copyright text
     ld de, $3DC8
@@ -1079,11 +1079,11 @@ drawBlueBG:
     ; Set PAL1 1st color to blue
     ld a, $34
     ld de, $C010
-    rst $18	; writeToVdpAddress
+    rst writeToVdpAddress
 
     ; Set PAL0 4th color to blue
     ld de, $C003
-    rst $18	; writeToVdpAddress
+    rst writeToVdpAddress
 
     ; Fill BG with blue tile
     ld h, $08
@@ -1108,10 +1108,10 @@ drawInfoBar:
 -:
     push bc
     ld a, $00
-    rst $18	; writeToVdpAddress
+    rst writeToVdpAddress
     inc de
     ld a, $11
-    rst $18	; writeToVdpAddress
+    rst writeToVdpAddress
     inc de
     pop bc
     djnz -
@@ -1122,7 +1122,7 @@ drawInfoBar:
     djnz --
 
     ld a, $08
-    ld (_RAM_C12B_), a
+    ld (p2ScoreByte3), a
 
     ; Draw "TOP"
     ld de, $3870
@@ -1160,7 +1160,7 @@ drawInfoBar:
     ld hl, _DATA_9B3_ + 2
     ld bc, $0202
     ld a, $08
-    ld (_RAM_C12B_), a
+    ld (p2ScoreByte3), a
     call _LABEL_B5E_
 
     ; Return if single player
@@ -1173,12 +1173,12 @@ drawInfoBar:
     ld hl, _DATA_9B9_
     ld bc, $0202
     ld a, $08
-    ld (_RAM_C12B_), a
+    ld (p2ScoreByte3), a
     call _LABEL_B5E_
 
     ; @TODO
     ld a, $08
-    ld (_RAM_C12B_), a
+    ld (p2ScoreByte3), a
 
     ; Draw "2UP"
     ld de, $39F0
@@ -1328,7 +1328,7 @@ _LABEL_A3E_:
     ld d, (iy+30)
     ld e, (iy+31)
     ld a, $3F
-    rst $18	; writeToVdpAddress
+    rst writeToVdpAddress
     ld a, $08
     out (Port_VDPData), a
     ld a, $0F
@@ -1435,7 +1435,7 @@ _LABEL_B0F_:
     ld hl, _DATA_B20_
 _LABEL_B12_:
     ld a, $08
-    ld (_RAM_C12B_), a
+    ld (p2ScoreByte3), a
     ld de, $3C32
     ld bc, $0206
     jp _LABEL_B5E_
@@ -1453,7 +1453,7 @@ drawTiles:
     ld c, Port_VDPData
 -:
     outi
-    ld a, (_RAM_C12B_)
+    ld a, (p2ScoreByte3)
     nop
     out (c), a
     nop
@@ -1492,7 +1492,7 @@ _LABEL_B5E_:
     ld c, Port_VDPData
 -:
     outi
-    ld a, (_RAM_C12B_)
+    ld a, (p2ScoreByte3)
     nop
     out (c), a
     nop
@@ -2015,20 +2015,26 @@ _LABEL_24E4_:
     ld (iy + Entity.yPos.low), $D8
     ret
 
-_LABEL_255E_:
+addScore:
+    ; Return if in demo state
     ld a, (state)
-    bit 2, a
+    bit STATE_DEMO_BIT, a
     ret nz
+
     ld de, _RAM_C123_
-    ld a, (iy+5)
+    ld a, (iy + Player.playerNumber)
     cp $01
     jr z, +
-    ld de, _RAM_C127_
-+:
+        ld de, _RAM_C127_
+    +:
     ld a, $01
     ld (de), a
+
+    ; DE = p1ScoreByte1 or p2ScoreByte1.
     inc de
-    ld hl, $25C4
+
+    ; Load value from bonus scores table indexed by C.
+    ld hl, scoresTable
     dec c
     ld a, c
     add a, a
@@ -2036,26 +2042,34 @@ _LABEL_255E_:
     ld c, a
     ld b, $00
     add hl, bc
+
+    ; Add to first score byte (least significant).
     ld a, (de)
     add a, (hl)
     daa
     ld (de), a
+
+    ; Add to second score byte.
     inc hl
     inc de
     ld a, (de)
     adc a, (hl)
     daa
     ld (de), a
+
+    ; Add to third score byte (most significant).
     inc hl
     inc de
     ld a, (de)
     adc a, (hl)
     daa
     ld (de), a
+
+    ; @TODO: Related to extra life.
     and $0F
     ld c, a
     ld hl, _RAM_C335_
-    ld a, (iy+5)
+    ld a, (iy + Player.playerNumber)
     dec a
     jr z, +
     ld hl, _RAM_C336_
@@ -2073,60 +2087,35 @@ _LABEL_255E_:
     ret nz
 +:
     ld (hl), a
-    ld a, (iy+5)
+    ld a, (iy + Player.playerNumber)
     dec a
     jr nz, +
-    ld a, $08
+    ld a, $08 ; incrementAndDrawPlayer1Lives
     ld (interruptActionSlot9), a
     ret
 
 +:
-    ld a, $09
+    ld a, $09 ; incrementAndDrawPlayer2Lives
     ld (interruptActionSlot10), a
     ret
 
 
-    ; Unused code
-    ld bc, $0000
-    nop
-    djnz +
-+:
-    nop
-    jr nc, +
-
-+:
-    nop
-    ld d,b
-    nop
-    nop
-    ld (hl),b
-    nop
-    nop
-    nop
-    ld bc, $0020
-    nop
-    jr nc, +
-
-+:
-    nop
-    ld d,b
-    nop
-    nop
-    djnz +
-
-+:
-    nop
-    nop
-    ld bc, $5000
-    ld bc, $0000
-    inc bc
-    nop
-    nop
-    dec b
-    nop
-    nop
-    dec d
-    nop
+scoresTable:
+.db $01 $00 $00
+.db $00 $10 $00
+.db $00 $30 $00
+.db $00 $50 $00
+.db $00 $70 $00
+.db $00 $00 $01
+.db $20 $00 $00
+.db $30 $00 $00
+.db $50 $00 $00
+.db $10 $00 $00
+.db $00 $01 $00
+.db $50 $01 $00
+.db $00 $03 $00
+.db $00 $05 $00
+.db $00 $15 $00
 
 _LABEL_25F1_:
     ld de, _RAM_C123_
@@ -2150,7 +2139,7 @@ _LABEL_25F1_:
     ld (de), a
     inc de
     call ++
-    ld hl, _RAM_C12A_
+    ld hl, p2ScoreByte2
     ld de, $3A30
     ld b, $06
     jp +++
@@ -2211,7 +2200,7 @@ _LABEL_264A_:
     ex af, af'
     add a, $30
     ex de, hl
-    rst $18	; writeToVdpAddress
+    rst writeToVdpAddress
     ld a, $18
     call writeVDPData
     ex de, hl
@@ -2224,7 +2213,7 @@ _LABEL_264A_:
     push af
     ld a, $20
     ex de, hl
-    rst $18	; writeToVdpAddress
+    rst writeToVdpAddress
     ld a, $18
     call writeVDPData
     ex de, hl
@@ -2659,7 +2648,7 @@ _LABEL_294A_:
 +:
     ld (ix + Entity.type), $08
     ld c, $0A
-    jp _LABEL_255E_
+    jp addScore
 
 ++:
     ld (iy + Entity.type), $05
@@ -2672,7 +2661,7 @@ _LABEL_29A5_:
     ld a, $89
     ld (_RAM_CD00_), a
     ld c, $09
-    jp _LABEL_255E_
+    jp addScore
 
 _LABEL_29B9_:
     ld a, (ix+28)
@@ -2704,7 +2693,7 @@ _LABEL_29C3_:
     inc (iy+24)
     ld (ix+31), $FF
     ld c, $08
-    jp _LABEL_255E_
+    jp addScore
 
 ; Unused code
 _LABEL_29ED_:
@@ -2732,13 +2721,13 @@ _LABEL_2A01_:
     	ld (ix+5), a
     	inc (iy+24)
     	ld (ix+2), $08
-    	jp _LABEL_255E_
+    	jp addScore
 
 ; Unused code
 _LABEL_2A14_:	
     	ret nz
     	ld c, $0A
-    	call _LABEL_255E_
+    	call addScore
     	ld hl, _DATA_143F_
     	ld (ix+0), l
     	ld (ix+1), h
@@ -2773,7 +2762,7 @@ _LABEL_2A5B_:
     	ld a, (iy+17)
     	cp $03
     	ret nz
-    	call _LABEL_255E_
+    	call addScore
     	ld a, (iy+5)
     	ld (ix+5), a
     	ld (ix+2), $09
@@ -2838,7 +2827,7 @@ _LABEL_2A9A_:
     call _LABEL_2A9A_
     call putIYEntityOffscreen
     ld c, $0E
-    jp _LABEL_255E_
+    jp addScore
 
 entities_slot_6_and_10_LABEL_2AE6_:
     ld a, (entities.6.data1d)
@@ -2957,7 +2946,7 @@ _DATA_2B63_:
     add a, $38
     ld d, a
 +:
-    rst $08	; _LABEL_8_
+    rst _LABEL_8_
     ld a, b
     ld b, d
     ld c, e
