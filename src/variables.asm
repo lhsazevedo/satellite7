@@ -36,18 +36,17 @@ _RAM_C11B_ db
 
 .enum $C11E export
 stateBackup db
-_RAM_C11F_ .dw
 highScoreByte1 db
 highScoreByte2 db
 highScoreByte3 db
 .ende
 
 .enum $C123 export
-_RAM_C123_ db
+player1ScoreChanged db
 p1ScoreByte1 db
 p1ScoreByte2 db
 p1ScoreByte3 db
-_RAM_C127_ db
+player2ScoreChanged db
 p2ScoreByte1 dw
 p2ScoreByte2 db
 p2ScoreByte3 db
@@ -144,8 +143,8 @@ _RAM_C331_ db
 _RAM_C332_ db
 _RAM_C333_ db
 _RAM_C334_ db
-_RAM_C335_ db
-_RAM_C336_ db
+player1ExtraLifeScore db
+player2ExtraLifeScore db
 _RAM_C337_ db
 _RAM_C338_ db
 _RAM_C339_ db

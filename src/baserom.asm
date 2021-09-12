@@ -430,9 +430,9 @@ resetScores:
     ld a, (state)
     cp STATE_DEMO
     jr z, +
-    ld hl, _RAM_C123_
+    ld hl, player1ScoreChanged
     ld (hl), $00
-    ld de, _RAM_C123_ + 1
+    ld de, player1ScoreChanged + 1
     ld bc, $0007
     ldir
 +:
@@ -732,8 +732,8 @@ updateDemoState:
     or a
     jr z, ++
     ld a, $01
-    ld (_RAM_C123_), a
-    ld (_RAM_C127_), a
+    ld (player1ScoreChanged), a
+    ld (player2ScoreChanged), a
     call +++
     ld a, (_RAM_C150_)
     cp $E0
@@ -2015,22 +2015,34 @@ _LABEL_24E4_:
     ld (iy + Entity.yPos.low), $D8
     ret
 
+/*
+ * Add an score table entry to player score. Handle extra life.
+ * IY: Player entity.
+ * C: Score table index
+ */
 addScore:
+    /*
+     * # Add score
+     * BCD sum a value from the score
+     * table with the player score.
+     */
+
     ; Return if in demo state
     ld a, (state)
     bit STATE_DEMO_BIT, a
     ret nz
 
-    ld de, _RAM_C123_
+    ; Load DE with player1ScoreChanged or
+    ; player2ScoreChanged and set it.
+    ld de, player1ScoreChanged
     ld a, (iy + Player.playerNumber)
     cp $01
     jr z, +
-        ld de, _RAM_C127_
+        ld de, player2ScoreChanged
     +:
     ld a, $01
     ld (de), a
 
-    ; DE = p1ScoreByte1 or p2ScoreByte1.
     inc de
 
     ; Load value from bonus scores table indexed by C.
@@ -2065,28 +2077,47 @@ addScore:
     daa
     ld (de), a
 
-    ; @TODO: Related to extra life.
+
+    /*
+     * # Extra life
+     *
+     * Add an extra life if score hundred thousands
+     * place has changed and is 1, 2, 4 or 8.
+     */
+
+    ; Load hundred thousands nibble into c.
     and $0F
     ld c, a
-    ld hl, _RAM_C335_
+
+    ; Check if it changed and return if so.
+    ld hl, player1ExtraLifeScore
     ld a, (iy + Player.playerNumber)
     dec a
     jr z, +
-    ld hl, _RAM_C336_
-+:
+        ld hl, player2ExtraLifeScore
+    +:
     ld a, c
     cp (hl)
     ret z
+
+    ; Return if it isn't 1, 2, 4 or 8.
     cp $01
     jr z, +
+
     cp $02
     jr z, +
+
     cp $04
     jr z, +
+
     cp $08
     ret nz
+
 +:
+    ; Update extra life score
     ld (hl), a
+
+    ; Queue increment lives interrupt action
     ld a, (iy + Player.playerNumber)
     dec a
     jr nz, +
@@ -2118,49 +2149,62 @@ scoresTable:
 .db $00 $15 $00
 
 _LABEL_25F1_:
-    ld de, _RAM_C123_
+    ; Skip player 1 if score hasn't changed.
+    ld de, player1ScoreChanged
     ld a, (de)
     or a
     jr z, +
+
+    ; Reset scoreChanged flag.
     xor a
     ld (de), a
+
     inc de
-    call ++
+    call @updateHighScore
+
     ld hl, p1ScoreByte3
     ld de, $3970
     ld b, $06
     call +++
 +:
-    ld de, _RAM_C127_
+    ld de, player2ScoreChanged
     ld a, (de)
     or a
     ret z
     xor a
     ld (de), a
     inc de
-    call ++
+    call @updateHighScore
+
     ld hl, p2ScoreByte2
     ld de, $3A30
     ld b, $06
     jp +++
 
-++:
-    ld hl, _RAM_C11F_
+@updateHighScore:
+    ; Check if score is higher
+    ; and return if it hasn't.
+    ld hl, highScoreByte1
     ld b, $03
     and a
     push de
--:
-    ld a, (de)
-    sbc a, (hl)
-    inc hl
-    inc de
+
+    -:
+        ld a, (de)
+        sbc a, (hl)
+        inc hl
+        inc de
     djnz -
+
     pop de
     ret c
-    ld hl, _RAM_C11F_
+
+    ; Update high score
+    ld hl, highScoreByte1
     ex de, hl
     ld bc, $0003
     ldir
+
 _LABEL_2638_:
     ld hl, highScoreByte3
     ld de, $38B0
@@ -2198,11 +2242,16 @@ _LABEL_264A_:
     pop bc
     jr z, +
     ex af, af'
+
+    ; Draw zero tile.
     add a, $30
     ex de, hl
     rst writeToVdpAddress
+
+    ; Write tile attributes (Palette 1 and priority)
     ld a, $18
     call writeVDPData
+
     ex de, hl
     inc hl
     inc hl
@@ -2211,11 +2260,16 @@ _LABEL_264A_:
 +:
     ex af, af'
     push af
+
+    ; Draw empty tile.
     ld a, $20
     ex de, hl
     rst writeToVdpAddress
+
+    ; Write tile attributes (Palette 1 and priority)
     ld a, $18
     call writeVDPData
+
     ex de, hl
     inc hl
     inc hl
