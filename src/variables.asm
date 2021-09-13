@@ -68,7 +68,7 @@ starsCounts db
 .enum $C145 export
 lastStarTileIndex db
 playerThatCollectedTheLastStar db
-_RAM_C147_ db
+starBlinkTimer db
 _RAM_C148_ dw
 cheatCounter1 db
 cheatCounter2 db

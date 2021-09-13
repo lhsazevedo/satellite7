@@ -1831,37 +1831,48 @@ powerUpExtraLife:
     ld (interruptActionSlot10), a
     ret
 
-_LABEL_170F_:
+blinkStars:
     ld hl, starsCounts
     ld b, $05
--:
-    push hl
-    push bc
-    ld a, (hl)
-    rlca
-    call c, +
-    pop bc
-    pop hl
-    inc hl
-    inc hl
-    inc hl
-    djnz -
+
+    @starLoop:
+        push hl
+        push bc
+        ld a, (hl)
+        rlca
+        call c, @blinkStar
+
+        pop bc
+        pop hl
+        inc hl
+        inc hl
+        inc hl
+    djnz @starLoop
+
     ret
 
-+:
+@blinkStar:
     ex de, hl
-    ld hl, _RAM_C147_
+    ld hl, starBlinkTimer
     inc (hl)
     ld a, (hl)
     cp $04
     ret c
+
+    ; Reset starBlinkTimer.
     ld (hl), $00
+
     ex de, hl
+
+    ; Increment blink phase.
     inc hl
     inc (hl)
+
+    ; 
     ld a, (hl)
     cp $18
-    jr nc, ++
+    jr nc, @resetStarData
+
     inc hl
     push hl
     ld a, (hl)
@@ -1869,7 +1880,9 @@ _LABEL_170F_:
     pop hl
     dec hl
     bit 0, (hl)
-    jr nz, +
+    jr nz, @clearStars
+
+    ; Draw stars
     inc hl
     ld a, (hl)
     add a, $3A
@@ -1878,12 +1891,12 @@ _LABEL_170F_:
     ld bc, $0005
     jp fillVram
 
-+:
+@clearStars:
     ld hl, $0800
     ld bc, $0005
     jp fillVram
 
-++:
+@resetStarData:
     xor a
     dec hl
     ld (hl), a
