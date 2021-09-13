@@ -966,8 +966,8 @@ interruptActions:
 .dw _LABEL_A9C_
 .dw _LABEL_ABB_
 .dw drawExtraText
-.dw drawBonus10KText
-.dw _LABEL_B0F_
+.dw drawBonusText
+.dw clearInfoText
 .dw interruptNopAction
 .dw interruptNopAction
 .dw interruptNopAction
@@ -978,11 +978,11 @@ jumpToClearTilemap:
 
 drawMark3Logo:
     ld a, $08
-    ld (p2ScoreByte3), a
+    ld (drawRectAttributes), a
     ld de, $3A4C
     ld hl, mark3Logo
     ld bc, $0213
-    jp _LABEL_B5E_
+    jp drawTileAreaWithAttributes
 
 ; Data from 781 to 7A6 (38 bytes)
 mark3Logo:
@@ -1013,7 +1013,7 @@ drawMenu:
     ld de, $38EE
     ld b, $02
     ld a, $08
-    ld (p2ScoreByte3), a
+    ld (drawRectAttributes), a
     call drawTiles
     ld a, $D6
     out (Port_VDPData), a
@@ -1122,7 +1122,7 @@ drawInfoBar:
     djnz --
 
     ld a, $08
-    ld (p2ScoreByte3), a
+    ld (drawRectAttributes), a
 
     ; Draw "TOP"
     ld de, $3870
@@ -1160,8 +1160,8 @@ drawInfoBar:
     ld hl, _DATA_9B3_ + 2
     ld bc, $0202
     ld a, $08
-    ld (p2ScoreByte3), a
-    call _LABEL_B5E_
+    ld (drawRectAttributes), a
+    call drawTileAreaWithAttributes
 
     ; Return if single player
     ld a, (flags_RAM_C103_)
@@ -1173,12 +1173,12 @@ drawInfoBar:
     ld hl, _DATA_9B9_
     ld bc, $0202
     ld a, $08
-    ld (p2ScoreByte3), a
-    call _LABEL_B5E_
+    ld (drawRectAttributes), a
+    call drawTileAreaWithAttributes
 
     ; @TODO
     ld a, $08
-    ld (p2ScoreByte3), a
+    ld (drawRectAttributes), a
 
     ; Draw "2UP"
     ld de, $39F0
@@ -1398,53 +1398,59 @@ drawExtraText:
     ld a, $80
     ld (_RAM_C338_), a
     ld hl, _DATA_ACC_
-    jp _LABEL_B12_
+    jp drawInfoText
 
 ; Data from ACC to AD7 (12 bytes)
 _DATA_ACC_:
 .db $45 $51 $54 $52 $41 $20 $20 $20 $20 $20 $20 $20
 
 ; 16th entry of Jump Table from 745 (indexed by interruptActionSlot1)
-drawBonus10KText:
+drawBonusText:
     ld a, $80
     ld (_RAM_C338_), a
-    ld hl, _DATA_AF9_
-    call _LABEL_B12_
+
+    ; Draw Bonus 0000 text
+    ld hl, bonusBaseText
+    call drawInfoText
+
     ld a, (_RAM_C339_)
     add a, a
     ld e, a
     xor a
     ld d, a
     ld (_RAM_C339_), a
-    ld hl, _DATA_B05_
+    ld hl, bonusTierTextTable
     add hl, de
     ld de, $3C72
     ld b, $02
     jp drawTiles
 
-; Data from AF9 to B04 (12 bytes)
-_DATA_AF9_:
-.db $42 $4F $4E $55 $53 $20 $20 $20 $30 $30 $30 $30
+bonusBaseText:
+; BONUS
+.db $42 $4F $4E $55 $53
+; 0000
+.db $20 $20 $20 $30 $30 $30 $30
 
-; Data from B05 to B0E (10 bytes)
-_DATA_B05_:
-.db $20 $31 $20 $33 $20 $35 $20 $37 $31 $30
+bonusTierTextTable:
+.db $20 $31 ; 01
+.db $20 $33 ; 03
+.db $20 $35 ; 05
+.db $20 $37 ; 07
+.db $31 $30 ; 10
 
-; 17th entry of Jump Table from 745 (indexed by interruptActionSlot1)
-_LABEL_B0F_:
-    ld hl, _DATA_B20_
-_LABEL_B12_:
+clearInfoText:
+    ld hl, clearInfoTextData
+
+drawInfoText:
     ld a, $08
-    ld (p2ScoreByte3), a
+    ld (drawRectAttributes), a
     ld de, $3C32
     ld bc, $0206
-    jp _LABEL_B5E_
+    jp drawTileAreaWithAttributes
 
-; Data from B20 to B2B (12 bytes)
-_DATA_B20_:
+clearInfoTextData:
 .dsb 12, $20
 
-; 18th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 interruptNopAction:
     ret
 
@@ -1453,7 +1459,7 @@ drawTiles:
     ld c, Port_VDPData
 -:
     outi
-    ld a, (p2ScoreByte3)
+    ld a, (drawRectAttributes)
     nop
     out (c), a
     nop
@@ -1485,36 +1491,65 @@ _LABEL_B50_:
     djnz _LABEL_B50_
     ret
 
-_LABEL_B5E_:
+/*
+ * Draw tiles in an area of C width and B height, using a common attribute.
+ * HL = Source address, tile indexes only.
+ * DE = VRAM destination address
+ * B = Height
+ * C = Width
+ * drawRectAttributes = Tile attributes
+ */
+drawTileAreaWithAttributes:
+    ; Save height and width in the stack.
     push bc
+
     call setVDPWriteAddress
+
     ld b, c
     ld c, Port_VDPData
--:
-    outi
-    ld a, (p2ScoreByte3)
-    nop
-    out (c), a
-    nop
+
+    ; Draw line.
+    -:
+        outi
+        ld a, (drawRectAttributes)
+        nop
+        out (c), a
+        nop
     jp nz, -
+
+    ; Advance to next line, if there is one.
     ex de, hl
     ld bc, $0040
     add hl, bc
     ex de, hl
     pop bc
-    djnz _LABEL_B5E_
+    djnz drawTileAreaWithAttributes
     ret
 
+/*
+ * Draw tiles in an area of C width and B height.
+ * HL = Source address, tile index and attributes pairs.
+ * DE = VRAM destination address
+ * B = Height
+ * C = Width
+ */
 drawTileArea:
+    ; Save height and width in the stack.
     push bc
+
     call setVDPWriteAddress
+
     ld b, c
     ld c, Port_VDPData
--:
-    nop
-    nop
-    outi
+
+    ; Draw line.
+    -:
+        nop
+        nop
+        outi
     jp nz, -
+
+    ; Advance to next line, if there is one.
     ex de, hl
     ld bc, $0040
     add hl, bc
@@ -1524,12 +1559,12 @@ drawTileArea:
     ret
 
 copySpritesToVram:
-    ld hl, spriteTable
+    ld hl, spriteBuffer
     ld de, $3F00
     ld bc, $0040
     rst copyToVram
 
-    ld hl, spriteTable + $40
+    ld hl, spriteBuffer + $40
     ld de, $3F80
     ld bc, $0080
     jp copyToVram
@@ -2190,7 +2225,7 @@ drawScores:
     call @updateAndDrawHighScore
 
     ; Draw player 2 high score.
-    ld hl, p2ScoreByte2
+    ld hl, p2ScoreByte3
     ld de, $3A30
     ld b, $06
     jp drawScore
@@ -3086,8 +3121,8 @@ handleMapScrolling:
 
     or $08
     ld (unknownFlags_RAM_C151_), a
-    ld de, spriteTable + 1
-    ld hl, spriteTable
+    ld de, spriteBuffer + 1
+    ld hl, spriteBuffer
     ld (hl), $00
     ld bc, $0040
     ldir

@@ -47,9 +47,10 @@ p1ScoreByte1 db
 p1ScoreByte2 db
 p1ScoreByte3 db
 player2ScoreChanged db
-p2ScoreByte1 dw
+p2ScoreByte1 db
 p2ScoreByte2 db
 p2ScoreByte3 db
+drawRectAttributes db
 .ende
 
 .enum $C12D export
@@ -151,7 +152,7 @@ _RAM_C339_ db
 .ende
 
 .enum $C500 export
-spriteTable dsb $40
+spriteBuffer dsb $40
 _RAM_C540_ db
 .ende
 
