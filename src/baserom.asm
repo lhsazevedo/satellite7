@@ -1393,32 +1393,30 @@ _LABEL_ABB_:
     ld (_RAM_CD00_), a
     ret
 
-; 15th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 drawExtraText:
     ld a, $80
-    ld (_RAM_C338_), a
-    ld hl, _DATA_ACC_
+    ld (statusTextTimer), a
+
+    ld hl, extraText
     jp drawInfoText
 
-; Data from ACC to AD7 (12 bytes)
-_DATA_ACC_:
+extraText:
+; EXTRA
 .db $45 $51 $54 $52 $41 $20 $20 $20 $20 $20 $20 $20
 
-; 16th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 drawBonusText:
     ld a, $80
-    ld (_RAM_C338_), a
+    ld (statusTextTimer), a
 
-    ; Draw Bonus 0000 text
     ld hl, bonusBaseText
     call drawInfoText
 
-    ld a, (_RAM_C339_)
+    ld a, (bonusTier)
     add a, a
     ld e, a
     xor a
     ld d, a
-    ld (_RAM_C339_), a
+    ld (bonusTier), a
     ld hl, bonusTierTextTable
     add hl, de
     ld de, $3C72
@@ -1681,7 +1679,238 @@ updateEntities:
     ex de, hl
     jp (hl)
 
-.INCLUDE "entityUpdaters.asm"
+.INCLUDE "entityUpdaters1.asm"
+
+powerUpShield:
+    ld de, $0280
+    ld hl, flags_RAM_C103_
+    ld a, (playerThatCollectedTheLastStar)
+    dec a
+    jr nz, @player2
+    push hl
+    ld hl, player1ArmorAnimationDescriptor
+    ld a, l
+    ld (player1.animationDescriptorPointer.low), a
+    ld a, h
+    ld (player1.animationDescriptorPointer.high), a
+    pop hl
+    set 2, (hl)
+    ex de, hl
+    ld (player1.timer_data0b), hl
+    ret
+
+@player2:
+    push hl
+    ld hl, player2ArmorAnimationDescriptor
+    ld a, l
+    ld (player2.animationDescriptorPointer.low), a
+    ld a, h
+    ld (player2.animationDescriptorPointer.high), a
+    pop hl
+    set 3, (hl)
+    ex de, hl
+    ld (player2.timer_data0b), hl
+    ret
+
+; Data from 164E to 165D (16 bytes)
+player1ArmorAnimationDescriptor:
+.dw _DATA_166E_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_166E_
+.dw _DATA_54E_
+.dw _DATA_54E_
+.dw _DATA_54E_
+
+; Data from 165E to 1687 (42 bytes)
+player2ArmorAnimationDescriptor:
+.dw _DATA_167B_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_541_
+.dw _DATA_167B_
+.dw _DATA_54E_
+.dw _DATA_54E_
+.dw _DATA_54E_
+
+_DATA_166E_:
+.db $04
+.db $00 $00 $1E
+.db $00 $08 $1F
+.db $08 $00 $12
+.db $08 $08 $13
+
+_DATA_167B_:
+.db $04
+.db $00 $00 $1E
+.db $00 $08 $1F
+.db $08 $00 $14
+.db $08 $08 $15
+
+powerUpAutofireRate:
+    ld c, $08
+    ld a, (playerThatCollectedTheLastStar)
+    dec a
+    jr nz, @player2
+    ld a, c
+    ld (player1.data1c), a
+    ret
+
+@player2:
+    ld a, c
+    ld (player2.data1c), a
+    ret
+
+powerUpSpeedUp:
+    ld hl, player1.data04
+    ld a, (playerThatCollectedTheLastStar)
+    dec a
+    jr z, @player2
+    ld hl, player2.data04
+@player2:
+    ld (hl), $01
+    ret
+
+powerUpBonus:
+    ld iy, player1
+    ld a, (p1ScoreByte1)
+    ld c, a
+    ld a, (playerThatCollectedTheLastStar)
+    dec a
+    jr z, @player1
+    ld iy, player2
+    ld a, (p2ScoreByte1)
+    ld c, a
+@player1:
+    ld a, c
+    rrca
+    rrca
+    rrca
+    rrca
+    and $0F
+    ld bc, $0002
+    cp $08
+    jp nc, +
+    ld bc, $0103
+    cp $06
+    jp nc, +
+    ld bc, $0204
+    cp $04
+    jp nc, +
+    ld bc, $0305
+    cp $02
+    jp nc, +
+    ld bc, $0406
++:
+    push bc
+    call addScore
+    pop bc
+
+    ld a, $10
+    ld (interruptActionSlot17), a
+
+    ld a, b
+    ld (bonusTier), a
+
+    ret
+
+powerUpExtraLife:
+    ld a, $0F
+    ld (interruptActionSlot16), a
+
+    ld a, (playerThatCollectedTheLastStar)
+    dec a
+    jr nz, +
+    ld a, $08 ; incrementAndDrawPlayer1Lives
+    ld (interruptActionSlot9), a
+    ret
+
++:
+    ld a, $09 ; incrementAndDrawPlayer2Lives
+    ld (interruptActionSlot10), a
+    ret
+
+_LABEL_170F_:
+    ld hl, starsCounts
+    ld b, $05
+-:
+    push hl
+    push bc
+    ld a, (hl)
+    rlca
+    call c, +
+    pop bc
+    pop hl
+    inc hl
+    inc hl
+    inc hl
+    djnz -
+    ret
+
++:
+    ex de, hl
+    ld hl, _RAM_C147_
+    inc (hl)
+    ld a, (hl)
+    cp $04
+    ret c
+    ld (hl), $00
+    ex de, hl
+    inc hl
+    inc (hl)
+    ld a, (hl)
+    cp $18
+    jr nc, ++
+    inc hl
+    push hl
+    ld a, (hl)
+    call getStarTilemapAddress
+    pop hl
+    dec hl
+    bit 0, (hl)
+    jr nz, +
+    inc hl
+    ld a, (hl)
+    add a, $3A
+    ld l, a
+    ld h, $08
+    ld bc, $0005
+    jp fillVram
+
++:
+    ld hl, $0800
+    ld bc, $0005
+    jp fillVram
+
+++:
+    xor a
+    dec hl
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    ret
+
+checkStatusTextTimer:
+    ; Do nothing if it is zero.
+    ld a, (statusTextTimer)
+    or a
+    ret z
+
+    dec a
+    ld (statusTextTimer), a
+
+    ; Do nothing if it isn't zero yet.
+    ret nz
+
+    ; Schedule clearStatusText action.
+    ld a, $11
+    ld (interruptActionSlot18), a ; Related to interruptActions jumptable
+    ret
+
+.INCLUDE "entityUpdaters2.asm"
 
 .INCLUDE "input.asm"
 

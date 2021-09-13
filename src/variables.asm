@@ -26,12 +26,10 @@ interruptActionSlot11 db
 interruptActionSlot12 db
 interruptActionSlot13 db
 interruptActionSlot14 db
-.ende
-
-.enum $C119 export
-_RAM_C119_ db
-_RAM_C11A_ db
-_RAM_C11B_ db
+interruptActionSlot15 db
+interruptActionSlot16 db
+interruptActionSlot17 db
+interruptActionSlot18 db
 .ende
 
 .enum $C11E export
@@ -147,8 +145,8 @@ _RAM_C334_ db
 player1ExtraLifeScore db
 player2ExtraLifeScore db
 _RAM_C337_ db
-_RAM_C338_ db
-_RAM_C339_ db
+statusTextTimer db
+bonusTier db
 .ende
 
 .enum $C500 export

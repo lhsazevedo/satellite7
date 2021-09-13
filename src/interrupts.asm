@@ -54,7 +54,7 @@ handleInterrupt:
     @oddFrame:
     ; The following routines are called only on odd frames.
     call _LABEL_170F_ ; no effect observed
-    call _LABEL_1760_ ; no effect observed
+    call checkStatusTextTimer ; no effect observed
     call drawScores
     call _LABEL_2682_ ; if skipped: no collisions
     
