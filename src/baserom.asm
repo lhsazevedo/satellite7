@@ -961,7 +961,7 @@ interruptActions:
 .dw incrementAndDrawPlayer1Lives
 .dw incrementAndDrawPlayer2Lives
 .dw incrementAndDrawStar
-.dw _LABEL_A3E_
+.dw handleTerrainStructureHit
 .dw loadBossTiles
 .dw _LABEL_A9C_
 .dw _LABEL_ABB_
@@ -1322,44 +1322,64 @@ powerUpAwarded:
     jp z, powerUpBonus
     jp powerUpExtraLife
 
-; 11th entry of Jump Table from 745 (indexed by interruptActionSlot1)
-_LABEL_A3E_:
-    call _LABEL_A63_
-    ld d, (iy+30)
-    ld e, (iy+31)
+handleTerrainStructureHit:
+    call getBombAndSetDropStarPosition
+
+    ; Load DE with Vram address of the tile to patch.
+    ld d, (iy + Entity.data1e)
+    ld e, (iy + Entity.data1f)
+
+    ; Patch tile
     ld a, $3F
     rst writeToVdpAddress
     ld a, $08
     out (Port_VDPData), a
-    ld a, $0F
-    ld (_RAM_C942_), a
+
+    ; Set drop star entity type
+    ld a, ENTITY_DROP_STAR
+    ld (entities.27.type), a
+
+    ; @TODO
     ld hl, _RAM_C32F_
     ld a, (hl)
     cp $05
     jp c, putIYEntityOffscreen
+
     dec (hl)
     call _LABEL_2A9A_
     jp putIYEntityOffscreen
 
-_LABEL_A63_:
-    ld iy, _RAM_C6A0_
-    ld a, (iy+29)
+/*
+ * Selects the bomb based on data1d, and copies its position to the dropped
+ * star.
+ */
+getBombAndSetDropStarPosition:
+    ; Select player 1 or 2 bomb based bomb data1d.
+    ld iy, entities.6
+    ld a, (iy + Entity.data1d)
     cp $02
     jr z, +
-    ld iy, _RAM_C720_
-    ld a, (iy+29)
-    cp $02
-    ret nz
-+:
-    ld a, (_RAM_C943_)
+        ld iy, entities.10
+        ld a, (iy + Entity.data1d)
+        cp $02
+        ret nz
+    +:
+
+    ; Put bomb offscreen (to be destroyed)
+    ; if a there is a drop star a Drop Star.
+    ld a, (entities.27.data03)
     or a
     jp nz, putIYEntityOffscreen
+
+    ; Copy bomb position to star
     ld a, (iy + Entity.xPos.low)
     sub $04
-    ld (_RAM_C948_), a
+    ld (entities.27.xPos.low), a
+
     ld a, (iy + Entity.yPos.low)
     sub $04
-    ld (_RAM_C946_), a
+    ld (entities.27.yPos.low), a
+
     ret
 
 ; 12th entry of Jump Table from 745 (indexed by interruptActionSlot1)
@@ -1371,7 +1391,7 @@ loadBossTiles:
 
 ; 13th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 _LABEL_A9C_:
-    call _LABEL_A63_
+    call getBombAndSetDropStarPosition
     ld a, (iy+5)
     ld (_RAM_C945_), a
     ld a, (_RAM_C334_)
@@ -3180,23 +3200,30 @@ _LABEL_2A9A_:
     ld c, $0E
     jp addScore
 
-entities_slot_6_and_10_LABEL_2AE6_:
+bomb_LABEL_2AE6_:
+    ; Skip player 1 bomb if its data1d isn't zero...
     ld a, (entities.6.data1d)
     or a
     jr nz, +
+    ; ...or if frame isn't 3
     ld a, (entities.6.frame)
     cp $03
     jr nz, +
+
+    ; @TODO
     ld de, entities.6.yPos.low
     ld hl, entities.6.data1d
     call ++
-+:
+
+    +:
     ld a, (entities.10.data1d)
     or a
     ret nz
+
     ld a, (entities.10.frame)
     cp $03
     ret nz
+
     ld de, entities.10.yPos.low
     ld hl, entities.10.data1d
 
@@ -3252,7 +3279,7 @@ entities_slot_6_and_10_LABEL_2AE6_:
     ld (hl), e
     cp $82
     jr nz, +
-    ld a, $0B
+    ld a, $0B ; handleTerrainStructureHit
     ld (interruptActionSlot12), a
     ret
 
@@ -3636,11 +3663,11 @@ _LABEL_2D63_:
     ; Return if not demo or gameplay
     bit 2, a
     jr nz, +
-
     bit 3, a
     ret z
-+:
 
++:
+    ;
     ld a, (wave)
     ld hl, wave_RAM_C322_
     cp (hl)
@@ -3682,6 +3709,7 @@ _LABEL_2D63_:
     ret
 
 +:
+    ; HL = enemySpawnTimer
     inc hl
     ld a, (hl)
     or a
@@ -3690,21 +3718,31 @@ _LABEL_2D63_:
     ret
 
 +:
+    ; Reset enemySpawnTimer
     ld a, (enemySpawnTimerReset)
     ld (hl), a
+
+    ; HL = waveEntityACount.
     inc hl
     inc hl
+
     ld a, (hl)
     or a
     jr nz, +
+
+    ; Handle wave entity B.
+    ; HL = waveEntityBCount.
     inc hl
     inc hl
     ld a, (hl)
     or a
     ret z
 +:
+
     push hl
     pop de
+
+    ; HL = _RAM_C326_
     inc hl
     ld a, (hl)
     cp $0D
@@ -3723,11 +3761,14 @@ _LABEL_2DCC_:
     pop de
     ret nc
 
-    ; Enemy type loaded here
+    ; Load wave type
     ld (hl), c
+
     ex de, hl
+
+    ; Skip count for ENTITY_ENEMY_1 and $1A
     ld a, c
-    cp $0A
+    cp ENTITY_ENEMY_1
     ret z
     cp $1A
     ret z

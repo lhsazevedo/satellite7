@@ -942,7 +942,7 @@ _LABEL_15B5_:
     ld (_RAM_C320_), a
     jp _LABEL_1027_
 
-updateEntity0F:
+updateDropStar:
     ld a, (iy + Entity.data03)
     or a
     jp nz, +

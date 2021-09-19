@@ -40,7 +40,7 @@ handleInterrupt:
     rrca
     jp c, @oddFrame
 
-    call entities_slot_6_and_10_LABEL_2AE6_
+    call bomb_LABEL_2AE6_
 
     ; Related to jellyfish count and player armor, at least.
     call _LABEL_2FD2_

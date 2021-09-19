@@ -126,6 +126,10 @@ _RAM_C321_ db
 wave_RAM_C322_ db
 enemySpawnTimer db
 enemySpawnTimerReset db
+waveEntityACount db
+waveEntityAType db
+waveEntityBCount db
+waveEntityBType db
 .ende
 
 .enum $C329 export

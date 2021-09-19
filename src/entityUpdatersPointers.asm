@@ -13,7 +13,7 @@ entityUpdatersPointers:
 .dw updateEntity0C
 .dw updateEntity0D
 .dw updateEntity0E
-.dw updateEntity0F
+.dw updateDropStar
 .dw updateEntity10
 .dw updateEntity11
 .dw updateEntity12
