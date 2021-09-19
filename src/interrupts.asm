@@ -36,26 +36,22 @@ handleInterrupt:
     inc (hl)
     ld a, (hl)
 
-    ; The following routines are called only on even frames.
     rrca
     jp c, @oddFrame
 
     call bomb_LABEL_2AE6_
-
     ; Related to jellyfish count and player armor, at least.
     call _LABEL_2FD2_
-
-    call _LABEL_2D63_ ; If skipped: no entity waves
-    call _AUDIO_3894_ ; If skipped: no audio
+    call updateWave
+    call audio.update
     call _LABEL_110C_ ; If skipped: unlimited grace period without flashing
     jp interruptHandlerExit
 
     @oddFrame:
-    ; The following routines are called only on odd frames.
     call blinkStars
     call checkStatusTextTimer
     call drawScores
-    call _LABEL_2682_ ; if skipped: no collisions
+    call updateCollisions
     
     ; Flag toggled every two frames.
     ld hl, two_frame_toggle_RAM_C108_

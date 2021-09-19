@@ -2593,7 +2593,7 @@ drawScore:
     pop af
     ret
 
-_LABEL_2682_:
+updateCollisions:
     call _LABEL_284B_
     jp _LABEL_2760_
 
@@ -3657,7 +3657,7 @@ _LABEL_2D4F_:
     djnz -
     ret
 
-_LABEL_2D63_:
+updateWave:
     ld a, (state)
 
     ; Return if not demo or gameplay

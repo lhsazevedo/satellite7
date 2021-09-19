@@ -1,4 +1,4 @@
-_AUDIO_3894_:
+audio.update:
     call ++
     call +
     ld ix, _RAM_CD05_
