@@ -38,11 +38,15 @@ handleInterrupt:
     jp c, @oddFrame
 
     call bomb_LABEL_2AE6_
+
     ; Related to jellyfish count and player armor, at least.
     call _LABEL_2FD2_
+
     call updateWave
     call audio.update
-    call _LABEL_110C_ ; If skipped: unlimited grace period without flashing
+
+    ; If skipped: unlimited grace period without flashing
+    call _LABEL_110C_
     jp interruptHandlerExit
 
 @oddFrame:
@@ -52,6 +56,7 @@ handleInterrupt:
     call updateCollisions_LABEL_2682_
     
     ; Flag toggled every two frames.
+    ; Used in _LABEL_2770_ and _LABEL_284B_.
     ld hl, two_frame_toggle_RAM_C108_
     inc (hl)
     ld a, (hl)
