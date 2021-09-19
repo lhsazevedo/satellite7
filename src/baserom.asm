@@ -2593,7 +2593,7 @@ drawScore:
     pop af
     ret
 
-updateCollisions:
+updateCollisions_LABEL_2682_:
     call _LABEL_284B_
     jp _LABEL_2760_
 

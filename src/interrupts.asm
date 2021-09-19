@@ -26,9 +26,7 @@ handleInterrupt:
     out (Port_VDPData), a
 
     call runInterruptActions
-
     call handleMapScrolling
-
     call readInput
 
     ; Increment frame counter.
@@ -47,11 +45,11 @@ handleInterrupt:
     call _LABEL_110C_ ; If skipped: unlimited grace period without flashing
     jp interruptHandlerExit
 
-    @oddFrame:
+@oddFrame:
     call blinkStars
     call checkStatusTextTimer
     call drawScores
-    call updateCollisions
+    call updateCollisions_LABEL_2682_
     
     ; Flag toggled every two frames.
     ld hl, two_frame_toggle_RAM_C108_
