@@ -9,12 +9,12 @@ updateEnemy2:
     ld (iy + Entity.data19), $E8
     ld (iy + Entity.data1a), $50
     ld (iy + Entity.data1d), $20
-    call rng_LABEL_2D2A_
+    call getRandomByte
     rrca
     jr c, +
     ld (iy + Entity.data1a), $30
 +:
-    call rng_LABEL_2D2A_
+    call getRandomByte
     rrca
     ret c
     ld (iy + Entity.data18), $00
@@ -64,4 +64,4 @@ _LABEL_1B5A_:
     dec (iy + Entity.data1d)
     ret nz
     ld (iy + Entity.data1d), $80
-    jp fire_LABEL_3063_
+    jp enemyRandomFire

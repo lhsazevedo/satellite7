@@ -5,7 +5,7 @@ entityUpdatersPointers:
 .dw updateBomb
 .dw updateEntity05
 .dw updateEntity06
-.dw updateEntity07
+.dw updateEnemyBullet
 .dw updateExplosion
 .dw updateEntity09
 .dw updateEnemy1

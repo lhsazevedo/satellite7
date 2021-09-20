@@ -101,7 +101,7 @@ _RAM_C308_ db
 _RAM_C30A_ db
 jellyFishCount db
 _RAM_C30C_ db
-_RAM_C30D_ db
+timer_RAM_C30D_ db
 enemy1Counter db
 .ende
 

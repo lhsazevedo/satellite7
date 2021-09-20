@@ -334,7 +334,7 @@ updateEntityXY:
     jp updateEntityY
 
     ; Unused code
-    call rng_LABEL_2D2A_
+    call getRandomByte
     and $0F
     cp $05
     ret c
@@ -409,7 +409,7 @@ _LABEL_1149_:
     pop iy
     ret
 
-updateEntity07:
+updateEnemyBullet:
     ld a, (iy + Entity.data03)
     or a
     jp nz, updateEntityXY
@@ -506,7 +506,7 @@ updateEntity0B:
     ret
 
 _LABEL_12F7_:
-    call rng_LABEL_2D2A_
+    call getRandomByte
     ld c, a
     and $37
     ld b, a
@@ -617,7 +617,7 @@ _LABEL_1362_:
 +++:
     ld a, (iy + Entity.data05)
     ld c, a
-    call _LABEL_2F92_
+    call enemyFire
     ld (iy + Entity.type), $08
     ret
 
@@ -625,7 +625,7 @@ _LABEL_13B0_:
     dec (iy + Entity.data19)
     ret nz
     ld (iy + Entity.data19), $38
-    jp fire_LABEL_3063_
+    jp enemyRandomFire
 
 loadPlayer1XYPosToHL:
     ld a, (player1.xPos.low)
@@ -770,7 +770,7 @@ _LABEL_144B_:
     ld a, (iy + Entity.type)
     cp $13
     ret z
-    jp fire_LABEL_3063_
+    jp enemyRandomFire
 
 updateEntity0D:
     ld a, (iy + Entity.data03)
@@ -871,7 +871,7 @@ _LABEL_1511_:
 
 +++:
     ld (iy + Entity.data1c), $38
-    jp fire_LABEL_3063_
+    jp enemyRandomFire
 
 ++++:
     ld (iy + Entity.frame), $01

@@ -262,6 +262,3 @@ entity_wave 32  02 $1C \
                 07 ENTITY_STAR
 
 entity_wave 00  00 $00
-
-entity_wave 58  00 $0D \
-                06 $03

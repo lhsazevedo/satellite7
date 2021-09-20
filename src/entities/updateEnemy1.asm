@@ -106,7 +106,7 @@ _DATA_1258_:
 
 realUpdateEnemy1:
     dec (iy + Entity.data1d)
-    call z, fire_LABEL_3063_
+    call z, enemyRandomFire
 
     ld a, (iy + Entity.data1a)
     or a
@@ -117,7 +117,7 @@ realUpdateEnemy1:
     cp ENTITY_ENEMY_1_STATE1_TIMER
     jr c, @turn
 
-    ; First state, accelerate upwards and sideways?
+    ; TODO: First state, accelerate upwards and sideways?
     ld (iy + Entity.data13), ENTITY_ENEMY_1_ANIMATION_TIMER
     ld hl, $0001
     ld (iy + Entity.data1a), l
@@ -127,9 +127,9 @@ realUpdateEnemy1:
     ld (iy + Entity.xVel.high), h
     ld a, (iy + Entity.data1b)
     or a
-    jp z, fire_LABEL_3063_
+    jp z, enemyRandomFire
     ld (iy + Entity.xVel.low), $FF
-    jp fire_LABEL_3063_
+    jp enemyRandomFire
 
 ; Turn
 ; Second state, change in horizontal velocity

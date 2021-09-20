@@ -122,7 +122,7 @@ _LABEL_1805_:
     ld a, (_RAM_C30A_)
     rrca
     ret c
-    jp fire_LABEL_3063_
+    jp enemyRandomFire
 
 _LABEL_1859_:
     ld d, (iy + Entity.data19)
@@ -143,7 +143,7 @@ _LABEL_185F_:
     ld a, (_RAM_C30A_)
     rrca
     ret c
-    jp _LABEL_2F92_
+    jp enemyFire
 
 _LABEL_1884_:
     ld c, (iy + Entity.xPos.low)
@@ -171,7 +171,7 @@ updateEntity12:
     call memcpyIYToHL
     ld (iy + Entity.data18), $01
     ld (iy + Entity.xPos.low), $00
-    call rng_LABEL_2D2A_
+    call getRandomByte
     rrca
     jr c, +
     ld (iy + Entity.data18), $02
@@ -181,7 +181,7 @@ updateEntity12:
     ld a, (player1.data03)
     or a
     jr z, +
-    call rng_LABEL_2D2A_
+    call getRandomByte
     rrca
     jp c, ++
 +:
@@ -256,7 +256,7 @@ _LABEL_191F_:
     jp nc, updateEntityXY
     ld (iy + Entity.data1a), $01
     ld c, (iy + Entity.data05)
-    call _LABEL_2F92_
+    call enemyFire
     ld (iy + Entity.data13), $10
     ld hl, $00FF
     ld (iy + Entity.xVel.low), l
@@ -307,7 +307,7 @@ updateJellyfish:
 
 +:
     ld (iy + Entity.data19), $02
-    call rng_LABEL_2D2A_
+    call getRandomByte
     rrca
     ret c
     ld (iy + Entity.data19), $03
@@ -395,7 +395,7 @@ subData18FromYVel:
     ret nc
 ++:
     push hl
-    call _LABEL_2F92_
+    call enemyFire
     pop hl
     ret nc
     ld (iy + Entity.data1a), $01
@@ -413,7 +413,7 @@ updateEntity1A:
     ld bc, $0007
     call memcpyIYToHL
     ld c, $03
-    call rng_LABEL_2D2A_
+    call getRandomByte
     and $0F
     cp $05
     jr c, +
@@ -461,7 +461,7 @@ _LABEL_1C00_:
     dec (iy + Entity.data1a)
     ret nz
     ld (iy + Entity.data1a), $50
-    jp fire_LABEL_3063_
+    jp enemyRandomFire
 
 updateEntity1B:
     ld a, (iy + Entity.data03)
@@ -683,7 +683,7 @@ updateEntity1C:
     ld hl, $0308
     call _LABEL_1049_
     ld (iy + Entity.data18), $20
-    call rng_LABEL_2D2A_
+    call getRandomByte
     ld bc, $FE80
     rrca
     jr c, +
@@ -711,7 +711,7 @@ _DATA_1DA4_:
     dec (iy + Entity.data18)
     ret nz
     ld (iy + Entity.data18), $40
-    jp fire_LABEL_3063_
+    jp enemyRandomFire
 
 updateEntity1D:
     ld a, (iy + Entity.data03)
@@ -798,7 +798,7 @@ _LABEL_1E38_:
     dec (iy + Entity.data1a)
     jr nz, +
     ld (iy + Entity.data1a), $48
-    call fire_LABEL_3063_
+    call enemyRandomFire
 +:
     dec (iy + Entity.data19)
     ret nz
@@ -1057,7 +1057,7 @@ _LABEL_2039_:
     dec (iy + Entity.data1f)
     jr nz, +
     ld (iy + Entity.data1f), $20
-    call fire_LABEL_3063_
+    call enemyRandomFire
 +:
     ld hl, _RAM_C75E_
     ld a, (hl)

@@ -9,7 +9,7 @@ updateStar:
     jp _LABEL_12F7_
 
 _LABEL_1A80_:
-    call rng_LABEL_2D2A_
+    call getRandomByte
     and $0F
     ld c, $00
     cp $05

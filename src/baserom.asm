@@ -3605,18 +3605,28 @@ updateNextMetatileVramPointer:
 
     ret
 
-rng_LABEL_2D2A_:
+/*
+ * Generates a (pseudo) byte using the frameCounter and R register as source.
+ */
+getRandomByte:
+    ; Add frameCounter and R
     ld a, (frameCounter)
     ld b, a
     ld a, r
     add a, b
+
+    ; Use the lower nibble of the sum above
+    ; to shift R (copied to A) right n times.
     and $07
     or $01
     ld b, a
     ld a, r
--:
-    rrca
+
+    -:
+        rrca
     djnz -
+
+    ; Return the sum of the right shift above with R.
     ld b, a
     ld a, r
     add a, b
@@ -3878,37 +3888,57 @@ _LABEL_2E36_:
 
 .INCLUDE "data/waves.asm"
 
-.db $B7 $C0
-
-_LABEL_2F92_:
-    ld b, $08
-    ld hl, _RAM_C842_
--:
-    ld a, (hl)
+; Unused?
+_LABEL_2F8D_:	
+    ld a, (timer_RAM_C30D_)
     or a
-    jr z, +
-    ld de, $0020
-    add hl, de
+    ret nz
+
+/*
+ * IY: Enemy entity.
+ * C: Player 1 or 2.
+ */
+enemyFire:
+    ld b, $08
+    ld hl, entities.19.type
+
+    ; Find an available entity slot from
+    ; entity 19 onwards. Else, return 0 on A.
+    -:
+        ld a, (hl)
+        or a
+        jr z, +
+        ld de, $0020
+        add hl, de
     djnz -
     xor a
     ret
 
 +:
-    ld (hl), $07
+    ld (hl), ENTITY_ENEMY_BULLET
+
+    ; Set bullet data05 to player number (1 or 2)
     inc hl
     inc hl
     inc hl
     ld (hl), c
+
+    ; Copy enemy position to bullet
     inc hl
-    ld a, (iy+6)
+    ld a, (iy + Entity.yPos.low)
     ld (hl), a
     inc hl
     inc hl
-    ld a, (iy+8)
+    ld a, (iy + Entity.xPos.low)
     ld (hl), a
+
     scf
+
+    ; TODO
+    ; Reset an unknown timer
     ld a, $14
-    ld (_RAM_C30D_), a
+    ld (timer_RAM_C30D_), a
+
     ret
 
 ; Data from 2FBB to 2FD1 (23 bytes)
@@ -3934,7 +3964,7 @@ _LABEL_2FD2_:
     ld a, (jellyFishCount)
     cp $07
     jr c, ++
-    call rng_LABEL_2D2A_
+    call getRandomByte
     and $03
     cp $03
     jr nz, +
@@ -3944,7 +3974,7 @@ _LABEL_2FD2_:
     xor a
     ld (jellyFishCount), a
 ++:
-    ld hl, _RAM_C30D_
+    ld hl, timer_RAM_C30D_
     ld a, (hl)
     or a
     jr z, +
@@ -4022,63 +4052,89 @@ _LABEL_2FD2_:
     ld (player2.animationDescriptorPointer.high), a
     ret
 
-; Related to enemy1 shoot
-fire_LABEL_3063_:
+/*
+ * Randomly fires a bullet, with increasing odds as the game progresses.
+ */
+enemyRandomFire:
+    ; Always fire after wave $28 (40)
     ld a, (wave)
     cp $28
-    jr nc, ++
+    jr nc, @fire
 
-    call rng_LABEL_2D2A_
+    call getRandomByte
     and $0F
     ld c, a
+
     ld a, (wave)
     cp $04
-    jr nc, +
+    jr nc, @afterWave4
+
+    ; Up to wave 4, 2/15 chance of firing.
     ld a, c
     cp $02
-    jr c, ++
+    jr c, @fire
+
     ret
 
-+:
+@afterWave4:
     cp $0F
-    jr nc, +
+    jr nc, @afterWave0F
+
+    ; 4/15 chance of firing.
     ld a, c
     cp $04
-    jr c, ++
+    jr c, @fire
+
     ret
 
-+:
+@afterWave0F:
+    ; 1/2 chance of firing.
     ld a, c
     rrca
     ret c
-++:
+
+/*
+ * Randomly choose a player to fire at. Fire at player 1 if in single player
+ * mode.
+ */
+@fire:
     ld a, (flags_RAM_C103_)
     rrca
-    jr nc, +
-    call rng_LABEL_2D2A_
-    rrca
-    jr nc, ++
-+:
-    ld c, $01
-    ld a, (player1.type)
-    cp c
-    jp z, _LABEL_2F92_
-    ld c, $02
-    ld a, (_RAM_C622_)
-    cp c
-    ret nz
-    jp _LABEL_2F92_
+    jr nc, @fireAtPlayer1
 
-++:
-    ld c, $02
-    ld a, (_RAM_C622_)
+    ; Randomly choose the player to fire at.
+    call getRandomByte
+    rrca
+    jr nc, @fireAtPlayer2
+
+/*
+ * Try firing at player 1 first, with player 2 as fallback.
+ */
+@fireAtPlayer1:
+    ld c, $01
+    ld a, (player1.type)
     cp c
-    jp z, _LABEL_2F92_
+    jp z, enemyFire
+    ld c, $02
+    ld a, (player2.type)
+    cp c
+    ret nz
+    jp enemyFire
+
+/*
+ * Try firing at player 2 first, with player 1 as fallback.
+ */
+@fireAtPlayer2:
+    ; TODO
+    ld c, $02
+    ld a, (player2.type)
+    cp c
+    jp z, enemyFire
     ld c, $01
     ld a, (player1.type)
     cp c
     ret nz
-    jp _LABEL_2F92_
+    jp enemyFire
 
 _LABEL_30BC_:
     ld a, $04
