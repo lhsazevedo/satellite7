@@ -32,4 +32,4 @@ entityUpdatersPointers:
 .dw updateEntity1F
 .dw updateEntity20
 .dw updateEntity21
-.dw updateEntity22
+.dw updateExtraLife

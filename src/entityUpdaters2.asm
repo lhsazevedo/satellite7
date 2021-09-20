@@ -822,21 +822,27 @@ _LABEL_1E38_:
 _DATA_1E82_:
 .db $03 $01 $02 $01
 
-updateEntity22:
+updateExtraLife:
     ld a, (iy + Entity.data03)
     or a
     jp nz, _LABEL_15FE_
-    ld hl, _DATA_1E93_
+    ld hl, extraLifeAnimationDescriptor
     jp ++
 
 ; Data from 1E93 to 1E98 (6 bytes)
-_DATA_1E93_:
-.db $95 $1E $01 $04 $04 $21
+extraLifeAnimationDescriptor:
+.dw _DATA_1E95_
+
+_DATA_1E95_:
+.db $01
+.db $04 $04 $21
 
 updateEntity21:
     ld a, (iy + Entity.data03)
     or a
     jp nz, _LABEL_15FE_
+
+    ; data04 = Index of the tile hit
     ld a, (iy + Entity.data04)
     ld (iy + Entity.data04), $00
     ld c, $0D

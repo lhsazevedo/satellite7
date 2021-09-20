@@ -1392,19 +1392,19 @@ loadBossTiles:
 ; 13th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 _LABEL_A9C_:
     call getBombAndSetDropStarPosition
-    ld a, (iy+5)
-    ld (_RAM_C945_), a
+    ld a, (iy + Entity.data05)
+    ld (entities.27.data05), a
     ld a, (_RAM_C334_)
-    ld (_RAM_C944_), a
+    ld (entities.27.data04), a
     cp $8D
     jr nz, +
     ld a, $22
-    ld (_RAM_C942_), a
+    ld (entities.27.type), a
     ret
 
 +:
     ld a, $21
-    ld (_RAM_C942_), a
+    ld (entities.27.type), a
     ret
 
 ; 14th entry of Jump Table from 745 (indexed by interruptActionSlot1)

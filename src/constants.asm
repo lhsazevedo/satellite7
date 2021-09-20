@@ -27,6 +27,7 @@ ENTITY_DROP_STAR    = $0F
 ENTITY_JELLYFISH    = $15
 ENTITY_STAR         = $16
 ENTITY_ENEMY_2      = $17
+ENTITY_EXTRA_LIFE   = $22
 
 
 ; Entity config
