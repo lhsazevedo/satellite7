@@ -3776,9 +3776,9 @@ _LABEL_2DCC_:
 
     ex de, hl
 
-    ; Skip count for ENTITY_ENEMY_1 and $1A
+    ; Skip count for ENTITY_DRAGONFLY and $1A
     ld a, c
-    cp ENTITY_ENEMY_1
+    cp ENTITY_DRAGONFLY
     ret z
     cp $1A
     ret z

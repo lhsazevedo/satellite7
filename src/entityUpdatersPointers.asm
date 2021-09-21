@@ -8,7 +8,7 @@ entityUpdatersPointers:
 .dw updateEnemyBullet
 .dw updateExplosion
 .dw updateEntity09
-.dw updateEnemy1
+.dw updateDragonfly
 .dw updateEntity0B
 .dw updateEntity0C
 .dw updateEntity0D

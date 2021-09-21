@@ -1,6 +1,6 @@
 
 
-updateEnemy1:
+updateDragonfly:
     ld a, (iy + Entity.data03)
     or a
     jp nz, realUpdateEnemy1
@@ -50,7 +50,7 @@ updateEnemy1:
 
 enemy1Data:
 .dw enemy1AnimationDescriptor1
-.db ENTITY_ENEMY_1				; type
+.db ENTITY_DRAGONFLY				; type
 .db $01                         ; data03
 .db $04                         ; data04
 .db $00                         ; data05

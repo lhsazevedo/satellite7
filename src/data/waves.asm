@@ -5,14 +5,14 @@
 waves:
 entity_wave 00  00 $00
 
-entity_wave 48  07 ENTITY_ENEMY_1
+entity_wave 48  07 ENTITY_DRAGONFLY
 
-entity_wave 08  07 ENTITY_ENEMY_1
+entity_wave 08  07 ENTITY_DRAGONFLY
 
 entity_wave 20  07 ENTITY_ENEMY_2
 
 entity_wave 20  02 ENTITY_STAR \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 20  01 ENTITY_STAR \
                 07 ENTITY_ENEMY_2
@@ -21,7 +21,7 @@ entity_wave 32  02 ENTITY_STAR \
                 07 $0B
 
 entity_wave 34  02 $1D \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 32  01 $1D \
                 07 $0B
@@ -46,13 +46,13 @@ entity_wave 32  01 $1D \
                 07 ENTITY_ENEMY_2
 
 entity_wave 16  06 $10 \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 12  02 ENTITY_STAR \
                 07 $1A
 
 entity_wave 22  01 ENTITY_STAR \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 32  01 $1C \
                 07 $1B
@@ -89,7 +89,7 @@ entity_wave 32  03 $1D \
                 07 ENTITY_ENEMY_2
 
 entity_wave 24  01 $0E \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 24  02 ENTITY_STAR \
                 07 $0B
@@ -102,7 +102,7 @@ entity_wave 32  02 $1D \
 
 entity_wave 00  07 $13
 
-entity_wave 12  07 ENTITY_ENEMY_1
+entity_wave 12  07 ENTITY_DRAGONFLY
 
 entity_wave 08  07 $1B \
                 07 $1A
@@ -118,7 +118,7 @@ entity_wave 16  07 $15 \
                 07 $15
 
 entity_wave 12  02 ENTITY_STAR \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 20  07 $12 \
                 07 $12
@@ -166,7 +166,7 @@ entity_wave 16  07 $15 \
 entity_wave 05  07 $0D
 
 entity_wave 16  02 ENTITY_STAR \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 05  07 $0D
 
@@ -208,10 +208,10 @@ entity_wave 16  07 $15 \
                 07 $15
 
 entity_wave 16  07 $10 \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 12  07 $10 \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 16  01 $0E \
                 07 $1A
@@ -242,7 +242,7 @@ entity_wave 12  07 ENTITY_ENEMY_2 \
                 07 ENTITY_ENEMY_2
 
 entity_wave 12  07 $0B \
-                07 ENTITY_ENEMY_1
+                07 ENTITY_DRAGONFLY
 
 entity_wave 24  04 $1C \
                 03 ENTITY_STAR

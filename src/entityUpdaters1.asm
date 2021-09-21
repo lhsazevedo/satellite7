@@ -475,7 +475,7 @@ _DATA_11C8_:
 _DATA_11CA_:
 .db $01 $00 $00 $40
 
-.INCLUDE "entities/updateEnemy1.asm"
+.INCLUDE "entities/updateDragonfly.asm"
 
 updateEntity0B:
     ld a, (iy + Entity.data03)
