@@ -269,31 +269,42 @@ detectKeyboard:
     res 6, (hl)
     ret
 
+/*
+ * Load 1bpp tiles do VRAM.
+ *
+ * HL: Source data address
+ * DE: Vram destination address
+ * B: Number of tiles
+ */
 load1Bpptiles:
+    ; Set VDP Address.
     ld a, e
     out (Port_VDPAddress), a
     ld a, d
     or $40
     out (Port_VDPAddress), a
--:
-    xor a
-    out (Port_VDPData), a
-    push af
-    pop af
 
-    xor a
-    out (Port_VDPData), a
+    ; Repeat for each tile.      
+    -:
+        xor a
+        out (Port_VDPData), a
+        push af
+        pop af
 
-    ld a, (hl)
-    push af
-    pop af
-    out (Port_VDPData), a
+        xor a
+        out (Port_VDPData), a
 
-    nop
-    xor a
-    out (Port_VDPData), a
-    inc hl
+        ld a, (hl)
+        push af
+        pop af
+        out (Port_VDPData), a
+
+        nop
+        xor a
+        out (Port_VDPData), a
+        inc hl
     djnz -
+
     ret
 
 ; Extract RLE compressed data from HL to DE
@@ -356,8 +367,10 @@ updateGameplayState:
     ld a, (flags_RAM_C133_)
     bit 0, a
     jp z, resetScores
+
     bit 3, a
     call nz, _LABEL_369_
+
     call _LABEL_2301_
     call updateEntities
     ld a, (_RAM_C319_)
@@ -373,7 +386,7 @@ updateGameplayState:
     ld a, (flags_RAM_C133_)
     bit 6, a
     jp z, update
-    call _LABEL_70E_
+    call setStartScreenStateOnButtonPress
     jr nz, +
     ld a, (_RAM_C300_)
     inc a
@@ -393,7 +406,7 @@ updateGameplayState:
     jr z, ++++
     cp $80
     jr z, _LABEL_324_
-    call _LABEL_70E_
+    call setStartScreenStateOnButtonPress
     jr nz, +
     ld a, (_RAM_C300_)
     inc a
@@ -454,8 +467,8 @@ resetScores:
     call _LABEL_BFC_
     ld a, $09
     ld (flags_RAM_C133_), a
-    ld a, $83
-    ld (_RAM_CD00_), a
+    ld a, SOUND_MAIN_SONG
+    ld (soundRequest), a
     jp update
 
 _LABEL_369_:
@@ -579,8 +592,8 @@ _LABEL_3FF_:
     ret
 
 _LABEL_456_:
-    ld a, $84
-    ld (_RAM_CD00_), a
+    ld a, SOUND_GAME_OVER_SONG
+    ld (soundRequest), a
     ret
 
 drawPlayer1Lives:
@@ -735,7 +748,7 @@ _DATA_54E_:
 .db $08 $08 $0F
 
 updateDemoState:
-    call _LABEL_70E_
+    call setStartScreenStateOnButtonPress
     cp $02
     jr z, +
     ld a, (flags_RAM_C133_)
@@ -836,16 +849,18 @@ _DATA_61E_:
 .db $06 $01 $FF
 
 updateStartScreenState:
-    call +++
+    call @checkInput
+
     xor a
-    ld hl, (_RAM_C148_)
+    ld hl, (screenTimer)
     cp h
     jr nz, +
     cp l
-    call z, ++
+    call z, @init
+
 +:
     inc hl
-    ld (_RAM_C148_), hl
+    ld (screenTimer), hl
     ld a, h
     cp $03
     jp c, update
@@ -855,11 +870,13 @@ updateStartScreenState:
     ld (interruptActionSlot5), a ; Related to interruptActions jumptable
     jp resetPlayfieldAndUpdate
 
-++:
+@init:
     di
+
     push hl
     call extractTitleTiles
     pop hl
+
     ld a, $01 ; jumpToClearTilemap
     ld (interruptActionSlot2), a ; Related to interruptActions jumptable
     ld a, $02 ; drawBlueBG
@@ -867,74 +884,87 @@ updateStartScreenState:
     ld a, $04 ; drawMenu
     ld (interruptActionSlot5), a ; Related to interruptActions jumptable
 
-    ld a, $81
-    ld (_RAM_CD00_), a
+    ld a, SOUND_TITLE_SONG
+    ld (soundRequest), a
     ret
 
-+++:
+@checkInput:
     ld hl, flags_RAM_C103_
     ld a, (input.player1Changes)
-    and $30
-    jr z, +
-    res 0, (hl)
-    jr ++
+    and JOY_FIREA | JOY_FIREB
 
-+:
-    ld a, (input.player2Changes)
-    and $30
-    ret z
-    set 0, (hl)
-++:
+    ; Reset flags_RAM_C103_ bit 0 then check if a button was pressed. If so, set
+    ; it again an change state to gameplay. Else, return leaving the bit reset.
+    jr z, +
+        res 0, (hl)
+        jr ++
+    +:
+        ld a, (input.player2Changes)
+        and JOY_FIREA | JOY_FIREB
+        ret z
+
+        set 0, (hl)
+    ++:
+
     ld hl, state
     ld (hl), STATE_GAMEPLAY
     ret
 
 updateMark3LogoState:
-    ld a, (_RAM_C152_)
+    ; Initialize state on first call.
+    ld a, (mark3LogoStateInitialized)
     or a
-    call z, +++
+    call z, @init
 
-    call _LABEL_70E_
-    cp $02
-    jr z, ++
-    ld hl, _RAM_C148_
+    ; Advance to title screen if a button was pressed.
+    call setStartScreenStateOnButtonPress
+    cp STATE_START_SCREEN
+    jr z, @buttonPressed
+
+    ld hl, screenTimer
     inc (hl)
     ld a, (hl)
+
     cp MARK_3_LOGO_TIMER
-    jr z, +
+    jr z, @timeOut
     jp update
 
-+:
-    call ++++
-++:
+@timeOut:
+    call setStartScreenState
+
+@buttonPressed:
     xor a
     ld (interruptActionSlot3), a
     jp resetPlayfieldAndUpdate
 
-+++:
+@init:
     ld a, $02 ; drawBlueBG
     ld (interruptActionSlot3), a ; Related to interruptActions jumptable
 
     
     ld a, $05 ; drawMark3Logo
     ld (interruptActionSlot6), a ; Related to interruptActions jumptable
-    ld (_RAM_C152_), a
+
+    ld (mark3LogoStateInitialized), a
     ret
 
-_LABEL_70E_:
+setStartScreenStateOnButtonPress:
     ld a, (input.player1Changes)
-    and $30
+    and JOY_FIREA | JOY_FIREB
     or a
-    jr nz, ++++
+    jr nz, setStartScreenState
+
     ld a, (input.player2Changes)
-    and $30
+    and JOY_FIREA | JOY_FIREB
     or a
     ret z
-++++:
+
+setStartScreenState:
     ld a, STATE_START_SCREEN
     ld (state), a
     or a
     ret
+
 
 runInterruptActions:
     ld hl, interruptActionSlot1
@@ -1236,16 +1266,16 @@ _DATA_9B9_:
 
 ; 8th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 incrementAndDrawPlayer1Lives:
-    ld a, $8B
-    ld (_RAM_CD00_), a
+    ld a, SOUND_EXTRA_LIFE
+    ld (soundRequest), a
     ld hl, p1Lives
     inc (hl)
     jp drawPlayer1Lives
 
 ; 9th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 incrementAndDrawPlayer2Lives:
-    ld a, $8B
-    ld (_RAM_CD00_), a
+    ld a, SOUND_EXTRA_LIFE
+    ld (soundRequest), a
     ld hl, p2Lives
     inc (hl)
     jp drawPlayer2Lives
@@ -1324,8 +1354,8 @@ powerUpAwarded:
     ld (hl), $00
     inc hl
     ld (hl), c
-    ld a, $8C
-    ld (_RAM_CD00_), a
+    ld a, SOUND_POWER_UP
+    ld (soundRequest), a
     ld a, c
     or a
     jp z, powerUpAutofireRate
@@ -1423,8 +1453,8 @@ _LABEL_A9C_:
 
 ; 14th entry of Jump Table from 745 (indexed by interruptActionSlot1)
 _LABEL_ABB_:
-    ld a, $8F
-    ld (_RAM_CD00_), a
+    ld a, SOUND_8F
+    ld (soundRequest), a
     ret
 
 drawExtraText:
@@ -2111,7 +2141,7 @@ _LABEL_2371_:
     ld c, $8E
 +:
     ld a, c
-    ld (_RAM_CD00_), a
+    ld (soundRequest), a
 
     ret
 
@@ -2158,8 +2188,8 @@ spawnBomb:
     ld (iy + Entity.data18), ENTITY_BOMB_DRAG
     call unknown_LABEL_2456_
 
-    ld a, $86
-    ld (_RAM_CD00_), a
+    ld a, SOUND_BOMB_DROP
+    ld (soundRequest), a
     ret
 
 ; Data from 2430 to 2455 (38 bytes)
@@ -2863,8 +2893,8 @@ _LABEL_2760_:
     ld (_RAM_C618_), a
     ld a, c
     ld (_RAM_C638_), a
-    ld a, $8D
-    ld (_RAM_CD00_), a
+    ld a, SOUND_BUMP
+    ld (soundRequest), a
     ret
 
 _LABEL_282B_:
@@ -3085,8 +3115,8 @@ _LABEL_29A5_:
     ld (ix+24), $01
     ld a, (iy+5)
     ld (ix+5), a
-    ld a, $89
-    ld (_RAM_CD00_), a
+    ld a, SOUND_STAR
+    ld (soundRequest), a
     ld c, $09
     jp addScore
 
@@ -3160,7 +3190,7 @@ _LABEL_2A14_:
     	ld (ix+1), h
     	ld (ix+28), $01
     	ld a, $82
-    	ld (_RAM_CD00_), a
+    	ld (soundRequest), a
     	ld (ix+24), $01
     	ld a, (iy+8)
     	add a, $04
@@ -3205,7 +3235,7 @@ _LABEL_2A5B_:
 ; Unused code
 _LABEL_2A7E_:
     	ld a, $82
-    	ld (_RAM_CD00_), a
+    	ld (soundRequest), a
     	jp putIYEntityOffscreen
 
 ; Unused code
@@ -4087,8 +4117,8 @@ _LABEL_2FD2_:
     ret c
     cp $80
     ret nc
-    ld a, $82
-    ld (_RAM_CD00_), a
+    ld a, SOUND_82
+    ld (soundRequest), a
     ret
 
 ++++:

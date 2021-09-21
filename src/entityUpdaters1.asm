@@ -19,8 +19,8 @@ updateEntity05:
     ld (iy + Entity.frame), h
     ld (iy + Entity.data12), $04
     ld (iy + Entity.data1e), $60
-    ld a, $8A
-    ld (_RAM_CD00_), a
+    ld a, SOUND_8A
+    ld (soundRequest), a
     ld hl, _RAM_C104_
     ld a, (iy + Entity.data05)
     cp $01
@@ -184,8 +184,8 @@ updateEntity09:
     ld (iy + Entity.animationDescriptorPointer.high), h
     ld (iy + Entity.data16), $01
     ld (iy + Entity.frame), $00
-    ld a, $88
-    ld (_RAM_CD00_), a
+    ld a, SOUND_88
+    ld (soundRequest), a
     ret
 
 ; Data from FE5 to FF3 (15 bytes)

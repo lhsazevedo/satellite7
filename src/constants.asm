@@ -40,6 +40,22 @@ ENTITY_ENEMY_1_ANIMATION_TIMER = $0C
 
 ENTITY_BOMB_DRAG               = $10
 
+; Audio
+SOUND_80             = $80
+SOUND_TITLE_SONG     = $81
+SOUND_82             = $82
+SOUND_MAIN_SONG      = $83
+SOUND_GAME_OVER_SONG = $84
+SOUND_BOMB_DROP      = $86
+SOUND_87             = $87
+SOUND_88             = $88
+SOUND_STAR           = $89
+SOUND_8A             = $8A
+SOUND_EXTRA_LIFE     = $8B
+SOUND_POWER_UP       = $8C
+SOUND_BUMP           = $8D
+SOUND_8F             = $8F
+
 ; Input
 JOY_UP_BIT    = 0
 JOY_DOWN_BIT  = 1

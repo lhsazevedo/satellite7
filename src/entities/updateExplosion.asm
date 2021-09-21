@@ -10,8 +10,8 @@ updateExplosion:
     ld (iy + Entity.data12), $04
     ld (iy + Entity.data13), $00
     ld (iy + Entity.data14), $08
-    ld a, $87
-    ld (_RAM_CD00_), a
+    ld a, SOUND_87
+    ld (soundRequest), a
     ret
 
 ; Data from F8C to FAF (36 bytes)

@@ -69,7 +69,7 @@ starsCounts db
 lastStarTileIndex db
 playerThatCollectedTheLastStar db
 starBlinkTimer db
-_RAM_C148_ dw
+screenTimer dw
 cheatCounter1 db
 cheatCounter2 db
 _RAM_C14C_ dw
@@ -80,7 +80,7 @@ _RAM_C150_ db
 ; xxxxxxxs
 ; s = Enable vertical scroll
 unknownFlags_RAM_C151_ db
-_RAM_C152_ db
+mark3LogoStateInitialized db
 .ende
 
 .enum $C300 export
@@ -327,7 +327,7 @@ _RAM_C948_ db
 .ende
 
 .enum $CD00 export
-_RAM_CD00_ db
+soundRequest db
 _RAM_CD01_ db
 _RAM_CD02_ db
 .ende

@@ -35,7 +35,7 @@ audio.update:
     ret
 
 ++:
-    ld a, (_RAM_CD00_)
+    ld a, (soundRequest)
     bit 7, a
     jp z, _AUDIO_3C56_
     cp $91
@@ -61,49 +61,49 @@ audio.update:
     ld e, a
     jp (hl)
 
-; Pointer Table from 38FA to 3917 (15 entries, indexed by _RAM_CD00_)
+; Pointer Table from 38FA to 3917 (15 entries, indexed by soundRequest)
 _DATA_38FA_:
 .dw _DATA_3D2D_ _DATA_403B_ _DATA_3DD6_ _DATA_3EF9_ _DATA_3F56_ _DATA_3F69_ _DATA_3F77_ _DATA_3F92_
 .dw _DATA_3FBE_ _DATA_3FA8_ _DATA_3FCC_ _DATA_3FEF_ _DATA_4016_ _DATA_4054_ _DATA_405E_
 
-; Jump Table from 3918 to 3935 (15 entries, indexed by _RAM_CD00_)
+; Jump Table from 3918 to 3935 (15 entries, indexed by soundRequest)
 _DATA_3918_:
 .dw _AUDIO_3936_ _AUDIO_3972_ _AUDIO_3941_ _AUDIO_3936_ _AUDIO_395C_ _AUDIO_394E_ _AUDIO_3954_ _AUDIO_3954_
 .dw _AUDIO_397A_ _AUDIO_394A_ _AUDIO_3982_ _AUDIO_3972_ _AUDIO_398A_ _AUDIO_395C_ _AUDIO_394A_
 
-; 1st entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 1st entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_3936_:
     call _AUDIO_3C56_
     ld a, $80
     ld (_RAM_CD01_), a
     jp +
 
-; 3rd entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 3rd entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_3941_:
     call _AUDIO_3C56_
 +:
     ld de, _RAM_CD05_
     jp _AUDIO_399A_
 
-; 10th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 10th entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_394A_:
     ld a, $40
     jr ++
 
-; 6th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 6th entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_394E_:
     or a
     jp nz, _AUDIO_39BD_
     jr +
 
-; 7th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 7th entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_3954_:
     ld a, $01
     cp e
     jp c, _AUDIO_39BD_
     jr +
 
-; 5th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 5th entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_395C_:
     or a
     jr nz, _AUDIO_39BD_
@@ -119,28 +119,28 @@ _AUDIO_395C_:
     ld de, _RAM_CDA5_
     jp _AUDIO_399A_
 
-; 2nd entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 2nd entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_3972_:
     ld a, $08
     cp e
     jp c, _AUDIO_39BD_
     jr +
 
-; 9th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 9th entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_397A_:
     ld a, $04
     cp e
     jp c, _AUDIO_39BD_
     jr ++
 
-; 11th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 11th entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_3982_:
     ld a, $10
     cp e
     jp c, _AUDIO_39BD_
     jr ++
 
-; 13th entry of Jump Table from 3918 (indexed by _RAM_CD00_)
+; 13th entry of Jump Table from 3918 (indexed by soundRequest)
 _AUDIO_398A_:
     ld a, $20
     cp e
@@ -181,8 +181,8 @@ _AUDIO_399A_:
     pop bc
     djnz -
 _AUDIO_39BD_:
-    ld a, $80
-    ld (_RAM_CD00_), a
+    ld a, SOUND_80
+    ld (soundRequest), a
     ret
 
 _AUDIO_39C3_:
@@ -691,7 +691,7 @@ _AUDIO_3D1A_:
     cpl
     ret
 
-; 1st entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 1st entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3D2D to 3D30 (4 bytes)
 _DATA_3D2D_:
 .db $03 $80 $20 $02
@@ -726,7 +726,7 @@ _DATA_3D75_:
 .db $99 $0A $E2 $8D $02 $8D $91 $91 $94 $94 $96 $94 $8D $04 $80 $0C
 .db $EB
 
-; 3rd entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 3rd entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3DD6 to 3DD9 (4 bytes)
 _DATA_3DD6_:
 .db $03 $80 $20 $01
@@ -769,7 +769,7 @@ _DATA_3DF2_:
 _DATA_3EF3_:
 .db $ED $04 $E5 $8D $3E $E2
 
-; 4th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 4th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3EF9 to 3EFC (4 bytes)
 _DATA_3EF9_:
 .db $03 $80 $20 $01
@@ -799,7 +799,7 @@ _DATA_3F2B_:
 .db $04 $94 $94 $E2 $9D $08 $96 $94 $94 $04 $9D $80 $9D $96 $08 $94
 .db $94 $A5 $A2 $A0 $9D $99 $80 $04 $91 $91 $E2
 
-; 5th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 5th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3F56 to 3F59 (4 bytes)
 _DATA_3F56_:
 .db $01 $A0 $23 $01
@@ -815,7 +815,7 @@ _DATA_3F56_:
 _DATA_3F60_:
 .db $E3 $07 $AF $A5 $02 $99 $9B $02 $E2
 
-; 6th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 6th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3F69 to 3F6C (4 bytes)
 _DATA_3F69_:
 .db $01 $A0 $22 $01
@@ -831,7 +831,7 @@ _DATA_3F69_:
 _DATA_3F73_:
 .db $AA $9E $06 $E2
 
-; 7th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 7th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3F77 to 3F7A (4 bytes)
 _DATA_3F77_:
 .db $01 $80 $23 $02
@@ -853,7 +853,7 @@ _DATA_3F81_:
 ; Data from 3F86 to 3F91 (12 bytes)
 .db $00 $04 $01 $E1 $0B $E6 $00 $04 $00 $F0 $02 $EE
 
-; 8th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 8th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3F92 to 3F95 (4 bytes)
 _DATA_3F92_:
 .db $01 $A0 $23 $01
@@ -869,7 +869,7 @@ _DATA_3F92_:
 _DATA_3F9C_:
 .db $E3 $07 $99 $B1 $01 $80 $80 $01 $B1 $81 $08 $EE
 
-; 10th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 10th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3FA8 to 3FAB (4 bytes)
 _DATA_3FA8_:
 .db $01 $A0 $23 $02
@@ -885,7 +885,7 @@ _DATA_3FA8_:
 _DATA_3FB2_:
 .db $E3 $07 $B1 $99 $04 $99 $B1 $0A $80 $80 $01 $EE
 
-; 9th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 9th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3FBE to 3FC1 (4 bytes)
 _DATA_3FBE_:
 .db $01 $80 $21 $02
@@ -901,7 +901,7 @@ _DATA_3FBE_:
 _DATA_3FC8_:
 .db $B1 $01 $AC $EE
 
-; 11th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 11th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3FCC to 3FCF (4 bytes)
 _DATA_3FCC_:
 .db $02 $80 $21 $01
@@ -928,7 +928,7 @@ _DATA_3FDF_:
 _DATA_3FE7_:
 .db $92 $02 $96 $99 $9D $99 $0C $EE
 
-; 12th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 12th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 3FEF to 3FF2 (4 bytes)
 _DATA_3FEF_:
 .db $02 $80 $21 $02
@@ -958,7 +958,7 @@ _DATA_4002_:
 _DATA_400C_:
 .db $A0 $02 $80 $A0 $8D $A0 $8D $A5 $08 $EE
 
-; 13th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 13th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 4016 to 4019 (4 bytes)
 _DATA_4016_:
 .db $02 $A0 $21 $01
@@ -985,7 +985,7 @@ _DATA_4029_:
 _DATA_4032_:
 .db $A4 $9E $04 $EC $00 $03 $32 $40 $EE
 
-; 2nd entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 2nd entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 403B to 403E (4 bytes)
 _DATA_403B_:
 .db $02 $80 $22 $01
@@ -1012,7 +1012,7 @@ _DATA_404E_:
 _DATA_4051_:
 .db $BD $07 $EE
 
-; 14th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 14th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 4054 to 4057 (4 bytes)
 _DATA_4054_:
 .db $01 $A0 $23 $01
@@ -1023,7 +1023,7 @@ _DATA_4054_:
 ; Data from 405C to 405D (2 bytes)
 .db $06 $0C
 
-; 15th entry of Pointer Table from 38FA (indexed by _RAM_CD00_)
+; 15th entry of Pointer Table from 38FA (indexed by soundRequest)
 ; Data from 405E to 4061 (4 bytes)
 _DATA_405E_:
 .db $01 $80 $23 $01
