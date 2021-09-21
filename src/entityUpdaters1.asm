@@ -158,7 +158,7 @@ _LABEL_F48_:
     ld a, (iy + Entity.yPos.low)
     cp $80
     jp nc, updateEntityY
-    ld hl, _RAM_C133_
+    ld hl, flags_RAM_C133_
     ld a, (iy + Entity.data05)
     dec a
     jr nz, +

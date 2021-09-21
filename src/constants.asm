@@ -54,3 +54,21 @@ JOY_LEFT  = 1 << JOY_LEFT_BIT
 JOY_RIGHT = 1 << JOY_RIGHT_BIT
 JOY_FIREA = 1 << JOY_BTN1_BIT
 JOY_FIREB = 1 << JOY_BTN2_BIT
+
+
+; VDP Register constants
+VDP_R0_DISABLE_VSCROLL_COLS_24_TO_32    = 1 << 7
+VDP_R0_DISABLE_HSCROLL_ROWS_0_AND_1     = 1 << 6
+VDP_R0_MASK_COL_0                       = 1 << 5
+VDP_R0_ENABLE_LINE_INTERRUPT            = 1 << 4
+VDP_R0_SHIFT_SPRITES_LEFT               = 1 << 3
+VDP_R0_USE_MODE_4                       = 1 << 2
+VDP_R0_CHANGE_HEIGHT_IN_MODE_4          = 1 << 1
+VDP_R0_NOSYNC_MONO                      = 1
+
+VDP_R1_DISPLAY_VISIBLE          = 1 << 6
+VDP_R1_ENABLE_FRAME_INTERRUPT   = 1 << 5
+VDP_R1_224_LINE_MODE4           = 1 << 4
+VDP_R1_240_LINE_MODE4           = 1 << 3
+VDP_R1_SPRITES_8_x_16           = 1 << 1
+VDP_R1_DOUBLE_SPRITE_PIXELS     = 1

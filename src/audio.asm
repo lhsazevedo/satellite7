@@ -630,6 +630,7 @@ _AUDIO_3C56_:
     ld (hl), $00
     ldir
     exx
+
 _AUDIO_3C65_:
     exx
     ld hl, _DATA_3C78_

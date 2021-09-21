@@ -1,7 +1,7 @@
 .enum $C000 export
 _RAM_C000_ dsb $100
-_RAM_C100_ db
-_RAM_C101_ db
+vdpRegister0 db
+vdpRegister1 db
 state db
 flags_RAM_C103_ db
 _RAM_C104_ db
@@ -58,7 +58,7 @@ input.player1 db
 input.player1Changes db
 input.player2 db
 input.player2Changes db
-_RAM_C133_ db
+flags_RAM_C133_ db
 mapIndex .dw
 mapIndex.low db
 mapIndex.high db
@@ -355,7 +355,7 @@ _RAM_D001_ db
 .ende
 
 .enum $D100 export
-_RAM_D100_ db
+demoInput db
 .ende
 
 .enum $D300 export
