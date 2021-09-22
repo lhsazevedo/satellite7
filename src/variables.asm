@@ -58,7 +58,7 @@ input.player1 db
 input.player1Changes db
 input.player2 db
 input.player2Changes db
-flags_RAM_C133_ db
+gameplay_flags_RAM_C133_ db
 mapIndex .dw
 mapIndex.low db
 mapIndex.high db

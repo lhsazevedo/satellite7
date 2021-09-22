@@ -188,7 +188,7 @@ resetPlayfieldAndUpdate:
 
 
     xor a
-    ld (flags_RAM_C133_), a
+    ld (gameplay_flags_RAM_C133_), a
 
     ld hl, flags_RAM_C103_
     res 7, (hl)
@@ -234,8 +234,8 @@ unused_LABEL_131_:
     jr +
 
 clear_some_ram_LABEL_13C_:
-    ld de, flags_RAM_C133_ + 1
-    ld hl, flags_RAM_C133_
+    ld de, gameplay_flags_RAM_C133_ + 1
+    ld hl, gameplay_flags_RAM_C133_
     ld bc, $0FCD
 +:
     ld (hl), $00
@@ -363,29 +363,35 @@ updatePauseState:
 ++:
     jp update
 
+
 updateGameplayState:
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     bit 0, a
-    jp z, resetScores
+    jp z, initGameplayState
 
     bit 3, a
-    call nz, _LABEL_369_
+    call nz, if_RAM_C133_bit_3_LABEL_369_
 
     call _LABEL_2301_
     call updateEntities
+
     ld a, (_RAM_C319_)
     cpl
     ld (_RAM_C319_), a
     or a
     call nz, _LABEL_1070_
+
     call _LABEL_2484_
     call _LABEL_39E_
+
     ld a, (flags_RAM_C103_)
     rrca
     jr c, ++
-    ld a, (flags_RAM_C133_)
+
+    ld a, (gameplay_flags_RAM_C133_)
     bit 6, a
     jp z, update
+
     call setStartScreenStateOnButtonPress
     jr nz, +
     ld a, (_RAM_C300_)
@@ -399,7 +405,7 @@ updateGameplayState:
     jp +++
 
 ++:
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     and $C0
     jp z, update
     cp $40
@@ -418,9 +424,9 @@ updateGameplayState:
     call putIYEntityOffscreen
     ld iy, player2
     call putIYEntityOffscreen
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     and $F9
-    ld (flags_RAM_C133_), a
+    ld (gameplay_flags_RAM_C133_), a
 +++:
     ld a, STATE_MARK_3_LOGO
     ld (state), a
@@ -430,7 +436,7 @@ updateGameplayState:
 ++++:
     call +
     jp c, update
-    ld hl, flags_RAM_C133_
+    ld hl, gameplay_flags_RAM_C133_
     res 1, (hl)
     ld iy, player1
     call putIYEntityOffscreen
@@ -439,7 +445,7 @@ updateGameplayState:
 _LABEL_324_:
     call +
     jp c, update
-    ld hl, flags_RAM_C133_
+    ld hl, gameplay_flags_RAM_C133_
     res 2, (hl)
     ld iy, player2
     call putIYEntityOffscreen
@@ -454,7 +460,7 @@ _LABEL_324_:
     xor a
     ret
 
-resetScores:
+initGameplayState:
     ld a, (state)
     cp STATE_DEMO
     jr z, +
@@ -463,44 +469,50 @@ resetScores:
     ld de, player1ScoreChanged + 1
     ld bc, $0007
     ldir
-+:
-    call _LABEL_BFC_
+    +:
+
+    call prepare_gameplay_LABEL_BFC_
+
     ld a, $09
-    ld (flags_RAM_C133_), a
+    ld (gameplay_flags_RAM_C133_), a
+
     ld a, SOUND_MAIN_SONG
     ld (soundRequest), a
     jp update
 
-_LABEL_369_:
-    ld hl, flags_RAM_C133_
+if_RAM_C133_bit_3_LABEL_369_:
+    ld hl, gameplay_flags_RAM_C133_
     res 3, (hl)
+
     ld a, (flags_RAM_C103_)
     rrca
     jp c, +
-    ld a, (flags_RAM_C133_)
+
+    ld a, (gameplay_flags_RAM_C133_)
     bit 1, a
     ret nz
+
     jp _LABEL_48D_
 
 +:
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     and $06
     cp $06
     ret z
     bit 6, a
     jr nz, +
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     and $42
     jp nz, +
     call _LABEL_48D_
 +:
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     and $84
     ret nz
     jp _LABEL_48D_
 
 _LABEL_39E_:
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     bit 6, a
     jp nz, _LABEL_3FF_
     ld a, (_RAM_C104_)
@@ -518,7 +530,7 @@ _LABEL_39E_:
     and $F7
     or $01
     ld (_RAM_C104_), a
-    ld hl, flags_RAM_C133_
+    ld hl, gameplay_flags_RAM_C133_
     set 3, (hl)
     ld a, (p1Lives)
     dec a
@@ -526,7 +538,7 @@ _LABEL_39E_:
     ld a, (_RAM_C104_)
     and $F0
     ld (_RAM_C104_), a
-    ld hl, flags_RAM_C133_
+    ld hl, gameplay_flags_RAM_C133_
     set 1, (hl)
     ld a, $06
     ld (player1.type), a
@@ -535,7 +547,7 @@ _LABEL_39E_:
     ld a, (flags_RAM_C103_)
     rrca
     jr nc, +
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     and $84
     jr z, ++
 +:
@@ -564,7 +576,7 @@ _LABEL_3FF_:
     and $7F
     or $10
     ld (_RAM_C104_), a
-    ld hl, flags_RAM_C133_
+    ld hl, gameplay_flags_RAM_C133_
     bit 7, (hl)
     ret nz
     set 3, (hl)
@@ -574,13 +586,13 @@ _LABEL_3FF_:
     ld a, (_RAM_C104_)
     and $0F
     ld (_RAM_C104_), a
-    ld hl, flags_RAM_C133_
+    ld hl, gameplay_flags_RAM_C133_
     set 2, (hl)
     ld a, $06
     ld (_RAM_C622_), a
     ld a, $02
     ld (_RAM_C625_), a
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     and $42
     jr z, +
     call _LABEL_456_
@@ -751,7 +763,7 @@ updateDemoState:
     call setStartScreenStateOnButtonPress
     cp $02
     jr z, +
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     bit 1, a
     jr nz, +
     bit 2, a
@@ -849,8 +861,10 @@ _DATA_61E_:
 .db $06 $01 $FF
 
 updateStartScreenState:
+    ; Init gameplay on button press.
     call @checkInput
 
+    ; Init on first call.
     xor a
     ld hl, (screenTimer)
     cp h
@@ -859,15 +873,22 @@ updateStartScreenState:
     call z, @init
 
 +:
+    ; Tick timer.
     inc hl
     ld (screenTimer), hl
+
+    ; Bail if time is over.
     ld a, h
     cp $03
     jp c, update
+
+    ; Go to demo state
     ld a, STATE_DEMO
     ld (state), a
+
+    ; Remove drawMenu action.
     xor a
-    ld (interruptActionSlot5), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot5), a
     jp resetPlayfieldAndUpdate
 
 @init:
@@ -878,11 +899,11 @@ updateStartScreenState:
     pop hl
 
     ld a, $01 ; jumpToClearTilemap
-    ld (interruptActionSlot2), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot2), a
     ld a, $02 ; drawBlueBG
-    ld (interruptActionSlot3), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot3), a
     ld a, $04 ; drawMenu
-    ld (interruptActionSlot5), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot5), a
 
     ld a, SOUND_TITLE_SONG
     ld (soundRequest), a
@@ -939,11 +960,11 @@ updateMark3LogoState:
 
 @init:
     ld a, $02 ; drawBlueBG
-    ld (interruptActionSlot3), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot3), a
 
     
     ld a, $05 ; drawMark3Logo
-    ld (interruptActionSlot6), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot6), a
 
     ld (mark3LogoStateInitialized), a
     ret
@@ -1721,17 +1742,17 @@ enableDisplay:
     ld d, $81
     jp writeVDPCommandWord
 
-_LABEL_BFC_:
+prepare_gameplay_LABEL_BFC_:
     ld a, $03 ; setBGColorsToBlack
-    ld (interruptActionSlot4), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot4), a
     ld a, $01 ; jumpToClearTilemap
-    ld (interruptActionSlot2), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot2), a
     ld a, $06 ; clearSprites
-    ld (interruptActionSlot7), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot7), a
     ld a, $07 ; drawInfoBar
-    ld (interruptActionSlot8), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot8), a
     ld a, $0C ; extractEnemyTiles
-    ld (interruptActionSlot13), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot13), a
 
     ld a, $03
     ld (unknownFlags_RAM_C151_), a
@@ -1739,22 +1760,26 @@ _LABEL_BFC_:
     ; Initial lives
     ld a, INITIAL_LIVES
     ld (p1Lives), a
-
     ld (p2Lives), a
+
+    ; @TODO
     ld a, $1E
     ld (_RAM_C32F_), a
+
     ld a, (flags_RAM_C103_)
     rrca
     jr nc, +
-    ld a, $11
-    jr ++
-
-+:
-    ld a, $01
-++:
+        ld a, $11
+        jr ++
+    +:
+        ld a, $01
+    ++:
+    
     ld (_RAM_C104_), a
+
     ld a, $FF
     ld (wave_RAM_C322_), a
+
     ret
 
 updateEntities:
@@ -2026,7 +2051,7 @@ checkStatusTextTimer:
 
     ; Schedule clearStatusText action.
     ld a, $11
-    ld (interruptActionSlot18), a ; Related to interruptActions jumptable
+    ld (interruptActionSlot18), a
     ret
 
 .INCLUDE "entityUpdaters2.asm"
@@ -2038,43 +2063,54 @@ _LABEL_2301_:
     and $0F
     or a
     jr nz, +
+
     ld ix, player1
     ld a, (ix + Entity.type)
     cp $01
     jr nz, +
-    ld iy, _RAM_C640_
+
+    ld iy, entities.3
     ld hl, input.player1
     ld de, _RAM_C302_
     call _LABEL_2371_
+
     ld a, (ix+25)
     or a
     jr nz, +
-    ld a, (_RAM_C6A3_)
+
+    ld a, (entities.6.data03)
     or a
     jr nz, +
+
     ld ix, player1
     ld iy, entities.6
     ld a, (input.player1)
     call spawnBomb
+
 +:
     ld a, (_RAM_C104_)
     and $F0
     or a
     ret nz
+
     ld ix, player2
     ld a, (ix + Entity.type)
     cp $02
     ret nz
-    ld iy, _RAM_C6C0_
+
+    ld iy, entities.7
     ld hl, input.player2
     ld de, autofireTimer
     call _LABEL_2371_
+
     ld a, (ix+24)
     or a
     ret nz
-    ld a, (_RAM_C723_)
+
+    ld a, (entities.10.data03)
     or a
     ret nz
+
     ld ix, player2
     ld iy, entities.10
     ld a, (input.player2)
@@ -2684,7 +2720,7 @@ updateCollisions_LABEL_2682_:
     jp _LABEL_2760_
 
 _LABEL_2688_:
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     and $20
     jp nz, _LABEL_2717_
     ld l, (iy + Entity.xPos.low)
@@ -3264,7 +3300,7 @@ _LABEL_2A9A_:
     ret
 
 +:
-    ld hl, flags_RAM_C133_
+    ld hl, gameplay_flags_RAM_C133_
     res 5, (hl)
     ld hl, unknownFlags_RAM_C151_
     set 0, (hl)
@@ -3965,7 +4001,7 @@ _LABEL_2E36_:
 
     ex de, hl
     dec (hl)
-    ld hl, flags_RAM_C133_
+    ld hl, gameplay_flags_RAM_C133_
     set 5, (hl)
     ld hl, unknownFlags_RAM_C151_
     res 0, (hl)

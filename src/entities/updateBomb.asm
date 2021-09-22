@@ -27,7 +27,7 @@ updateBomb:
     jp nc, putIYEntityOffscreen
 
     // @TODO
-    ld a, (flags_RAM_C133_)
+    ld a, (gameplay_flags_RAM_C133_)
     and $20
     ret nz
     ld de, $0055
