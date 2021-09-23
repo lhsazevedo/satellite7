@@ -175,11 +175,8 @@ init:
 resetPlayfieldAndUpdate:
     di
 
-    ; TODO
-    call clear_some_ram_LABEL_13C_
-
-    ; TODO: Probably reset PSG
-    call _AUDIO_3C65_
+    call clearGameplayRam
+    call audio.mute
 
     ld a, $01 ; jumpToClearTilemap
     ld (interruptActionSlot2), a
@@ -233,7 +230,7 @@ unused_LABEL_131_:
     ld bc, $01FF
     jr +
 
-clear_some_ram_LABEL_13C_:
+clearGameplayRam:
     ld de, gameplay_flags_RAM_C133_ + 1
     ld hl, gameplay_flags_RAM_C133_
     ld bc, $0FCD
@@ -343,7 +340,7 @@ extract:
 .INCLUDE "interrupts.asm"
 
 updatePauseState:
-    call _AUDIO_3C65_
+    call audio.mute
     ld a, (flags_RAM_C103_)
     rrca
     jr c, ++

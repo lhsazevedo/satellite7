@@ -631,12 +631,14 @@ _AUDIO_3C56_:
     ldir
     exx
 
-_AUDIO_3C65_:
+audio.mute:
     exx
-    ld hl, _DATA_3C78_
+    ld hl, audio.muteCommands
     ld c, Port_PSG
     ld b, $04
     otir
+
+    ; @TODO
     xor a
     ld (_RAM_CD01_), a
     ld (_RAM_CD02_), a
@@ -644,7 +646,7 @@ _AUDIO_3C65_:
     ret
 
 ; Data from 3C78 to 3C7B (4 bytes)
-_DATA_3C78_:
+audio.muteCommands:
 .db $9F $BF $DF $FF
 
 ; Data from 3C7C to 3D0D (146 bytes)
