@@ -28,7 +28,7 @@ updateBomb:
 
     // @TODO
     ld a, (gameplay_flags_RAM_C133_)
-    and $20
+    and %00100000
     ret nz
     ld de, $0055
     jp updateEntityYWith

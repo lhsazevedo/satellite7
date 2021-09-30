@@ -88,7 +88,7 @@ palette:
 .db $00 $00 $03 $00 $3F $3F $3A $02 $0B $0C $08 $0F $34 $22 $21 $02
 
 ; Data from 5B to 65 (11 bytes)
-_DATA_5B_:
+player1Data:
 .dw _DATA_14_
 .db $01
 .db $01
@@ -182,7 +182,6 @@ resetPlayfieldAndUpdate:
     ld (interruptActionSlot2), a
     ld a, $06 ; clearSprites
     ld (interruptActionSlot7), a
-
 
     xor a
     ld (gameplay_flags_RAM_C133_), a
@@ -363,22 +362,29 @@ updatePauseState:
 
 updateGameplayState:
     ld a, (gameplay_flags_RAM_C133_)
-    bit 0, a
+    bit GAMEPLAY_INITIALIZED_BIT, a
     jp z, initGameplayState
 
-    bit 3, a
-    call nz, if_RAM_C133_bit_3_LABEL_369_
+    ; If skipped: Players do not spawn.
+    bit GAMEPLAY_SHOULD_SPAWN_PLAYERS_BIT, a
+    call nz, spawnPlayers_LABEL_369_
 
-    call _LABEL_2301_
+    ; If skipped: Players can't shoot or drop bombs.
+    call handlePlayerWeapons
+
     call updateEntities
 
     ld a, (_RAM_C319_)
     cpl
     ld (_RAM_C319_), a
     or a
+    ; If skipped: Entities aren't destroyed when offscreen
     call nz, _LABEL_1070_
 
+    ; If skipped: No entities and players
     call _LABEL_2484_
+
+    ; If skipped: Player can't fire. No damage.
     call _LABEL_39E_
 
     ld a, (flags_RAM_C103_)
@@ -403,7 +409,7 @@ updateGameplayState:
 
 ++:
     ld a, (gameplay_flags_RAM_C133_)
-    and $C0
+    and %11000000
     jp z, update
     cp $40
     jr z, ++++
@@ -422,7 +428,7 @@ updateGameplayState:
     ld iy, player2
     call putIYEntityOffscreen
     ld a, (gameplay_flags_RAM_C133_)
-    and $F9
+    and GAMEPLAY_INITIALIZED | %11111000
     ld (gameplay_flags_RAM_C133_), a
 +++:
     ld a, STATE_MARK_3_LOGO
@@ -470,14 +476,15 @@ initGameplayState:
 
     call prepare_gameplay_LABEL_BFC_
 
-    ld a, $09
+    ld a, GAMEPLAY_INITIALIZED | %00001000
     ld (gameplay_flags_RAM_C133_), a
 
     ld a, SOUND_MAIN_SONG
     ld (soundRequest), a
     jp update
 
-if_RAM_C133_bit_3_LABEL_369_:
+spawnPlayers_LABEL_369_:
+    ; Reset bit 3
     ld hl, gameplay_flags_RAM_C133_
     res 3, (hl)
 
@@ -489,24 +496,26 @@ if_RAM_C133_bit_3_LABEL_369_:
     bit 1, a
     ret nz
 
-    jp _LABEL_48D_
+    jp spawnPlayers_LABEL_48D_
 
 +:
     ld a, (gameplay_flags_RAM_C133_)
-    and $06
-    cp $06
+    and %00000110
+    cp %00000110
     ret z
+
     bit 6, a
     jr nz, +
     ld a, (gameplay_flags_RAM_C133_)
-    and $42
+    and %01000010
     jp nz, +
-    call _LABEL_48D_
+    call spawnPlayers_LABEL_48D_
 +:
     ld a, (gameplay_flags_RAM_C133_)
-    and $84
+    and %10000100
     ret nz
-    jp _LABEL_48D_
+    jp spawnPlayers_LABEL_48D_
+
 
 _LABEL_39E_:
     ld a, (gameplay_flags_RAM_C133_)
@@ -527,8 +536,10 @@ _LABEL_39E_:
     and $F7
     or $01
     ld (_RAM_C104_), a
+
     ld hl, gameplay_flags_RAM_C133_
-    set 3, (hl)
+    set GAMEPLAY_SHOULD_SPAWN_PLAYERS_BIT, (hl)
+
     ld a, (p1Lives)
     dec a
     jp p, +++
@@ -545,7 +556,7 @@ _LABEL_39E_:
     rrca
     jr nc, +
     ld a, (gameplay_flags_RAM_C133_)
-    and $84
+    and %10000100
     jr z, ++
 +:
     call _LABEL_456_
@@ -590,7 +601,7 @@ _LABEL_3FF_:
     ld a, $02
     ld (_RAM_C625_), a
     ld a, (gameplay_flags_RAM_C133_)
-    and $42
+    and %01000010
     jr z, +
     call _LABEL_456_
 +:
@@ -638,25 +649,31 @@ drawPlayer2Lives:
     ld a, b
     jp writeToVdpAddress
 
-_LABEL_48D_:
+spawnPlayers_LABEL_48D_:
     ld a, (_RAM_C104_)
     bit 0, a
     jr z, +
     ld de, player1
-    ld hl, _DATA_5B_
+    ld hl, player1Data
     ld bc, $0009
     ldir
+
     ld a, $FF
-    ld (_RAM_C61A_), a
+    ld (player1.data1a), a
+
     ld a, $01
-    ld (_RAM_C61B_), a
+    ld (player1.data1b), a
+
     ld a, $02
     ld (player1.data12), a
+
     ld a, $03
-    ld (_RAM_C614_), a
+    ld (player1.data14), a
+
     ld a, $18
-    ld (_RAM_C61C_), a
-    ld (_RAM_C302_), a
+    ld (player1.data1c), a
+    ld (player1AutofireTimer), a
+
     ld a, (flags_RAM_C103_)
     bit 0, a
     jr nz, +
@@ -670,21 +687,27 @@ _LABEL_48D_:
     ld a, (_RAM_C104_)
     bit 4, a
     ret z
+
     ld de, player2
-    ld hl, _DATA_517_
+    ld hl, player2Data
     ld bc, $0009
     ldir
+
     ld a, $FF
-    ld (_RAM_C63A_), a
+    ld (player2.data1a), a
+
     ld a, $01
-    ld (_RAM_C63B_), a
+    ld (player2.data1b), a
+
     ld a, $02
-    ld (_RAM_C632_), a
+    ld (player2.data12), a
+
     ld a, $03
-    ld (_RAM_C634_), a
+    ld (player2.data14), a
+
     ld a, $18
-    ld (_RAM_C63C_), a
-    ld (autofireTimer), a
+    ld (player2.data1c), a
+    ld (player2AutofireTimer), a
     ret
 
 ; Data from 4F6 to 516 (33 bytes)
@@ -710,7 +733,7 @@ _DATA_513_:
 .db $04 $04 $00
 
 ; Data from 517 to 523 (13 bytes)
-_DATA_517_:
+player2Data:
 .dw _DATA_520_
 .db $02 ; type
 .db $01 ; data03
@@ -2055,55 +2078,65 @@ checkStatusTextTimer:
 
 .INCLUDE "input.asm"
 
-_LABEL_2301_:
+handlePlayerWeapons:
+    ; Skip player 1 if _RAM_C104_ low nibble is not zero.
     ld a, (_RAM_C104_)
     and $0F
     or a
-    jr nz, +
+    jr nz, @player2
 
+    ; Skip player 1 if entity 1 is not ENTITY_PLAYER_1.
     ld ix, player1
     ld a, (ix + Entity.type)
-    cp $01
-    jr nz, +
+    cp ENTITY_PLAYER_1
+    jr nz, @player2
 
+    ; Handle main weapon.
     ld iy, entities.3
     ld hl, input.player1
-    ld de, _RAM_C302_
-    call _LABEL_2371_
+    ld de, player1AutofireTimer
+    call fireBulletIfButtonIsPressed
 
-    ld a, (ix+25)
+    ; @TODO
+    ld a, (ix + Entity.data19)
     or a
-    jr nz, +
+    jr nz, @player2
 
+    ; Skip bomb if there is already one.
     ld a, (entities.6.data03)
     or a
-    jr nz, +
+    jr nz, @player2
 
     ld ix, player1
     ld iy, entities.6
     ld a, (input.player1)
     call spawnBomb
 
-+:
+@player2:
+    ; Skip player 2 if _RAM_C104_ high nibble is not zero.
     ld a, (_RAM_C104_)
     and $F0
     or a
     ret nz
 
+    ; Skip player 2 if entity 1 is not ENTITY_PLAYER_2.
     ld ix, player2
     ld a, (ix + Entity.type)
-    cp $02
+    cp ENTITY_PLAYER_2
     ret nz
 
+    ; Handle player 2 main weapon.
     ld iy, entities.7
     ld hl, input.player2
-    ld de, autofireTimer
-    call _LABEL_2371_
+    ld de, player2AutofireTimer
+    call fireBulletIfButtonIsPressed
 
-    ld a, (ix+24)
+    ; @TODO
+    ld a, (ix + Entity.data18)
     or a
     ret nz
 
+    ; Skip bomb if there is already one.
     ld a, (entities.10.data03)
     or a
     ret nz
@@ -2113,46 +2146,57 @@ _LABEL_2301_:
     ld a, (input.player2)
     jp spawnBomb
 
-_LABEL_2371_:
+fireBulletIfButtonIsPressed:
     ld b, (hl)
     inc hl
     ld c, (hl)
     ex de, hl
+
+    ; Return if fire button is not pressed.
     bit JOY_BTN2_BIT, b
     ret z
+
+    ; Skip autofire timer if the button state changed.
     bit JOY_BTN2_BIT, c
     jr nz, +
+
+    ; Decrement autofire timer.
     dec (hl)
     ret nz
 +:
+    ; Reset autofire timer
     ld a, (ix + Player.autofireRate)
     ld (hl), a
-    call _LABEL_246F_
+
+    call findBulletSlot
     ret nc
+
     push iy
     pop de
-    ld hl, _DATA_23D6_
+    ld hl, bulletData
     ld bc, $0005
     ldir
 
+    ; Copy player number to bullet entity.
     ld a, (ix + Entity.data05)
     ld (iy + Entity.data05), a
 
+    ; Copy position
     ld a, (ix + Entity.yPos.low)
     ld (iy + Entity.yPos.low), a
-
     ld a, (ix + Entity.xPos.low)
     add a, $04
     ld (iy + Entity.xPos.low), a
 
     call unknown_LABEL_2456_
 
+    ; Pick bullet velocities according to player frame (for bump shots).
     ld a, (ix + Entity.frame)
     add a, a
     add a, a
     ld e, a
     ld d, $00
-    ld hl, _DATA_23E1_
+    ld hl, bulletVelocities
     add hl, de
     ld a, (hl)
     ld (iy + Entity.yVel.low), a
@@ -2167,25 +2211,34 @@ _LABEL_2371_:
     ld a, (hl)
     ld (iy + Entity.xVel.high), a
 
-    ld c, $85
+    ; Request sound
+    ld c, SOUND_PLAYER_1_FIRE
     ld a, (ix + Entity.data05)
     dec a
     jr z, +
-    ld c, $8E
-+:
+        ld c, SOUND_PLAYER_2_FIRE
+    +:
     ld a, c
     ld (soundRequest), a
 
     ret
 
 ; Data from 23D6 to 23E0 (11 bytes)
-_DATA_23D6_:
-.db $DB $23 $03 $01 $01
-.db $DD $23 $01 $00 $00
-.db $04
+bulletData:
+.dw playerBulletAnimationDescriptor
+.db ENTITY_BULLET
+.db $01
+.db $01
+
+playerBulletAnimationDescriptor:
+.dw _DATA_23DD_
+
+_DATA_23DD_:
+.db $01
+.db $00 $00 $04
 
 ; Data from 23E1 to 2400 (32 bytes)
-_DATA_23E1_:
+bulletVelocities:
 ; yVel.low / yVel.high / xVel.low / xVel.high
 .db $FB $00 $00 $00
 .db $FD $00 $FE $00
@@ -2278,21 +2331,23 @@ unknown_LABEL_2456_:
     ld hl, player2AnimationDescriptor
     jp _LABEL_1149_
 
-_LABEL_246F_:
+findBulletSlot:
     ld b, $03
--:
-    ld a, (iy + Entity.type)
-    or a
-    jr z, +
-    push de
-    ld de, $0020
-    add iy, de
-    pop de
+
+    -:
+        ld a, (iy + Entity.type)
+        or a
+        jr z, @found
+        push de
+        ld de, $0020
+        add iy, de
+        pop de
     djnz -
+
     xor a
     ret
 
-+:
+    @found:
     scf
     ret
 
@@ -2718,7 +2773,7 @@ updateCollisions_LABEL_2682_:
 
 _LABEL_2688_:
     ld a, (gameplay_flags_RAM_C133_)
-    and $20
+    and %00100000
     jp nz, _LABEL_2717_
     ld l, (iy + Entity.xPos.low)
     call _LABEL_26B6_

@@ -86,8 +86,8 @@ mark3LogoStateInitialized db
 .enum $C300 export
 _RAM_C300_ db
 _RAM_C301_ db
-_RAM_C302_ db
-autofireTimer db
+player1AutofireTimer db
+player2AutofireTimer db
 _RAM_C304_ db
 _RAM_C305_ db
 .ende
