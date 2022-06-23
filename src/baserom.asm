@@ -365,21 +365,19 @@ updateGameplayState:
     bit GAMEPLAY_INITIALIZED_BIT, a
     jp z, initGameplayState
 
-    ; If skipped: Players do not spawn.
     bit GAMEPLAY_SHOULD_SPAWN_PLAYERS_BIT, a
     call nz, spawnPlayers_LABEL_369_
 
-    ; If skipped: Players can't shoot or drop bombs.
     call handlePlayerWeapons
-
     call updateEntities
 
+    ; Destroy offscreen entities every other call
     ld a, (_RAM_C319_)
     cpl
     ld (_RAM_C319_), a
     or a
     ; If skipped: Entities aren't destroyed when offscreen
-    call nz, _LABEL_1070_
+    call nz, destroyOffscreenEntities_LABEL_1070_
 
     ; If skipped: No entities and players
     call _LABEL_2484_

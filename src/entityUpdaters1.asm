@@ -269,25 +269,26 @@ putIXEntityOffscreen:
     ld (ix + Entity.data15), $01
     ret
 
-_LABEL_1070_:
+destroyOffscreenEntities_LABEL_1070_:
     ld iy, _RAM_C740_
     ld b, $11
     ld de, $0020
--:
-    ld a, (iy + Entity.data03)
-    or a
-    jr z, _LABEL_1091_
-    ld a, (iy + Entity.yPos.low)
-    cp $C4
-    jr c, +
-    cp $E0
-    jr c, ++
-+:
-    ld a, (iy + Entity.xPos.low)
-    cp $B5
-    jr nc, ++
-_LABEL_1091_:
-    add iy, de
+
+    -:
+        ld a, (iy + Entity.data03)
+        or a
+        jr z, _LABEL_1091_
+        ld a, (iy + Entity.yPos.low)
+        cp $C4
+        jr c, +
+            cp $E0
+            jr c, ++
+        +:
+        ld a, (iy + Entity.xPos.low)
+        cp $B5
+        jr nc, ++
+        _LABEL_1091_:
+            add iy, de
     djnz -
     ret
 
