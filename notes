@@ -1,0 +1,29 @@
+gameplay_flags_RAM_C133_ bits:
+
+0: State initialized
+1: 
+2: 
+3: 
+4: 
+5: 
+6: 
+7: 
+
+
+
+Sounds:
+$81: Intro
+$82: Block
+$83: Main song
+$84: Game over
+$85: Fire
+$86: Bomb drop
+$87: Explosion 1
+$88: Player explosion
+$89: Star
+$8A: Explosion 2
+$8B: Extra life
+$8C: Power Up
+$8D: Player bump
+$8E: Explosion 3
+$8F: Explosion 4
