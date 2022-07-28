@@ -372,12 +372,11 @@ updateGameplayState:
     call updateEntities
 
     ; Destroy offscreen entities every other call
-    ld a, (_RAM_C319_)
+    ld a, (var_shouldHandleOffscreenEntities)
     cpl
-    ld (_RAM_C319_), a
+    ld (var_shouldHandleOffscreenEntities), a
     or a
-    ; If skipped: Entities aren't destroyed when offscreen
-    call nz, destroyOffscreenEntities_LABEL_1070_
+    call nz, handleOffscreenEntities
 
     ; If skipped: No entities and players
     call _LABEL_2484_

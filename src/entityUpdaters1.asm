@@ -269,33 +269,42 @@ putIXEntityOffscreen:
     ld (ix + Entity.data15), $01
     ret
 
-destroyOffscreenEntities_LABEL_1070_:
+handleOffscreenEntities:
     ld iy, _RAM_C740_
     ld b, $11
     ld de, $0020
 
     -:
+        ; Skip if Entity.data03 is not set
         ld a, (iy + Entity.data03)
         or a
-        jr z, _LABEL_1091_
+        jr z, @nextEntity
+
+        ; handle if $C4 <= y < $E0
         ld a, (iy + Entity.yPos.low)
         cp $C4
         jr c, +
             cp $E0
-            jr c, ++
+            jr c, @handle
         +:
+
+        ; handle if x >= $B5
         ld a, (iy + Entity.xPos.low)
         cp $B5
-        jr nc, ++
-        _LABEL_1091_:
+        jr nc, @handle
+
+        @nextEntity:
             add iy, de
     djnz -
     ret
 
-++:
+@handle:
+    ; TODO
     ld a, (iy + Entity.type)
     cp $0E
     call z, ++
+
+    ; TODO
     ld a, (iy + Entity.type)
     cp $11
     jr z, +
@@ -303,9 +312,10 @@ destroyOffscreenEntities_LABEL_1070_:
     jr z, +
     cp $19
     jr z, +
+
 -:
     call putIYEntityOffscreen
-    jr _LABEL_1091_
+    jr @nextEntity
 
 +:
     ld a, (iy + Entity.data1c)

@@ -116,7 +116,7 @@ wave db
 
 .enum $C318 export
 _RAM_C318_ db
-_RAM_C319_ db
+var_shouldHandleOffscreenEntities db
 .ende
 
 .enum $C31F export
